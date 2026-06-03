@@ -5,20 +5,30 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
+use App\Models\Cashbook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class TransactionController extends Controller
 {
     // List all transactions (for reports/history)
     public function index()
     {
-        $transactions = Transaction::with(['user', 'items.product'])
-            ->latest()
-            ->paginate(15);
-        return view('transactions.index', compact('transactions'));
+        $filters = request()->only(['search', 'sort', 'dir', 'start_date', 'end_date']);
+        $query = Transaction::with(['user', 'items.product'])->filter($filters, ['transaction_code']);
+
+        if (!empty($filters['start_date'])) {
+            $query->whereDate('created_at', '>=', $filters['start_date']);
+        }
+        if (!empty($filters['end_date'])) {
+            $query->whereDate('created_at', '<=', $filters['end_date']);
+        }
+
+        $transactions = $query->latest()->paginate(15)->withQueryString();
+        return Inertia::render('Transactions/Index', ['transactions' => $transactions, 'filters' => $filters]);
     }
 
     // Cashier interface
@@ -26,125 +36,64 @@ class TransactionController extends Controller
     {
         $search = $request->input('search');
         
-        $productsQuery = Product::query()->where('stock', '>', 0);
-        
+        $query = Product::where('stock', '>', 0)
+            ->with(['category', 'seller']);
+            
         if ($search) {
-            $productsQuery->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%");
+            $query->where(function($q) use ($search) {
+                $q->where('code', 'like', "{$search}%")
+                  ->orWhere('name', 'like', "%{$search}%");
             });
+            $query->orderByRaw("CASE WHEN code LIKE ? THEN 1 ELSE 2 END", ["{$search}%"]);
         }
         
-        $products = $productsQuery->with(['category', 'seller'])->take(12)->get();
-        $cart = session()->get('cart', []);
+        // Limit to 50 for performance
+        $products = $query->take(50)->get();
         
-        // Calculate totals
-        $totalAmount = 0;
-        foreach ($cart as $id => $item) {
-            $totalAmount += $item['selling_price'] * $item['quantity'];
-        }
+        $prefixes = \App\Models\Category::select('prefix')->whereNotNull('prefix')->distinct()->pluck('prefix')->values();
 
-        return view('transactions.create', compact('products', 'cart', 'totalAmount', 'search'));
-    }
-
-    // Add product to cart
-    public function addToCart(Request $request)
-    {
-        $productId = $request->input('product_id');
-        $quantity = $request->input('quantity', 1);
-
-        $product = Product::findOrFail($productId);
-
-        if ($product->stock < $quantity) {
-            return redirect()->back()->with('error', 'Stok tidak mencukupi.');
-        }
-
-        $cart = session()->get('cart', []);
-
-        // If product already in cart, increment quantity if stock allows
-        if (isset($cart[$productId])) {
-            $newQty = $cart[$productId]['quantity'] + $quantity;
-            if ($product->stock < $newQty) {
-                return redirect()->back()->with('error', 'Stok tidak mencukupi untuk jumlah tersebut.');
-            }
-            $cart[$productId]['quantity'] = $newQty;
-        } else {
-            $cart[$productId] = [
-                'name' => $product->name,
-                'code' => $product->code,
-                'type' => $product->type,
-                'cost_price' => $product->cost_price,
-                'selling_price' => $product->selling_price,
-                'quantity' => $quantity,
-                'stock' => $product->stock
-            ];
-        }
-
-        session()->put('cart', $cart);
-
-        return redirect()->back()->with('success', 'Produk ditambahkan ke keranjang.');
-    }
-
-    // Update cart quantity
-    public function updateCart(Request $request)
-    {
-        $productId = $request->input('product_id');
-        $quantity = $request->input('quantity');
-
-        if ($quantity <= 0) {
-            return $this->removeFromCart($productId);
-        }
-
-        $product = Product::findOrFail($productId);
-        if ($product->stock < $quantity) {
-            return redirect()->back()->with('error', "Stok hanya tersedia {$product->stock} pcs.");
-        }
-
-        $cart = session()->get('cart', []);
-        if (isset($cart[$productId])) {
-            $cart[$productId]['quantity'] = $quantity;
-            session()->put('cart', $cart);
-        }
-
-        return redirect()->back()->with('success', 'Keranjang diperbarui.');
-    }
-
-    // Remove item from cart
-    public function removeFromCart($productId)
-    {
-        $cart = session()->get('cart', []);
-        if (isset($cart[$productId])) {
-            unset($cart[$productId]);
-            session()->put('cart', $cart);
-        }
-        return redirect()->back()->with('success', 'Produk dihapus dari keranjang.');
-    }
-
-    // Clear cart
-    public function clearCart()
-    {
-        session()->forget('cart');
-        return redirect()->back()->with('success', 'Keranjang dikosongkan.');
+        return Inertia::render('Transactions/Create', [
+            'products' => $products,
+            'search' => $search,
+            'prefixes' => $prefixes
+        ]);
     }
 
     // Checkout / Store Transaction
     public function checkout(Request $request)
     {
-        $cart = session()->get('cart', []);
-        if (empty($cart)) {
-            return redirect()->back()->with('error', 'Keranjang kosong.');
-        }
-
         $request->validate([
+            'items' => 'required|array|min:1',
+            'items.*.id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|integer|min:1',
             'paid_amount' => 'required|numeric|min:0',
         ]);
 
+        $items = $request->input('items');
+        $paidAmount = $request->input('paid_amount');
+        
         $totalAmount = 0;
-        foreach ($cart as $id => $item) {
-            $totalAmount += $item['selling_price'] * $item['quantity'];
+        
+        // Validate total amount and stock first
+        $itemIds = array_column($items, 'id');
+        $products = Product::whereIn('id', $itemIds)->get()->keyBy('id');
+        
+        $cartItems = [];
+        foreach ($items as $item) {
+            if (!isset($products[$item['id']])) continue;
+            
+            $product = $products[$item['id']];
+            if ($product->stock < $item['quantity']) {
+                return redirect()->back()->with('error', "Stok {$product->name} tidak cukup.");
+            }
+            $subtotal = $product->selling_price * $item['quantity'];
+            $totalAmount += $subtotal;
+            $cartItems[] = [
+                'product' => $product,
+                'quantity' => $item['quantity']
+            ];
         }
 
-        $paidAmount = $request->input('paid_amount');
         if ($paidAmount < $totalAmount) {
             return redirect()->back()->with('error', 'Uang bayar kurang dari total belanja.');
         }
@@ -154,14 +103,14 @@ class TransactionController extends Controller
         try {
             DB::beginTransaction();
 
-            // Generate sequential transaction code (e.g., 001, 002)
-            $latest = Transaction::orderBy('transaction_code', 'desc')->first();
-            $nextNumber = $latest && preg_match('/^(\d{3,})$/', $latest->transaction_code) ? ((int)$latest->transaction_code) + 1 : 1;
-            $transactionCode = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-            // Ensure uniqueness (unlikely but double‑check)
+            // Generate sequential transaction code
+            $latest = Transaction::orderBy('id', 'desc')->first();
+            $nextNumber = $latest ? ((int)$latest->transaction_code) + 1 : 1;
+            $transactionCode = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+            // Ensure uniqueness
             while (Transaction::where('transaction_code', $transactionCode)->exists()) {
                 $nextNumber++;
-                $transactionCode = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+                $transactionCode = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
             }
 
             // Create Transaction
@@ -174,23 +123,25 @@ class TransactionController extends Controller
             ]);
 
             // Save items and deduct stock
-            foreach ($cart as $productId => $item) {
-                $product = Product::lockForUpdate()->findOrFail($productId);
+            foreach ($cartItems as $cItem) {
+                $product = $cItem['product'];
+                $qty = $cItem['quantity'];
 
-                if ($product->stock < $item['quantity']) {
-                    throw new \Exception("Stok produk {$product->name} tidak mencukupi.");
+                $lockedProduct = Product::lockForUpdate()->findOrFail($product->id);
+
+                if ($lockedProduct->stock < $qty) {
+                    throw new \Exception("Stok produk {$lockedProduct->name} tidak mencukupi.");
                 }
 
                 // Deduct stock
-                $product->decrement('stock', $item['quantity']);
+                $lockedProduct->decrement('stock', $qty);
 
                 // Calculate profits
-                $qty = $item['quantity'];
-                $costPrice = $item['cost_price'];
-                $sellingPrice = $item['selling_price'];
+                $costPrice = $lockedProduct->cost_price;
+                $sellingPrice = $lockedProduct->selling_price;
 
-                if ($item['type'] === 'siswa') {
-                    $profitKantin = 500 * $qty;
+                if ($lockedProduct->type === 'siswa') {
+                    $profitKantin = ($sellingPrice - $costPrice) * $qty;
                     $profitSeller = $costPrice * $qty; // uang untuk siswa
                 } else {
                     $profitKantin = ($sellingPrice - $costPrice) * $qty;
@@ -199,7 +150,7 @@ class TransactionController extends Controller
 
                 TransactionItem::create([
                     'transaction_id' => $transaction->id,
-                    'product_id' => $productId,
+                    'product_id' => $product->id,
                     'quantity' => $qty,
                     'cost_price' => $costPrice,
                     'selling_price' => $sellingPrice,
@@ -209,8 +160,18 @@ class TransactionController extends Controller
                 ]);
             }
 
+            // Create Cashbook entry for income (Debit)
+            Cashbook::create([
+                'date' => now()->toDateString(),
+                'description' => 'Penjualan ' . $transaction->transaction_code,
+                'type' => 'debit',
+                'amount' => $transaction->total_amount,
+                'source' => 'transaction',
+                'reference_id' => $transaction->id,
+                'user_id' => Auth::id(),
+            ]);
+
             DB::commit();
-            session()->forget('cart');
 
             return redirect()->route('transactions.show', $transaction->id)
                 ->with('success', 'Transaksi berhasil disimpan!')
@@ -226,6 +187,50 @@ class TransactionController extends Controller
     public function show($id)
     {
         $transaction = Transaction::with(['user', 'items.product.seller'])->findOrFail($id);
-        return view('transactions.show', compact('transaction'));
+        $printModal = session()->get('print_modal', false);
+        return Inertia::render('Transactions/Show', [
+            'transaction' => $transaction,
+            'printModal' => (bool) $printModal,
+        ]);
+    }
+
+    // Void / Cancel Transaction
+    public function destroy($id)
+    {
+        $transaction = Transaction::with('items')->findOrFail($id);
+        
+        // Check if any item has been settled
+        foreach ($transaction->items as $item) {
+            if ($item->seller_settlement_id !== null) {
+                return redirect()->back()->with('error', 'Transaksi tidak dapat dibatalkan karena keuntungan sudah dicairkan ke penitip.');
+            }
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Reverse stock
+            foreach ($transaction->items as $item) {
+                $product = Product::lockForUpdate()->find($item->product_id);
+                if ($product) {
+                    $product->increment('stock', $item->quantity);
+                }
+            }
+
+            // Remove Cashbook entry
+            \App\Models\Cashbook::where('source', 'transaction')
+                ->where('reference_id', $transaction->id)
+                ->delete();
+
+            // Delete transaction (items will be cascade deleted)
+            $transaction->delete();
+
+            DB::commit();
+
+            return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dibatalkan (void). Stok telah dikembalikan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat membatalkan transaksi: ' . $e->getMessage());
+        }
     }
 }

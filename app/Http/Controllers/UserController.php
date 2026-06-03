@@ -7,12 +7,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 
+use Inertia\Inertia;
+
 class UserController extends Controller
 {
     public function index()
     {
-        $users = User::paginate(10);
-        return view('users.index', compact('users'));
+        $filters = request()->only(['search', 'sort', 'dir']);
+        $users = User::filter($filters, ['name', 'email', 'role'])->paginate(15)->withQueryString();
+        return Inertia::render('Users/Index', ['users' => $users, 'filters' => $filters]);
     }
 
     public function store(Request $request)
@@ -62,6 +65,10 @@ class UserController extends Controller
     {
         if (User::count() <= 1) {
             return redirect()->route('users.index')->with('error', 'Tidak dapat menghapus user terakhir.');
+        }
+
+        if ($user->transactions()->count() > 0) {
+            return redirect()->route('users.index')->with('error', 'User ini tidak dapat dihapus karena sudah memiliki riwayat transaksi kasir.');
         }
 
         if ($user->id === auth()->id()) {

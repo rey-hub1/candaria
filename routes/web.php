@@ -9,6 +9,8 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\SettlementController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MarginRuleController;
+use App\Http\Controllers\CashbookController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect welcome page to login
@@ -19,6 +21,7 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
     // Dashboard (accessible by both admin & cashier)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/export', [DashboardController::class, 'exportPenitip'])->name('penitip.export');
 
     // Profile (standard Laravel Breeze)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -28,14 +31,11 @@ Route::middleware(['auth'])->group(function () {
     // Cashier routes (accessible by both admin and cashier)
     Route::middleware(['role:admin,cashier'])->group(function () {
         Route::get('/cashier', [TransactionController::class, 'create'])->name('transactions.create');
-        Route::post('/cart/add', [TransactionController::class, 'addToCart'])->name('cart.add');
-        Route::post('/cart/update', [TransactionController::class, 'updateCart'])->name('cart.update');
-        Route::get('/cart/remove/{productId}', [TransactionController::class, 'removeFromCart'])->name('cart.remove');
-        Route::post('/cart/clear', [TransactionController::class, 'clearCart'])->name('cart.clear');
         Route::post('/checkout', [TransactionController::class, 'checkout'])->name('checkout');
         
         Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
         Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show');
+        Route::delete('/transactions/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
     });
 
     // Admin-only routes
@@ -52,15 +52,24 @@ Route::middleware(['auth'])->group(function () {
         // Settlements / Pembayaran Penitip
         Route::get('/settlements', [SettlementController::class, 'index'])->name('settlements.index');
         Route::post('/settlements', [SettlementController::class, 'store'])->name('settlements.store');
+        
+        // Mutasi Saldo / Buku Kas
+        Route::resource('cashbooks', CashbookController::class)->only(['index', 'store', 'destroy']);
+        
         Route::get('/settlements/{settlement}', [SettlementController::class, 'show'])->name('settlements.show');
 
         // Reports
         Route::get('/reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
         Route::get('/reports/titipan', [ReportController::class, 'titipan'])->name('reports.titipan');
         Route::get('/reports/products', [ReportController::class, 'products'])->name('reports.products');
+        Route::get('/reports/stock', [ReportController::class, 'stock'])->name('reports.stock');
 
         // User Management
         Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
+
+
+        // Margin Rules
+        Route::resource('margin-rules', MarginRuleController::class)->except(['show']);
     });
 });
 

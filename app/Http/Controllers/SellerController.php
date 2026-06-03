@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Seller;
 use Illuminate\Http\Request;
 
+use Inertia\Inertia;
+
 class SellerController extends Controller
 {
     public function index()
     {
-        $sellers = Seller::withCount('products')->get();
-        return view('sellers.index', compact('sellers'));
+        $filters = request()->only(['search', 'sort', 'dir']);
+        $sellers = Seller::withCount('products')->filter($filters, ['name', 'phone', 'class'])->paginate(15)->withQueryString();
+        return Inertia::render('Sellers/Index', ['sellers' => $sellers, 'filters' => $filters]);
     }
 
     public function store(Request $request)
@@ -21,12 +24,23 @@ class SellerController extends Controller
             'phone' => 'nullable|string|max:20',
         ]);
 
-        Seller::create([
+        $seller = Seller::create([
             'name' => $request->name,
             'class' => $request->class,
             'phone' => $request->phone,
             'is_active' => true,
         ]);
+
+        if ($request->phone) {
+            \App\Models\User::firstOrCreate(
+                ['phone' => $request->phone],
+                [
+                    'name' => $request->name,
+                    'password' => \Illuminate\Support\Facades\Hash::make('candaria123'),
+                    'role' => 'penitip',
+                ]
+            );
+        }
 
         return redirect()->route('sellers.index')->with('success', 'Penitip baru berhasil didaftarkan.');
     }
@@ -40,7 +54,26 @@ class SellerController extends Controller
             'is_active' => 'required|boolean',
         ]);
 
+        $oldPhone = $seller->phone;
+
         $seller->update($request->only('name', 'class', 'phone', 'is_active'));
+
+        if ($request->phone) {
+            $user = \App\Models\User::where('phone', $oldPhone ?: $request->phone)->first();
+            if ($user) {
+                $user->update([
+                    'name' => $request->name,
+                    'phone' => $request->phone,
+                ]);
+            } else {
+                \App\Models\User::create([
+                    'name' => $request->name,
+                    'phone' => $request->phone,
+                    'password' => \Illuminate\Support\Facades\Hash::make('candaria123'),
+                    'role' => 'penitip',
+                ]);
+            }
+        }
 
         return redirect()->route('sellers.index')->with('success', 'Data penitip berhasil diubah.');
     }
@@ -49,6 +82,10 @@ class SellerController extends Controller
     {
         if ($seller->products()->count() > 0) {
             return redirect()->route('sellers.index')->with('error', 'Penitip tidak bisa dihapus karena masih memiliki produk titipan.');
+        }
+
+        if (\App\Models\SellerSettlement::where('seller_id', $seller->id)->count() > 0) {
+            return redirect()->route('sellers.index')->with('error', 'Penitip tidak bisa dihapus karena sudah memiliki riwayat pencairan/mutasi.');
         }
 
         $seller->delete();

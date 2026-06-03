@@ -14,6 +14,8 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
+    use \App\Traits\Filterable;
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

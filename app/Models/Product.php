@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
+    use \App\Traits\Filterable;
+
     protected $fillable = [
         'category_id',
         'seller_id',
@@ -16,8 +19,16 @@ class Product extends Model
         'type',
         'cost_price',
         'selling_price',
-        'stock'
+        'stock',
+        'image'
     ];
+
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? asset('storage/' . $this->image) : null;
+    }
 
     protected static function boot()
     {
@@ -25,18 +36,39 @@ class Product extends Model
 
         static::saving(function ($product) {
             if ($product->type === 'siswa') {
-                $product->selling_price = $product->cost_price + 500;
+                $margin = 0;
+                $rule = \App\Models\MarginRule::where('min_price', '<=', $product->cost_price)
+                    ->where(function ($query) use ($product) {
+                        $query->whereNull('max_price')
+                              ->orWhere('max_price', '>', $product->cost_price);
+                    })
+                    ->orderBy('min_price', 'desc')
+                    ->first();
+                if ($rule) {
+                    $margin = $rule->margin;
+                } else {
+                    $margin = 500; // default if no rule matches
+                }
+                $product->selling_price = $product->cost_price + $margin;
             }
 
             if (empty($product->code)) {
-                // Generate simple sequential code (e.g., 001, 002)
-                $latest = static::orderBy('code', 'desc')->first();
-                $nextNumber = $latest && preg_match('/^(\d{3,})$/', $latest->code) ? ((int)$latest->code) + 1 : 1;
-                $code = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-                // Ensure uniqueness (unlikely to collide but double‑check)
+                $category = \App\Models\Category::find($product->category_id);
+                $prefix = $category ? ($category->prefix ?: strtoupper(substr($category->name, 0, 1))) : 'X';
+                
+                $latest = static::where('code', 'like', $prefix . '%')
+                                ->orderBy('code', 'desc')
+                                ->first();
+                
+                $nextNumber = 1;
+                if ($latest && preg_match('/^' . preg_quote($prefix, '/') . '(\d+)$/', $latest->code, $matches)) {
+                    $nextNumber = ((int)$matches[1]) + 1;
+                }
+                
+                $code = $prefix . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
                 while (static::where('code', $code)->exists()) {
                     $nextNumber++;
-                    $code = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+                    $code = $prefix . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
                 }
                 $product->code = $code;
             }
