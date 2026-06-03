@@ -1,4 +1,10 @@
-<table>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <table>
     <thead>
         <tr>
             <th colspan="5" style="font-weight: bold; font-size: 14px; text-align: left;">Kantin Smekda</th>
@@ -50,3 +56,5 @@
         </tr>
     </tbody>
 </table>
+</body>
+</html>

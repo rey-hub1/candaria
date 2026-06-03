@@ -17,21 +17,32 @@ class SettlementController extends Controller
     // View all sellers and their balances
     public function index(Request $request)
     {
-        $filters = $request->only(['search', 'sort', 'dir']);
+        $filters = $request->only(['search', 'sort', 'dir', 'start_date', 'end_date']);
         
+        $startDate = $filters['start_date'] ?? null;
+        $endDate = $filters['end_date'] ?? null;
+
         // Use a subquery to calculate earnings and payments
         $sellers = Seller::withCount('products')
             ->select('sellers.*')
-            ->selectSub(function($query) {
+            ->selectSub(function($query) use ($startDate, $endDate) {
                 $query->selectRaw('COALESCE(SUM(transaction_items.profit_seller), 0)')
                     ->from('transaction_items')
                     ->join('products', 'products.id', '=', 'transaction_items.product_id')
                     ->whereColumn('products.seller_id', 'sellers.id');
+                
+                if ($startDate && $endDate) {
+                    $query->whereBetween(DB::raw('DATE(transaction_items.created_at)'), [$startDate, $endDate]);
+                }
             }, 'total_earnings')
-            ->selectSub(function($query) {
+            ->selectSub(function($query) use ($startDate, $endDate) {
                 $query->selectRaw('COALESCE(SUM(total_amount), 0)')
                     ->from('seller_settlements')
                     ->whereColumn('seller_id', 'sellers.id');
+
+                if ($startDate && $endDate) {
+                    $query->whereBetween(DB::raw('DATE(seller_settlements.created_at)'), [$startDate, $endDate]);
+                }
             }, 'total_paid')
             ->filter($filters, ['name', 'class'])
             ->paginate(15)

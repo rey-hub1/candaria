@@ -12,6 +12,7 @@ export default function Sales({
 }) {
     const [localStartDate, setLocalStartDate] = useState(startDate);
     const [localEndDate, setLocalEndDate] = useState(endDate);
+    const [activePreset, setActivePreset] = useState(null);
 
     const formatRupiah = (value) => {
         return 'Rp' + new Intl.NumberFormat('id-ID', {
@@ -22,40 +23,94 @@ export default function Sales({
 
     const formatDateIndonesian = (dateString) => {
         if (!dateString) return '-';
-        const date = new Date(dateString);
+        const date = new Date(dateString + 'T00:00:00');
         const day = date.getDate();
         const months = [
-            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+            'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
         ];
-        const monthName = months[date.getMonth()];
-        const year = date.getFullYear();
-        return `${day} ${monthName} ${year}`;
+        return `${day} ${months[date.getMonth()]} ${date.getFullYear()}`;
     };
 
-    const handleFilterSubmit = (e) => {
-        e.preventDefault();
-        router.get(route('reports.sales'), {
-            start_date: localStartDate,
-            end_date: localEndDate
-        });
+    const formatDt = (dt) => {
+        const d = new Date(dt);
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+        return d.toISOString().split('T')[0];
+    };
+
+    const presets = [
+        { key: 'today', label: 'Hari Ini' },
+        { key: 'yesterday', label: 'Kemarin' },
+        { key: 'last7', label: '7 Hari' },
+        { key: 'thisMonth', label: 'Bulan Ini' },
+        { key: 'lastMonth', label: 'Bulan Lalu' },
+        { key: 'all', label: 'Semua' },
+    ];
+
+    const applyPreset = (preset) => {
+        setActivePreset(preset);
+        const today = new Date();
+        let start = new Date();
+        let end = new Date();
+
+        if (preset === 'all') {
+            setLocalStartDate('');
+            setLocalEndDate('');
+            router.get(route('reports.sales'), { start_date: '', end_date: '' });
+            return;
+        }
+
+        switch (preset) {
+            case 'today': break;
+            case 'yesterday':
+                start.setDate(today.getDate() - 1);
+                end.setDate(today.getDate() - 1);
+                break;
+            case 'last7':
+                start.setDate(today.getDate() - 6);
+                break;
+            case 'thisMonth':
+                start = new Date(today.getFullYear(), today.getMonth(), 1);
+                break;
+            case 'lastMonth':
+                start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                end = new Date(today.getFullYear(), today.getMonth(), 0);
+                break;
+            default: break;
+        }
+
+        const s = formatDt(start);
+        const e = formatDt(end);
+        setLocalStartDate(s);
+        setLocalEndDate(e);
+        router.get(route('reports.sales'), { start_date: s, end_date: e });
+    };
+
+    const handleStartChange = (val) => {
+        setLocalStartDate(val);
+        setActivePreset(null);
+        router.get(route('reports.sales'), { start_date: val, end_date: localEndDate });
+    };
+
+    const handleEndChange = (val) => {
+        setLocalEndDate(val);
+        setActivePreset(null);
+        router.get(route('reports.sales'), { start_date: localStartDate, end_date: val });
     };
 
     const handleExportExcel = () => {
-        window.location.href = route('reports.sales', {
-            start_date: startDate,
-            end_date: endDate,
-            export: 'xlsx'
-        });
+        window.location.href = route('reports.sales', { start_date: startDate, end_date: endDate, export: 'xlsx' });
     };
 
     const handleExportPdf = () => {
-        window.open(route('reports.sales', {
-            start_date: startDate,
-            end_date: endDate,
-            export: 'pdf'
-        }), '_blank');
+        window.open(route('reports.sales', { start_date: startDate, end_date: endDate, export: 'pdf' }), '_blank');
     };
+
+    const activeDateLabel = localStartDate && localEndDate
+        ? `${formatDateIndonesian(localStartDate)} — ${formatDateIndonesian(localEndDate)}`
+        : localStartDate
+            ? `Sejak ${formatDateIndonesian(localStartDate)}`
+            : 'Semua Waktu';
 
     return (
         <AuthenticatedLayout title="Laporan Penjualan Harian">
@@ -63,89 +118,97 @@ export default function Sales({
 
             <style dangerouslySetInnerHTML={{ __html: `
                 @media print {
-                    body {
-                        background-color: white !important;
-                    }
-                    /* Hide sidebar, header, form */
-                    aside, header, form, .print\\:hidden {
-                        display: none !important;
-                    }
-                    main {
-                        padding: 0 !important;
-                    }
-                    #report-sales-table {
-                        border: none !important;
-                        box-shadow: none !important;
-                    }
+                    body { background-color: white !important; }
+                    aside, header, form, .print\\:hidden { display: none !important; }
+                    main { padding: 0 !important; }
+                    #report-sales-table { border: none !important; box-shadow: none !important; }
                 }
             ` }} />
 
             <div className="space-y-6">
                 
-                {/* Filter Card */}
-                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm print:hidden">
-                    <form onSubmit={handleFilterSubmit} className="flex flex-wrap items-end gap-4">
-                        <div>
-                            <label htmlFor="start_date" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Tanggal Mulai</label>
-                            <input
-                                type="date"
-                                name="start_date"
-                                id="start_date"
-                                required
-                                value={localStartDate}
-                                onChange={(e) => setLocalStartDate(e.target.value)}
-                                className="px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="end_date" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Tanggal Selesai</label>
-                            <input
-                                type="date"
-                                name="end_date"
-                                id="end_date"
-                                required
-                                value={localEndDate}
-                                onChange={(e) => setLocalEndDate(e.target.value)}
-                                className="px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition"
-                        >
-                            Filter Laporan
-                        </button>
-                        
-                        <div className="flex items-center gap-2 ml-auto">
-                            <button
-                                type="button"
-                                onClick={handleExportExcel}
-                                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition flex items-center gap-1.5"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
+                {/* Filter Card — redesigned */}
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm print:hidden overflow-hidden">
+                    {/* Header bar */}
+                    <div className="px-6 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
-                                Ekspor Excel
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleExportPdf}
-                                className="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-sm rounded-lg shadow-sm transition flex items-center gap-1.5"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
+                            </div>
+                            <div>
+                                <p className="text-xs text-slate-400 font-medium">Periode Laporan</p>
+                                <p className="text-sm font-bold text-slate-800">{activeDateLabel}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button type="button" onClick={handleExportExcel} className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                                 </svg>
-                                Ekspor PDF
+                                Excel
                             </button>
-                            <button
-                                type="button"
-                                onClick={() => window.print()}
-                                className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm rounded-lg transition"
-                            >
-                                Cetak Laporan
+                            <button type="button" onClick={handleExportPdf} className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                PDF
+                            </button>
+                            <button type="button" onClick={() => window.print()} className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-lg transition">
+                                🖨 Cetak
                             </button>
                         </div>
-                    </form>
+                    </div>
+
+                    {/* Preset buttons */}
+                    <div className="px-6 py-4 flex flex-wrap gap-2 items-center border-b border-slate-100 bg-slate-50">
+                        <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mr-1">Pilih Cepat:</span>
+                        {presets.map(p => (
+                            <button
+                                key={p.key}
+                                type="button"
+                                onClick={() => applyPreset(p.key)}
+                                className={`px-4 py-1.5 text-xs font-bold rounded-full border transition-all duration-150 ${
+                                    activePreset === p.key
+                                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                                        : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-400 hover:text-emerald-700'
+                                }`}
+                            >
+                                {p.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Custom date range */}
+                    <div className="px-6 py-4 flex flex-wrap items-center gap-3">
+                        <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Atau atur manual:</span>
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                                <label htmlFor="start_date" className="text-xs text-slate-500 font-semibold whitespace-nowrap">Dari</label>
+                                <input
+                                    type="date"
+                                    id="start_date"
+                                    value={localStartDate}
+                                    onChange={(e) => handleStartChange(e.target.value)}
+                                    className="text-sm text-slate-800 font-semibold bg-transparent border-none outline-none cursor-pointer"
+                                />
+                            </div>
+                            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                                <label htmlFor="end_date" className="text-xs text-slate-500 font-semibold whitespace-nowrap">Sampai</label>
+                                <input
+                                    type="date"
+                                    id="end_date"
+                                    value={localEndDate}
+                                    onChange={(e) => handleEndChange(e.target.value)}
+                                    className="text-sm text-slate-800 font-semibold bg-transparent border-none outline-none cursor-pointer"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Summary Row */}

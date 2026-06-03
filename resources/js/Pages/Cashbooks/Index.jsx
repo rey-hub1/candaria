@@ -5,6 +5,62 @@ import FilterBar from '@/Components/FilterBar';
 import SortableHeader from '@/Components/SortableHeader';
 
 export default function Index({ cashbooks = { data: [], links: [], total: 0 }, filters = {}, currentBalance = 0, totalDebit = 0, totalCredit = 0 }) {
+    const [localStartDate, setLocalStartDate] = useState(filters.start_date || '');
+    const [localEndDate, setLocalEndDate] = useState(filters.end_date || '');
+
+    const applyPreset = (preset) => {
+        const today = new Date();
+        let start = new Date();
+        let end = new Date();
+
+        switch (preset) {
+            case 'today':
+                break;
+            case 'yesterday':
+                start.setDate(today.getDate() - 1);
+                end.setDate(today.getDate() - 1);
+                break;
+            case 'last7':
+                start.setDate(today.getDate() - 6);
+                break;
+            case 'thisMonth':
+                start = new Date(today.getFullYear(), today.getMonth(), 1);
+                break;
+            case 'lastMonth':
+                start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                end = new Date(today.getFullYear(), today.getMonth(), 0);
+                break;
+            default:
+                break;
+        }
+
+        const formatDt = (dt) => {
+            const d = new Date(dt);
+            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            return d.toISOString().split('T')[0];
+        };
+
+        const startDateStr = formatDt(start);
+        const endDateStr = formatDt(end);
+
+        setLocalStartDate(startDateStr);
+        setLocalEndDate(endDateStr);
+
+        router.get(route('cashbooks.index'), {
+            ...filters,
+            start_date: startDateStr,
+            end_date: endDateStr
+        });
+    };
+
+    const handleFilterSubmit = (e) => {
+        if (e) e.preventDefault();
+        router.get(route('cashbooks.index'), {
+            ...filters,
+            start_date: localStartDate,
+            end_date: localEndDate
+        });
+    };
     const { data, setData, post, processing, errors, reset } = useForm({
         date: new Date().toISOString().split('T')[0],
         description: '',
@@ -157,6 +213,40 @@ export default function Index({ cashbooks = { data: [], links: [], total: 0 }, f
                             <p className="text-[10px] md:text-xs font-bold text-emerald-700/70 uppercase tracking-wider relative z-10">Saldo Kas Saat Ini</p>
                             <p className="text-base md:text-2xl font-black text-emerald-800 mt-1 relative z-10">{formatRupiah(currentBalance)}</p>
                         </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-4">
+                        <div className="mb-4 pb-4 border-b border-slate-100 flex flex-wrap gap-2 items-center">
+                            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mr-2">Pilih Cepat:</span>
+                            <button type="button" onClick={() => applyPreset('today')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">Hari Ini</button>
+                            <button type="button" onClick={() => applyPreset('yesterday')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">Kemarin</button>
+                            <button type="button" onClick={() => applyPreset('last7')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">7 Hari Terakhir</button>
+                            <button type="button" onClick={() => applyPreset('thisMonth')} className="px-3 py-1.5 text-xs font-bold bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition">Bulan Ini</button>
+                            <button type="button" onClick={() => applyPreset('lastMonth')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">Bulan Lalu</button>
+                        </div>
+                        <form onSubmit={handleFilterSubmit} className="flex flex-wrap items-end gap-4">
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Tanggal Mulai</label>
+                                <input
+                                    type="date"
+                                    value={localStartDate}
+                                    onChange={(e) => setLocalStartDate(e.target.value)}
+                                    className="px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Tanggal Selesai</label>
+                                <input
+                                    type="date"
+                                    value={localEndDate}
+                                    onChange={(e) => setLocalEndDate(e.target.value)}
+                                    className="px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                />
+                            </div>
+                            <button type="submit" className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition">
+                                Filter
+                            </button>
+                        </form>
                     </div>
 
                     <div className="flex flex-wrap items-center justify-between gap-4">

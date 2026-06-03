@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import FilterBar from '@/Components/FilterBar';
@@ -8,11 +8,82 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
     const [payModal, setPayModal] = useState(false);
     const [selectedSeller, setSelectedSeller] = useState(null);
 
+    const [localStartDate, setLocalStartDate] = useState(filters.start_date || '');
+    const [localEndDate, setLocalEndDate] = useState(filters.end_date || '');
+
+    const applyPreset = (preset) => {
+        const today = new Date();
+        let start = new Date();
+        let end = new Date();
+
+        switch (preset) {
+            case 'today':
+                break;
+            case 'yesterday':
+                start.setDate(today.getDate() - 1);
+                end.setDate(today.getDate() - 1);
+                break;
+            case 'last7':
+                start.setDate(today.getDate() - 6);
+                break;
+            case 'thisMonth':
+                start = new Date(today.getFullYear(), today.getMonth(), 1);
+                break;
+            case 'lastMonth':
+                start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                end = new Date(today.getFullYear(), today.getMonth(), 0);
+                break;
+            default:
+                break;
+        }
+
+        const formatDt = (dt) => {
+            const d = new Date(dt);
+            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            return d.toISOString().split('T')[0];
+        };
+
+        const startDateStr = formatDt(start);
+        const endDateStr = formatDt(end);
+
+        setLocalStartDate(startDateStr);
+        setLocalEndDate(endDateStr);
+
+        router.get(route('settlements.index'), {
+            ...filters,
+            start_date: startDateStr,
+            end_date: endDateStr
+        });
+    };
+
+    const handleFilterSubmit = (e) => {
+        if (e) e.preventDefault();
+        router.get(route('settlements.index'), {
+            ...filters,
+            start_date: localStartDate,
+            end_date: localEndDate
+        });
+    };
+
     const { data: payData, setData: setPayData, post: postPay, processing: payProcessing, reset: payReset, errors: payErrors } = useForm({
         seller_id: '',
         amount: '',
         notes: '',
     });
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const paySellerId = urlParams.get('pay_seller_id');
+        if (paySellerId) {
+            const sellerToPay = sellers.data.find(s => s.id == paySellerId);
+            if (sellerToPay && sellerToPay.unpaid_amount > 0) {
+                openPayModal(sellerToPay);
+                
+                // Optional: remove query param so it doesn't reopen on refresh
+                window.history.replaceState(null, '', window.location.pathname);
+            }
+        }
+    }, [sellers.data]);
 
     const openPayModal = (seller) => {
         setSelectedSeller(seller);
@@ -67,6 +138,40 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                     <span className="text-xl md:text-2xl text-emerald-700 font-black">
                         {formatRupiah(totalUnpaid)}
                     </span>
+                </div>
+
+                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-4">
+                    <div className="mb-4 pb-4 border-b border-slate-100 flex flex-wrap gap-2 items-center">
+                        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mr-2">Pilih Cepat:</span>
+                        <button type="button" onClick={() => applyPreset('today')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">Hari Ini</button>
+                        <button type="button" onClick={() => applyPreset('yesterday')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">Kemarin</button>
+                        <button type="button" onClick={() => applyPreset('last7')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">7 Hari Terakhir</button>
+                        <button type="button" onClick={() => applyPreset('thisMonth')} className="px-3 py-1.5 text-xs font-bold bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition">Bulan Ini</button>
+                        <button type="button" onClick={() => applyPreset('lastMonth')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">Bulan Lalu</button>
+                    </div>
+                    <form onSubmit={handleFilterSubmit} className="flex flex-wrap items-end gap-4">
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Tanggal Mulai</label>
+                            <input
+                                type="date"
+                                value={localStartDate}
+                                onChange={(e) => setLocalStartDate(e.target.value)}
+                                className="px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Tanggal Selesai</label>
+                            <input
+                                type="date"
+                                value={localEndDate}
+                                onChange={(e) => setLocalEndDate(e.target.value)}
+                                className="px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            />
+                        </div>
+                        <button type="submit" className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition">
+                            Filter
+                        </button>
+                    </form>
                 </div>
 
                 <FilterBar filters={filters} searchPlaceholder="Cari nama penitip..." />
@@ -156,15 +261,32 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                                     Nominal yang Dibayarkan (Rp)
                                 </label>
-                                <input
-                                    type="number"
-                                    required
-                                    min="1"
-                                    max={selectedSeller.unpaid_amount}
-                                    value={payData.amount}
-                                    onChange={(e) => setPayData('amount', e.target.value)}
-                                    className="w-full px-4 py-3 text-lg font-bold text-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                />
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setPayData('amount', Math.max(1, Number(payData.amount || 0) - 500))}
+                                        className="p-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition flex-shrink-0"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15"></path></svg>
+                                    </button>
+                                    <input
+                                        type="number"
+                                        required
+                                        min="1"
+                                        step="500"
+                                        max={selectedSeller.unpaid_amount}
+                                        value={payData.amount}
+                                        onChange={(e) => setPayData('amount', e.target.value)}
+                                        className="w-full px-4 py-3 text-lg font-bold text-center text-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setPayData('amount', Math.min(selectedSeller.unpaid_amount, Number(payData.amount || 0) + 500))}
+                                        className="p-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition flex-shrink-0"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
+                                    </button>
+                                </div>
                                 <p className="text-[10px] text-slate-400 mt-1">Anda bisa membayar sebagian (dicicil) atau bayar lunas seluruh saldo.</p>
                                 {payErrors.amount && <p className="text-rose-600 text-xs mt-1">{payErrors.amount}</p>}
                             </div>

@@ -35,6 +35,50 @@ export default function Titipan({
         return s;
     };
 
+    const applyPreset = (preset) => {
+        const today = new Date();
+        let start = new Date();
+        let end = new Date();
+
+        switch (preset) {
+            case 'today':
+                break;
+            case 'yesterday':
+                start.setDate(today.getDate() - 1);
+                end.setDate(today.getDate() - 1);
+                break;
+            case 'last7':
+                start.setDate(today.getDate() - 6);
+                break;
+            case 'thisMonth':
+                start = new Date(today.getFullYear(), today.getMonth(), 1);
+                break;
+            case 'lastMonth':
+                start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                end = new Date(today.getFullYear(), today.getMonth(), 0);
+                break;
+            default:
+                break;
+        }
+
+        const formatDt = (dt) => {
+            const d = new Date(dt);
+            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            return d.toISOString().split('T')[0];
+        };
+
+        const startDateStr = formatDt(start);
+        const endDateStr = formatDt(end);
+
+        setLocalStartDate(startDateStr);
+        setLocalEndDate(endDateStr);
+
+        router.get(route('reports.titipan'), {
+            start_date: startDateStr,
+            end_date: endDateStr
+        });
+    };
+
     const handleFilterSubmit = (e) => {
         e.preventDefault();
         router.get(route('reports.titipan'), {
@@ -113,6 +157,15 @@ export default function Titipan({
                 
                 {/* Filter Card */}
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm print:hidden">
+                    <div className="mb-5 pb-5 border-b border-slate-100 flex flex-wrap gap-2 items-center">
+                        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mr-2">Pilih Cepat:</span>
+                        <button type="button" onClick={() => applyPreset('today')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">Hari Ini</button>
+                        <button type="button" onClick={() => applyPreset('yesterday')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">Kemarin</button>
+                        <button type="button" onClick={() => applyPreset('last7')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">7 Hari Terakhir</button>
+                        <button type="button" onClick={() => applyPreset('thisMonth')} className="px-3 py-1.5 text-xs font-bold bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition">Bulan Ini</button>
+                        <button type="button" onClick={() => applyPreset('lastMonth')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">Bulan Lalu</button>
+                    </div>
+
                     <form onSubmit={handleFilterSubmit} className="flex flex-wrap items-end gap-4">
                         <div>
                             <label htmlFor="start_date" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Tanggal Mulai</label>
@@ -213,7 +266,8 @@ export default function Titipan({
                                         <th className="px-6 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Tanggal & Waktu</th>
                                         <th className="px-6 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Siswa Penitip</th>
                                         <th className="px-6 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Nama Produk</th>
-                                        <th className="px-6 py-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">Jumlah</th>
+                                        <th className="px-6 py-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">Terjual</th>
+                                        <th className="px-6 py-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">Sisa Stok</th>
                                         <th className="px-6 py-3 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Harga Siswa</th>
                                         <th className="px-6 py-3 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Hasil Siswa</th>
                                         <th className="px-6 py-3 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Laba Kantin</th>
@@ -235,6 +289,9 @@ export default function Titipan({
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-bold text-slate-700">
                                                 {item.quantity} pcs
                                             </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-bold text-slate-500">
+                                                {item.product?.stock} pcs
+                                            </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-slate-600">
                                                 {formatRupiah(item.cost_price)}
                                             </td>
@@ -253,9 +310,12 @@ export default function Titipan({
                                                         Lunas (#SET-{padZero(item.seller_settlement_id, 4)})
                                                     </Link>
                                                 ) : (
-                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                                                        Belum Dibayar
-                                                    </span>
+                                                    <Link
+                                                        href={route('settlements.index', { pay_seller_id: item.product?.seller_id })}
+                                                        className="inline-flex items-center px-3 py-1 rounded text-xs font-bold bg-amber-500 text-white hover:bg-amber-600 transition shadow-sm"
+                                                    >
+                                                        Bayar
+                                                    </Link>
                                                 )}
                                             </td>
                                         </tr>

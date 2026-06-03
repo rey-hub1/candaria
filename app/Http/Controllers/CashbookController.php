@@ -11,9 +11,14 @@ class CashbookController extends Controller
 {
     public function index(Request $request)
     {
-        $filters = $request->only(['search', 'sort', 'dir']);
+        $filters = $request->only(['search', 'sort', 'dir', 'start_date', 'end_date']);
         
         $query = Cashbook::with('user')->filter($filters, ['description', 'source']);
+
+        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
+            $query->whereBetween('date', [$filters['start_date'], $filters['end_date']]);
+        }
+        
         
         // Default sort if not provided
         if (!$request->has('sort')) {
@@ -35,7 +40,7 @@ class CashbookController extends Controller
             $exportCurrentBalance = $exportTotalDebit - $exportTotalCredit;
 
             if ($request->input('export') === 'pdf') {
-                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.cashbooks_pdf', compact('exportData', 'exportTotalDebit', 'exportTotalCredit', 'exportCurrentBalance'))
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.cashbooks_xlsx', compact('exportData', 'exportTotalDebit', 'exportTotalCredit', 'exportCurrentBalance'))
                     ->setPaper('a4', 'portrait');
                 return $pdf->stream('laporan-buku-kas.pdf');
             }

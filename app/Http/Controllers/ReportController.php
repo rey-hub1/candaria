@@ -58,7 +58,7 @@ class ReportController extends Controller
         $grandTotalProfitSeller = $salesData->sum('profit_seller');
 
         if ($request->input('export') === 'pdf') {
-            $pdf = Pdf::loadView('reports.sales_pdf', compact(
+            $pdf = Pdf::loadView('reports.sales_xlsx', compact(
                 'salesData', 
                 'startDate', 
                 'endDate',
@@ -127,7 +127,7 @@ class ReportController extends Controller
             ->first();
 
         if ($request->input('export') === 'pdf') {
-            $pdf = Pdf::loadView('reports.titipan_pdf', compact(
+            $pdf = Pdf::loadView('reports.titipan_xlsx', compact(
                 'items', 
                 'startDate', 
                 'endDate', 
@@ -151,48 +151,43 @@ class ReportController extends Controller
     // Laporan Produk Terlaris & Stok
     public function products(Request $request)
     {
-        // 1. Top Selling Products (Kantin)
-        $topProductsKantin = Product::where('type', 'kantin')
+        // 1. ALL Products (primary — full inventory view)
+        $allProducts = Product::with(['category', 'seller'])
             ->select('products.*')
             ->selectSub(function($query) {
                 $query->selectRaw('COALESCE(SUM(transaction_items.quantity), 0)')
                     ->from('transaction_items')
                     ->whereColumn('transaction_items.product_id', 'products.id');
             }, 'sold_count')
-            ->with(['category', 'seller'])
-            ->orderBy('sold_count', 'desc')
+            ->orderBy('category_id')
+            ->orderBy('name')
+            ->get();
+
+        // 2. Top Selling Products (Kantin) — secondary insight
+        $topProductsKantin = $allProducts->where('type', 'kantin')
+            ->sortByDesc('sold_count')
             ->take(15)
-            ->get();
+            ->values();
 
-        // Top Selling Products (Siswa)
-        $topProductsSiswa = Product::where('type', 'siswa')
-            ->select('products.*')
-            ->selectSub(function($query) {
-                $query->selectRaw('COALESCE(SUM(transaction_items.quantity), 0)')
-                    ->from('transaction_items')
-                    ->whereColumn('transaction_items.product_id', 'products.id');
-            }, 'sold_count')
-            ->with(['category', 'seller'])
-            ->orderBy('sold_count', 'desc')
+        // Top Selling Products (Siswa) — secondary insight
+        $topProductsSiswa = $allProducts->where('type', 'siswa')
+            ->sortByDesc('sold_count')
             ->take(15)
-            ->get();
+            ->values();
 
-        // 2. Low Stock Products (Kantin)
-        $lowStockProductsKantin = Product::where('type', 'kantin')
+        // 3. Low Stock Products
+        $lowStockProductsKantin = $allProducts->where('type', 'kantin')
             ->where('stock', '<=', 5)
-            ->with(['category', 'seller'])
-            ->orderBy('stock', 'asc')
-            ->get();
+            ->sortBy('stock')
+            ->values();
 
-        // Low Stock Products (Siswa)
-        $lowStockProductsSiswa = Product::where('type', 'siswa')
+        $lowStockProductsSiswa = $allProducts->where('type', 'siswa')
             ->where('stock', '<=', 5)
-            ->with(['category', 'seller'])
-            ->orderBy('stock', 'asc')
-            ->get();
+            ->sortBy('stock')
+            ->values();
 
         if ($request->input('export') === 'pdf') {
-            $pdf = Pdf::loadView('reports.products_pdf', compact('topProductsKantin', 'topProductsSiswa', 'lowStockProductsKantin', 'lowStockProductsSiswa'))
+            $pdf = Pdf::loadView('reports.products_xlsx', compact('topProductsKantin', 'topProductsSiswa', 'lowStockProductsKantin', 'lowStockProductsSiswa'))
                 ->setPaper('a4', 'portrait');
             return $pdf->stream('laporan-produk-terlaris-dan-stok.pdf');
         }
@@ -201,7 +196,13 @@ class ReportController extends Controller
             return Excel::download(new ProductsReportExport($topProductsKantin, $topProductsSiswa, $lowStockProductsKantin, $lowStockProductsSiswa), 'laporan-produk-terlaris-dan-stok.xlsx');
         }
 
-        return Inertia::render('Reports/Products', compact('topProductsKantin', 'topProductsSiswa', 'lowStockProductsKantin', 'lowStockProductsSiswa'));
+        return Inertia::render('Reports/Products', [
+            'allProducts'           => $allProducts->values(),
+            'topProductsKantin'     => $topProductsKantin->values(),
+            'topProductsSiswa'      => $topProductsSiswa->values(),
+            'lowStockProductsKantin'=> $lowStockProductsKantin->values(),
+            'lowStockProductsSiswa' => $lowStockProductsSiswa->values(),
+        ]);
     }
 
     // Laporan Produk & Stok Harian
@@ -271,7 +272,7 @@ class ReportController extends Controller
         }
 
         if ($request->input('export') === 'pdf') {
-            $pdf = Pdf::loadView('reports.stock_pdf', compact('reportData', 'date'))
+            $pdf = Pdf::loadView('reports.stock_xlsx', compact('reportData', 'date'))
                 ->setPaper('a4', 'landscape'); // Landscape to fit 10 columns
             return $pdf->stream('laporan-stok-harian-' . $date . '.pdf');
         }
