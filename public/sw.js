@@ -41,8 +41,8 @@ self.addEventListener('fetch', event => {
           return response;
         }
         
-        // Return fetch or fallback to offline page if network fails
-        return fetch(event.request).catch(() => caches.match('/offline.html'));
+        // Return fetch, no fallback to offline page for non-navigation requests
+        return fetch(event.request);
       })
   );
 });

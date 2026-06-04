@@ -14,4 +14,12 @@ class MarginRule extends Model
         'max_price',
         'margin'
     ];
+
+    protected static function boot(): void
+    {
+        parent::boot();
+        $bust = fn() => cache()->forget('margin_rules_all');
+        static::saved($bust);
+        static::deleted($bust);
+    }
 }

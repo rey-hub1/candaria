@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Head, Link, useForm, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ConfirmModal from "@/Components/ConfirmModal";
@@ -56,24 +56,30 @@ export default function Create({
         localStorage.setItem("candaria_cart", JSON.stringify(cart));
     }, [cart]);
 
-    // Transform cart object into array
-    const cartItems = Object.entries(cart).map(([id, item]) => ({
-        id,
-        ...item,
-    }));
+    // Keep a ref so handleAddToCart stays stable
+    const cartRef = useRef(cart);
+    useEffect(() => { cartRef.current = cart; }, [cart]);
 
-    // Calculate total
-    const totalAmount = cartItems.reduce((sum, item) => sum + (item.selling_price * item.quantity), 0);
+    const cartItems = useMemo(
+        () => Object.entries(cart).map(([id, item]) => ({ id, ...item })),
+        [cart]
+    );
+
+    const totalAmount = useMemo(
+        () => cartItems.reduce((sum, item) => sum + (item.selling_price * item.quantity), 0),
+        [cartItems]
+    );
 
 
     const outOfStockClicks = useRef({});
 
-    // Add to Cart
-    const handleAddToCart = (productId) => {
-        const product = cart[productId] || products.find(p => p.id === productId || p.id === parseInt(productId));
+    // Add to Cart — stable ref so ProductCard memo works
+    const handleAddToCart = useCallback((productId) => {
+        const currentCart = cartRef.current;
+        const product = currentCart[productId] || products.find(p => p.id === productId || p.id === parseInt(productId));
         if (!product) return;
 
-        const currentQty = cart[productId]?.quantity ?? 0;
+        const currentQty = currentCart[productId]?.quantity ?? 0;
         if (currentQty + 1 > product.stock) {
             if (!outOfStockClicks.current[productId]) {
                 outOfStockClicks.current[productId] = 0;
@@ -95,7 +101,7 @@ export default function Create({
         }
 
         setCart(prev => ({ ...prev, [productId]: { ...(prev[productId] || product), quantity: currentQty + 1 } }));
-    };
+    }, [products, openAlert]);
 
     const handleSearchReset = () => {
         setLocalSearch("");

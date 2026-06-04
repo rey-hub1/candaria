@@ -36,20 +36,7 @@ class Product extends Model
 
         static::saving(function ($product) {
             if ($product->type === 'siswa') {
-                $margin = 0;
-                $rule = \App\Models\MarginRule::where('min_price', '<=', $product->cost_price)
-                    ->where(function ($query) use ($product) {
-                        $query->whereNull('max_price')
-                              ->orWhere('max_price', '>', $product->cost_price);
-                    })
-                    ->orderBy('min_price', 'desc')
-                    ->first();
-                if ($rule) {
-                    $margin = $rule->margin;
-                } else {
-                    $margin = 500; // default if no rule matches
-                }
-                $product->selling_price = $product->cost_price + $margin;
+                $product->selling_price = $product->cost_price + static::resolveMargin($product->cost_price);
             }
 
             if (empty($product->code)) {
@@ -73,6 +60,21 @@ class Product extends Model
                 $product->code = $code;
             }
         });
+    }
+
+    public static function resolveMargin(int|float $costPrice): int
+    {
+        $rules = cache()->remember('margin_rules_all', 3600, function () {
+            return \App\Models\MarginRule::orderBy('min_price', 'desc')->get(['min_price', 'max_price', 'margin']);
+        });
+
+        foreach ($rules as $rule) {
+            if ($rule->min_price <= $costPrice && (is_null($rule->max_price) || $rule->max_price > $costPrice)) {
+                return (int) $rule->margin;
+            }
+        }
+
+        return 500;
     }
 
     public function category(): BelongsTo

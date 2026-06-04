@@ -85,37 +85,38 @@ class SettlementController extends Controller
         $seller->total_earnings = $totalEarnings;
         $seller->total_paid = $totalPaid;
 
-        // Get all sales (earnings)
-        $sales = TransactionItem::with(['product', 'transaction'])
-            ->whereHas('product', function($q) use ($id) {
-                $q->where('seller_id', $id);
-            })
+        // Get all sales (earnings) — join instead of whereHas subquery
+        $sales = TransactionItem::with(['product:id,name', 'transaction:id,transaction_code'])
+            ->join('products', 'products.id', '=', 'transaction_items.product_id')
+            ->where('products.seller_id', $id)
             ->select(
-                'id', 
-                'created_at', 
-                DB::raw("'sale' as type"), 
-                'profit_seller as amount',
-                'quantity',
-                'product_id',
-                'transaction_id'
+                'transaction_items.id',
+                'transaction_items.created_at',
+                DB::raw("'sale' as type"),
+                'transaction_items.profit_seller as amount',
+                'transaction_items.quantity',
+                'transaction_items.product_id',
+                'transaction_items.transaction_id'
             )
+            ->latest('transaction_items.created_at')
             ->get();
 
         // Get all payouts (settlements)
         $payouts = SellerSettlement::where('seller_id', $id)
             ->select(
-                'id', 
-                'created_at', 
-                DB::raw("'payout' as type"), 
+                'id',
+                'created_at',
+                DB::raw("'payout' as type"),
                 'total_amount as amount',
                 DB::raw("NULL as quantity"),
                 DB::raw("NULL as product_id"),
                 DB::raw("NULL as transaction_id"),
                 'notes'
             )
+            ->latest()
             ->get();
 
-        // Merge and sort chronologically
+        // Merge — both already sorted desc, use sortByDesc for final merge
         $ledger = $sales->concat($payouts)->sortByDesc('created_at')->values();
 
         return Inertia::render('Settlements/Show', [

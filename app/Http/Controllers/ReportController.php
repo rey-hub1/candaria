@@ -153,14 +153,12 @@ class ReportController extends Controller
     {
         // 1. ALL Products (primary — full inventory view)
         $allProducts = Product::with(['category', 'seller'])
+            ->leftJoin('transaction_items', 'transaction_items.product_id', '=', 'products.id')
             ->select('products.*')
-            ->selectSub(function($query) {
-                $query->selectRaw('COALESCE(SUM(transaction_items.quantity), 0)')
-                    ->from('transaction_items')
-                    ->whereColumn('transaction_items.product_id', 'products.id');
-            }, 'sold_count')
-            ->orderBy('category_id')
-            ->orderBy('name')
+            ->selectRaw('COALESCE(SUM(transaction_items.quantity), 0) as sold_count')
+            ->groupBy('products.id')
+            ->orderBy('products.category_id')
+            ->orderBy('products.name')
             ->get();
 
         // 2. Top Selling Products (Kantin) — secondary insight

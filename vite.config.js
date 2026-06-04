@@ -3,6 +3,16 @@ import laravel from 'laravel-vite-plugin';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['react', 'react-dom', '@inertiajs/react'],
+                    charts: ['recharts'],
+                },
+            },
+        },
+    },
     server: {
         host: '0.0.0.0',
         origin: 'http://localhost:5173',
