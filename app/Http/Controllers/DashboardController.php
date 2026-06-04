@@ -113,14 +113,17 @@ class DashboardController extends Controller
                     ->orderBy('stock', 'asc')
                     ->get();
 
+                $salesByDate = TransactionItem::whereIn('product_id', $productIds)
+                    ->where('created_at', '>=', Carbon::today()->subDays(6)->startOfDay())
+                    ->selectRaw('DATE(created_at) as date, SUM(profit_seller) as amount')
+                    ->groupBy('date')
+                    ->pluck('amount', 'date');
+
                 for ($i = 6; $i >= 0; $i--) {
                     $d = Carbon::today()->subDays($i);
-                    $sum = TransactionItem::whereIn('product_id', $productIds)
-                        ->whereDate('created_at', $d)
-                        ->sum('profit_seller');
                     $mySalesChart[] = [
                         'date' => $d->format('d M'),
-                        'amount' => (float)$sum,
+                        'amount' => (float)($salesByDate[$d->toDateString()] ?? 0),
                     ];
                 }
 

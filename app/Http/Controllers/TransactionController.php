@@ -17,19 +17,6 @@ class TransactionController extends Controller
     // List all transactions (for reports/history)
     public function index()
     {
-        // Passive Deletion: Hapus transaksi yang lebih tua dari 7 hari
-        $sevenDaysAgo = now()->subDays(7);
-        $oldTransactions = Transaction::where('created_at', '<', $sevenDaysAgo)->get(['id']);
-        if ($oldTransactions->isNotEmpty()) {
-            $oldIds = $oldTransactions->pluck('id')->toArray();
-            
-            // Hapus juga riwayat di buku kas (opsional, tapi disarankan agar data sinkron jika transaksi dibuang total)
-            \App\Models\Cashbook::where('source', 'transaction')->whereIn('reference_id', $oldIds)->delete();
-            
-            // Hapus transaksi (item akan terhapus otomatis berkat onDelete('cascade'))
-            Transaction::whereIn('id', $oldIds)->delete();
-        }
-
         $filters = request()->only(['search', 'sort', 'dir', 'start_date', 'end_date']);
         $query = Transaction::with(['user', 'items.product'])->filter($filters, ['transaction_code']);
 

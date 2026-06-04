@@ -3,6 +3,7 @@ import { Head, Link, useForm, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ConfirmModal from "@/Components/ConfirmModal";
 import { useDialog } from "@/hooks/useDialog";
+import { formatRupiah } from "@/utils/format";
 import CustomKeyboard from "@/Components/CustomKeyboard";
 
 export default function Create({
