@@ -14,7 +14,21 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['"Plus Jakarta Sans"', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                primary: {
+                    50:  '#fdf8ed',
+                    100: '#f9eccc',
+                    200: '#f0d49a',
+                    300: '#e2b86a',
+                    400: '#cb9948',
+                    500: '#b88c3a',
+                    600: '#A88235',
+                    700: '#8a6a29',
+                    800: '#6e531f',
+                    900: '#4f3b16',
+                },
             },
             keyframes: {
                 fadeInUp: {

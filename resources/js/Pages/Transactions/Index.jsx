@@ -1,16 +1,16 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import ConfirmModal from '@/Components/ConfirmModal';
+import { useDialog } from '@/hooks/useDialog';
+import { formatRupiah } from '@/utils/format';
+import Pagination from '@/Components/Pagination';
 import FilterBar from '@/Components/FilterBar';
 import SortableHeader from '@/Components/SortableHeader';
 
 export default function Index({ transactions = { data: [], links: [], total: 0 }, filters = {} }) {
-    const formatRupiah = (value) => {
-        return 'Rp' + new Intl.NumberFormat('id-ID', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(value);
-    };
+
+    const { dialog, confirm: openConfirm, alert: openAlert, dialogConfirm, dialogClose } = useDialog();
 
     const formatDate = (dateString, withDay = false) => {
         if (!dateString) return '-';
@@ -29,35 +29,7 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
             : `${day}/${String(date.getMonth() + 1).padStart(2, '0')}/${year} ${hours}:${minutes}`;
     };
 
-    const Pagination = ({ links = [] }) => {
-        if (links.length <= 3) return null;
         return (
-            <div className="flex flex-wrap gap-1 justify-center mt-4">
-                {links.map((link, key) => (
-                    link.url === null ? (
-                        <div
-                            key={key}
-                            className="px-3 py-1.5 text-xs text-slate-400 border border-slate-200 rounded-lg bg-slate-50"
-                            dangerouslySetInnerHTML={{ __html: link.label }}
-                        />
-                    ) : (
-                        <Link
-                            key={key}
-                            href={link.url}
-                            className={`px-3 py-1.5 text-xs border rounded-lg transition ${
-                                link.active
-                                    ? 'bg-emerald-600 border-emerald-600 text-white font-bold'
-                                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                            }`}
-                            dangerouslySetInnerHTML={{ __html: link.label }}
-                        />
-                    )
-                ))}
-            </div>
-        );
-    };
-
-    return (
         <AuthenticatedLayout title="Riwayat Transaksi">
             <Head title="Riwayat Transaksi" />
 
@@ -112,9 +84,7 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
                                         </Link>
                                         <button
                                             onClick={() => {
-                                                if(confirm("Yakin batalkan transaksi ini?")) {
-                                                    router.delete(route('transactions.destroy', t.id));
-                                                }
+                                                openConfirm({ message: 'Yakin batalkan transaksi ini?' }, () => router.delete(route('transactions.destroy', t.id)));
                                             }}
                                             className="flex-1 text-center py-2 bg-red-100 hover:bg-red-200 text-red-700 font-bold text-xs rounded-lg transition"
                                         >
@@ -171,9 +141,7 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
                                                         </Link>
                                                         <button
                                                             onClick={() => {
-                                                                if(confirm("Yakin batalkan transaksi ini?")) {
-                                                                    router.delete(route('transactions.destroy', t.id));
-                                                                }
+                                                                openConfirm({ message: 'Yakin batalkan transaksi ini?' }, () => router.delete(route('transactions.destroy', t.id)));
                                                             }}
                                                             className="inline-flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 font-semibold text-xs rounded transition"
                                                         >
@@ -192,6 +160,7 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
                     </>
                 )}
             </div>
+            <ConfirmModal {...dialog} onConfirm={dialogConfirm} onClose={dialogClose} />
         </AuthenticatedLayout>
     );
 }

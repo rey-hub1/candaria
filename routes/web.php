@@ -13,9 +13,19 @@ use App\Http\Controllers\MarginRuleController;
 use App\Http\Controllers\CashbookController;
 use Illuminate\Support\Facades\Route;
 
-// Redirect welcome page to login
+// Landing Page with Popular Products
 Route::get('/', function () {
-    return redirect()->route('login');
+    $popularProducts = \App\Models\Product::with(['category'])
+        ->where('stock', '>', 0)
+        ->withSum('transactionItems', 'quantity')
+        ->orderByDesc('transaction_items_sum_quantity')
+        ->take(8)
+        ->get();
+
+    return \Inertia\Inertia::render('Welcome', [
+        'popularProducts' => $popularProducts,
+        'canLogin' => Route::has('login'),
+    ]);
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -36,6 +46,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
         Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show');
         Route::delete('/transactions/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+
+        // Force increment stock route
+        Route::post('/products/{product}/force-increment', [ProductController::class, 'forceIncrement'])->name('products.force-increment');
     });
 
     // Admin-only routes

@@ -48,9 +48,8 @@ class ProductController extends Controller
             $data['selling_price'] = $request->selling_price;
             $data['seller_id'] = null;
         } else {
-            // For siswa, Product model boot saving logic automatically sets: selling_price = cost_price + 500
             $data['seller_id'] = $request->seller_id;
-            $data['selling_price'] = $request->cost_price + 500;
+            // selling_price will be automatically calculated by Product model boot saving logic
         }
 
         if ($request->hasFile('image')) {
@@ -83,7 +82,7 @@ class ProductController extends Controller
             $data['seller_id'] = null;
         } else {
             $data['seller_id'] = $request->seller_id;
-            $data['selling_price'] = $request->cost_price + 500;
+            // selling_price will be automatically calculated by Product model boot saving logic
         }
         if ($request->hasFile('image')) {
             if ($product->image) {
@@ -106,5 +105,11 @@ class ProductController extends Controller
 
         $product->delete();
         return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
+    }
+
+    public function forceIncrement(Product $product)
+    {
+        $product->increment('stock', 1);
+        return redirect()->back()->with('success', "Stok {$product->name} berhasil ditambah 1 secara paksa.");
     }
 }

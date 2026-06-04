@@ -11,7 +11,8 @@ export default function CustomKeyboard({
     prefixes = []
 }) {
     const keyboard = useRef();
-    const [layoutName, setLayoutName] = useState("default");
+    const [isShift, setIsShift] = useState(false);
+    const [isFullMode, setIsFullMode] = useState(false);
 
     // Keep keyboard internal state synced with external value changes
     useEffect(() => {
@@ -25,12 +26,16 @@ export default function CustomKeyboard({
     };
 
     const handleShift = () => {
-        const newLayoutName = layoutName === "default" ? "shift" : "default";
-        setLayoutName(newLayoutName);
+        setIsShift(!isShift);
+    };
+
+    const handleModeToggle = () => {
+        setIsFullMode(!isFullMode);
     };
 
     const onKeyPress = (button) => {
         if (button === "{shift}" || button === "{lock}") handleShift();
+        if (button === "{mode}") handleModeToggle();
         if (button === "{close}") onClose();
         if (button === "{clear}") {
             onChange("");
@@ -53,6 +58,63 @@ export default function CustomKeyboard({
 
     const prefixRows = getPrefixRows(prefixes);
 
+    const getKeyboardLayout = () => {
+        if (layout === "numeric") {
+            return {
+                default: [
+                    "1 2 3", 
+                    "4 5 6", 
+                    "7 8 9", 
+                    "{clear} 0 {bksp} {enter}"
+                ]
+            };
+        }
+        
+        const baseLayout = {
+            full: [
+                "1 2 3 4 5 6 7 8 9 0 {bksp}",
+                "q w e r t y u i o p",
+                "a s d f g h j k l",
+                "{shift} z x c v b n m",
+                (prefixRows ? "{mode} " : "") + "{space} {close} {enter}"
+            ],
+            shift: [
+                "1 2 3 4 5 6 7 8 9 0 {bksp}",
+                "Q W E R T Y U I O P",
+                "A S D F G H J K L",
+                "{shift} Z X C V B N M",
+                (prefixRows ? "{mode} " : "") + "{space} {close} {enter}"
+            ]
+        };
+
+        if (prefixRows) {
+            return {
+                ...baseLayout,
+                default: [
+                    "1 2 3 4 5 6 7 8 9 0 {bksp}",
+                    ...prefixRows,
+                    "{mode} {clear} {close} {enter}"
+                ]
+            };
+        }
+
+        return {
+            ...baseLayout,
+            default: baseLayout.full
+        };
+    };
+
+    let currentLayoutName = "default";
+    if (layout === "numeric") {
+        currentLayoutName = "default";
+    } else {
+        if (prefixRows && !isFullMode) {
+            currentLayoutName = "default";
+        } else {
+            currentLayoutName = isShift ? "shift" : "full";
+        }
+    }
+
     return (
         <div className="fixed bottom-0 left-0 w-full bg-slate-100 border-t border-slate-300 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-[100] p-2 pb-6 md:pb-4 animate-slide-up">
             <div className="flex justify-between items-center px-2 mb-2">
@@ -65,43 +127,16 @@ export default function CustomKeyboard({
             <div className="max-w-4xl mx-auto">
                 <Keyboard
                     keyboardRef={r => (keyboard.current = r)}
-                    layoutName={layoutName}
-                    layout={layout === "numeric" ? {
-                        default: [
-                            "1 2 3", 
-                            "4 5 6", 
-                            "7 8 9", 
-                            "{clear} 0 {bksp} {enter}"
-                        ]
-                    } : (prefixRows ? {
-                        default: [
-                            "1 2 3 4 5 6 7 8 9 0",
-                            ...prefixRows,
-                            "{bksp} {clear} {close} {enter}"
-                        ]
-                    } : {
-                        default: [
-                            "1 2 3 4 5 6 7 8 9 0 {bksp}",
-                            "q w e r t y u i o p",
-                            "a s d f g h j k l",
-                            "{shift} z x c v b n m",
-                            "{space} {close} {enter}"
-                        ],
-                        shift: [
-                            "1 2 3 4 5 6 7 8 9 0 {bksp}",
-                            "Q W E R T Y U I O P",
-                            "A S D F G H J K L",
-                            "{shift} Z X C V B N M",
-                            "{space} {close} {enter}"
-                        ]
-                    })}
+                    layoutName={currentLayoutName}
+                    layout={getKeyboardLayout()}
                     display={{
                         "{bksp}": "⌫ Hapus",
                         "{enter}": "🔍 Cari",
                         "{shift}": "⇧ Caps",
                         "{space}": "Spasi",
                         "{close}": "Tutup",
-                        "{clear}": "C (Clear)"
+                        "{clear}": "Hapus",
+                        "{mode}": isFullMode ? "⌨️ Prefix" : "⌨️ Lengkap"
                     }}
                     theme={"hg-theme-default custom-keyboard-theme"}
                     onChange={handleChange}
@@ -145,6 +180,12 @@ export default function CustomKeyboard({
                     color: #047857 !important;
                     border-color: #a7f3d0 !important;
                     box-shadow: 0 4px 0 #a7f3d0 !important;
+                }
+                .custom-keyboard-theme .hg-button-mode {
+                    background: #e0f2fe !important;
+                    color: #0369a1 !important;
+                    border-color: #bae6fd !important;
+                    box-shadow: 0 4px 0 #bae6fd !important;
                 }
                 .animate-slide-up {
                     animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;

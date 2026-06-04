@@ -10,16 +10,7 @@
         <link rel="manifest" href="/manifest.json">
         <meta name="theme-color" content="#0f172a">
         <link rel="apple-touch-icon" href="/icon-192x192.png">
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-        <style>
-            body {
-                font-family: 'Plus Jakarta Sans', sans-serif;
-            }
-        </style>
 
         <!-- Scripts & Styles -->
         @routes
@@ -30,17 +21,19 @@
     <body class="h-full antialiased text-slate-800 pb-16 md:pb-0">
         @inertia
         
-        <!-- PWA Service Worker Registration -->
-        <script>
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js').then(registration => {
-                        console.log('SW registered: ', registration);
-                    }).catch(registrationError => {
-                        console.log('SW registration failed: ', registrationError);
+        @production
+            <!-- PWA Service Worker Registration -->
+            <script>
+                if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', () => {
+                        navigator.serviceWorker.register('/sw.js').then(registration => {
+                            console.log('SW registered: ', registration);
+                        }).catch(registrationError => {
+                            console.log('SW registration failed: ', registrationError);
+                        });
                     });
-                });
-            }
-        </script>
+                }
+            </script>
+        @endproduction
     </body>
 </html>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { formatRupiah } from '@/utils/format';
+import Pagination from '@/Components/Pagination';
 import FilterBar from '@/Components/FilterBar';
 import SortableHeader from '@/Components/SortableHeader';
 
@@ -11,7 +13,25 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
     const [localStartDate, setLocalStartDate] = useState(filters.start_date || '');
     const [localEndDate, setLocalEndDate] = useState(filters.end_date || '');
 
+    useEffect(() => {
+        setLocalStartDate(filters.start_date || '');
+        setLocalEndDate(filters.end_date || '');
+    }, [filters.start_date, filters.end_date]);
+
     const applyPreset = (preset) => {
+        if (preset === 'all') {
+            setLocalStartDate('');
+            setLocalEndDate('');
+            
+            router.get(route('settlements.index'), {
+                ...filters,
+                start_date: '',
+                end_date: '',
+                preset: 'all'
+            });
+            return;
+        }
+
         const today = new Date();
         let start = new Date();
         let end = new Date();
@@ -52,14 +72,19 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
         router.get(route('settlements.index'), {
             ...filters,
             start_date: startDateStr,
-            end_date: endDateStr
+            end_date: endDateStr,
+            preset: preset
         });
     };
 
     const handleFilterSubmit = (e) => {
         if (e) e.preventDefault();
+        
+        const newFilters = { ...filters };
+        delete newFilters.preset;
+
         router.get(route('settlements.index'), {
-            ...filters,
+            ...newFilters,
             start_date: localStartDate,
             end_date: localEndDate
         });
@@ -106,26 +131,8 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
         });
     };
 
-    const formatRupiah = (value) => {
-        return 'Rp' + new Intl.NumberFormat('id-ID').format(value || 0);
-    };
 
-    const Pagination = ({ links = [] }) => {
-        if (links.length <= 3) return null;
         return (
-            <div className="flex flex-wrap gap-1 justify-center mt-4">
-                {links.map((link, key) => (
-                    link.url === null ? (
-                        <div key={key} className="px-3 py-1.5 text-xs text-slate-400 border border-slate-200 rounded-lg bg-slate-50" dangerouslySetInnerHTML={{ __html: link.label }} />
-                    ) : (
-                        <Link key={key} href={link.url} className={`px-3 py-1.5 text-xs border rounded-lg transition ${link.active ? 'bg-emerald-600 border-emerald-600 text-white font-bold' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
-                    )
-                ))}
-            </div>
-        );
-    };
-
-    return (
         <AuthenticatedLayout title="Pembayaran Penitip">
             <Head title="Pembayaran Penitip (Pencairan Dana)" />
 
@@ -143,11 +150,12 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-4">
                     <div className="mb-4 pb-4 border-b border-slate-100 flex flex-wrap gap-2 items-center">
                         <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mr-2">Pilih Cepat:</span>
-                        <button type="button" onClick={() => applyPreset('today')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">Hari Ini</button>
-                        <button type="button" onClick={() => applyPreset('yesterday')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">Kemarin</button>
-                        <button type="button" onClick={() => applyPreset('last7')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">7 Hari Terakhir</button>
-                        <button type="button" onClick={() => applyPreset('thisMonth')} className="px-3 py-1.5 text-xs font-bold bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition">Bulan Ini</button>
-                        <button type="button" onClick={() => applyPreset('lastMonth')} className="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">Bulan Lalu</button>
+                        <button type="button" onClick={() => applyPreset('all')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'all' || (!filters.start_date && !filters.end_date && !filters.preset) ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Semuanya</button>
+                        <button type="button" onClick={() => applyPreset('today')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'today' ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Hari Ini</button>
+                        <button type="button" onClick={() => applyPreset('yesterday')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'yesterday' ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Kemarin</button>
+                        <button type="button" onClick={() => applyPreset('last7')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'last7' ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>7 Hari Terakhir</button>
+                        <button type="button" onClick={() => applyPreset('thisMonth')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'thisMonth' ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Bulan Ini</button>
+                        <button type="button" onClick={() => applyPreset('lastMonth')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'lastMonth' ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Bulan Lalu</button>
                     </div>
                     <form onSubmit={handleFilterSubmit} className="flex flex-wrap items-end gap-4">
                         <div>
@@ -273,7 +281,7 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                                         type="number"
                                         required
                                         min="1"
-                                        step="500"
+                                        step="1"
                                         max={selectedSeller.unpaid_amount}
                                         value={payData.amount}
                                         onChange={(e) => setPayData('amount', e.target.value)}

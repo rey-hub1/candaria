@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import ConfirmModal from '@/Components/ConfirmModal';
+import { useDialog } from '@/hooks/useDialog';
+import { formatRupiah } from '@/utils/format';
 
 export default function Show({ transaction = {}, printModal = false }) {
-    const formatRupiah = (value) => {
-        return 'Rp' + new Intl.NumberFormat('id-ID', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(value);
-    };
+
+    const { dialog, confirm: openConfirm, alert: openAlert, dialogConfirm, dialogClose } = useDialog();
 
     const formatDate = (dateString) => {
         if (!dateString) return '-';
@@ -64,9 +63,7 @@ export default function Show({ transaction = {}, printModal = false }) {
                     <div className="flex gap-2">
                         <button
                             onClick={() => {
-                                if (confirm("Apakah Anda yakin ingin membatalkan transaksi ini? Stok barang akan dikembalikan.")) {
-                                    router.delete(route('transactions.destroy', transaction.id));
-                                }
+                                openConfirm({ message: 'Apakah Anda yakin ingin membatalkan transaksi ini? Stok barang akan dikembalikan.' }, () => router.delete(route('transactions.destroy', transaction.id)));
                             }}
                             className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-lg shadow-sm transition flex items-center gap-1.5"
                         >
@@ -170,6 +167,7 @@ export default function Show({ transaction = {}, printModal = false }) {
 
                 </div>
             </div>
+            <ConfirmModal {...dialog} onConfirm={dialogConfirm} onClose={dialogClose} />
         </AuthenticatedLayout>
     );
 }

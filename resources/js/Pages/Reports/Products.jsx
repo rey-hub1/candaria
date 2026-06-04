@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { formatRupiah } from '@/utils/format';
 
 export default function Products({
     allProducts = [],
@@ -20,8 +21,6 @@ export default function Products({
         window.open(route('reports.products', { export: 'pdf' }), '_blank');
     };
 
-    const formatRupiah = (value) =>
-        'Rp' + new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(value);
 
     const lowStockAll = [...lowStockProductsKantin, ...lowStockProductsSiswa];
 

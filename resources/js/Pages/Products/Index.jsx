@@ -1,22 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import ConfirmModal from '@/Components/ConfirmModal';
+import { useDialog } from '@/hooks/useDialog';
+import { formatRupiah } from '@/utils/format';
+import Pagination from '@/Components/Pagination';
 import SortableHeader from '@/Components/SortableHeader';
-
-const Pagination = ({ links = [] }) => {
-    if (links.length <= 3) return null;
-    return (
-        <div className="flex flex-wrap gap-1 justify-center mt-4">
-            {links.map((link, key) => (
-                link.url === null ? (
-                    <div key={key} className="px-3 py-1.5 text-xs text-slate-300 border border-slate-100 rounded-lg bg-slate-50" dangerouslySetInnerHTML={{ __html: link.label }} />
-                ) : (
-                    <Link key={key} href={link.url} className={`px-3 py-1.5 text-xs border rounded-lg transition ${link.active ? 'bg-emerald-600 border-emerald-600 text-white font-bold shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
-                )
-            ))}
-        </div>
-    );
-};
 
 const FormField = ({ label, error, children, hint }) => (
     <div>
@@ -31,10 +20,13 @@ const inputCls = "w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg
 
 export default function Index({ products = { data: [], links: [], total: 0 }, filters = {}, categories = [], sellers = [] }) {
     const [addModal, setAddModal] = useState(false);
+    const { dialog, confirm: openConfirm, alert: openAlert, dialogConfirm, dialogClose } = useDialog();
     const [editModal, setEditModal] = useState(false);
     const [editId, setEditId] = useState('');
     const [search, setSearch] = useState(filters.search || '');
     const [sellerSearch, setSellerSearch] = useState(filters.seller_search || '');
+    const searchTimerRef = useRef(null);
+    const sellerTimerRef = useRef(null);
 
     const { data: addData, setData: setAddData, post: postAdd, processing: addProcessing, errors: addErrors, reset: addReset } = useForm({
         name: '', code: '', category_id: '', type: 'siswa',
@@ -48,16 +40,16 @@ export default function Index({ products = { data: [], links: [], total: 0 }, fi
 
     const handleSearch = (val) => {
         setSearch(val);
-        clearTimeout(window._searchTimer);
-        window._searchTimer = setTimeout(() => {
+        clearTimeout(searchTimerRef.current);
+        searchTimerRef.current = setTimeout(() => {
             router.get(window.location.pathname, { ...filters, search: val }, { preserveState: true, preserveScroll: true, replace: true });
         }, 300);
     };
 
     const handleSellerSearch = (val) => {
         setSellerSearch(val);
-        clearTimeout(window._sellerTimer);
-        window._sellerTimer = setTimeout(() => {
+        clearTimeout(sellerTimerRef.current);
+        sellerTimerRef.current = setTimeout(() => {
             router.get(window.location.pathname, { ...filters, seller_search: val }, { preserveState: true, preserveScroll: true, replace: true });
         }, 300);
     };
@@ -73,9 +65,7 @@ export default function Index({ products = { data: [], links: [], total: 0 }, fi
     };
 
     const handleDelete = (id) => {
-        if (confirm('Hapus produk ini? Aksi ini tidak dapat dibatalkan.')) {
-            router.delete(route('products.destroy', id));
-        }
+        openConfirm({ message: 'Hapus produk ini? Aksi ini tidak dapat dibatalkan.' }, () => router.delete(route('products.destroy', id)));
     };
 
     const openEditModal = (product) => {
@@ -90,7 +80,6 @@ export default function Index({ products = { data: [], links: [], total: 0 }, fi
         setEditModal(true);
     };
 
-    const fmt = (v) => 'Rp' + new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(v);
 
     const ProductForm = ({ data, setData, errors, onSubmit, processing, isEdit = false }) => (
         <form onSubmit={onSubmit} className="space-y-4">
@@ -151,7 +140,7 @@ export default function Index({ products = { data: [], links: [], total: 0 }, fi
                 ) : (
                     <FormField label="Harga Jual">
                         <div className="flex items-center h-[38px] px-3 bg-emerald-50 border border-emerald-100 rounded-lg text-xs text-emerald-700 font-semibold">
-                            Otomatis: Modal + Rp 500
+                            Otomatis dihitung oleh sistem
                         </div>
                     </FormField>
                 )}
@@ -262,11 +251,11 @@ export default function Index({ products = { data: [], links: [], total: 0 }, fi
                                     <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-100">
                                         <div className="text-center">
                                             <p className="text-[10px] text-slate-400">Modal</p>
-                                            <p className="text-xs font-bold text-slate-700">{fmt(p.cost_price)}</p>
+                                            <p className="text-xs font-bold text-slate-700">{formatRupiah(p.cost_price)}</p>
                                         </div>
                                         <div className="text-center">
                                             <p className="text-[10px] text-slate-400">Jual</p>
-                                            <p className="text-xs font-bold text-slate-900">{fmt(p.selling_price)}</p>
+                                            <p className="text-xs font-bold text-slate-900">{formatRupiah(p.selling_price)}</p>
                                         </div>
                                         <div className="text-center">
                                             <p className="text-[10px] text-slate-400">Stok</p>
@@ -328,8 +317,8 @@ export default function Index({ products = { data: [], links: [], total: 0 }, fi
                                                         {p.type === 'kantin' ? 'Kantin' : (p.seller ? `${p.seller.name}` : 'Titipan')}
                                                     </span>
                                                 </td>
-                                                <td className="px-5 py-3.5 whitespace-nowrap text-sm text-right text-slate-500 font-mono">{fmt(p.cost_price)}</td>
-                                                <td className="px-5 py-3.5 whitespace-nowrap text-sm text-right font-bold text-slate-900 font-mono">{fmt(p.selling_price)}</td>
+                                                <td className="px-5 py-3.5 whitespace-nowrap text-sm text-right text-slate-500 font-mono">{formatRupiah(p.cost_price)}</td>
+                                                <td className="px-5 py-3.5 whitespace-nowrap text-sm text-right font-bold text-slate-900 font-mono">{formatRupiah(p.selling_price)}</td>
                                                 <td className="px-5 py-3.5 whitespace-nowrap text-center">
                                                     <span className={`inline-block px-2.5 py-1 rounded-lg text-xs font-bold ${
                                                         p.stock <= 5 ? 'bg-rose-50 text-rose-700 border border-rose-100'
@@ -406,6 +395,7 @@ export default function Index({ products = { data: [], links: [], total: 0 }, fi
                     </div>
                 </div>
             )}
+            <ConfirmModal {...dialog} onConfirm={dialogConfirm} onClose={dialogClose} />
         </AuthenticatedLayout>
     );
 }

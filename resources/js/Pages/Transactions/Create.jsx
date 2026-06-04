@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Head, Link, useForm, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import ConfirmModal from "@/Components/ConfirmModal";
+import { useDialog } from "@/hooks/useDialog";
 import CustomKeyboard from "@/Components/CustomKeyboard";
 
 export default function Create({
@@ -8,6 +10,7 @@ export default function Create({
     search = "",
     prefixes = [],
 }) {
+    const { dialog, confirm: openConfirm, alert: openAlert, dialogConfirm, dialogClose } = useDialog();
     const [cart, setCart] = useState(() => {
         try {
             const savedCart = localStorage.getItem("candaria_cart");
@@ -39,7 +42,7 @@ export default function Create({
             if (e.key.toLowerCase() === 'c') {
                 e.preventDefault();
                 // We use document.getElementById since handleCheckoutSubmit uses stale state if captured in useEffect without dependencies
-                const checkoutBtn = document.getElementById('checkout-btn');
+                const checkoutBtn = document.getElementById('desktop-checkout-btn') ?? document.getElementById('mobile-checkout-btn');
                 if (checkoutBtn) checkoutBtn.click();
             }
         };
@@ -57,40 +60,40 @@ export default function Create({
         id,
         ...item,
     }));
-    
+
     // Calculate total
     const totalAmount = cartItems.reduce((sum, item) => sum + (item.selling_price * item.quantity), 0);
 
-    const formatRupiah = (value) => {
-        return (
-            "Rp" +
-            new Intl.NumberFormat("id-ID", {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-            }).format(value)
-        );
-    };
+
+    const outOfStockClicks = useRef({});
 
     // Add to Cart
     const handleAddToCart = (productId) => {
-        setCart(prev => {
-            const product = prev[productId] || products.find(p => p.id === productId || p.id === parseInt(productId));
-            if (!product) return prev;
-            
-            const currentQty = prev[productId] ? prev[productId].quantity : 0;
-            if (currentQty + 1 > product.stock) {
-                alert(`Stok ${product.name} tidak cukup.`);
-                return prev;
-            }
+        const product = cart[productId] || products.find(p => p.id === productId || p.id === parseInt(productId));
+        if (!product) return;
 
-            return {
-                ...prev,
-                [productId]: {
-                    ...product,
-                    quantity: currentQty + 1
-                }
-            };
-        });
+        const currentQty = cart[productId]?.quantity ?? 0;
+        if (currentQty + 1 > product.stock) {
+            if (!outOfStockClicks.current[productId]) {
+                outOfStockClicks.current[productId] = 0;
+            }
+            outOfStockClicks.current[productId] += 1;
+
+            if (outOfStockClicks.current[productId] >= 3) {
+                outOfStockClicks.current[productId] = 0;
+                router.post(route('products.force-increment', product.id), {}, {
+                    preserveScroll: true,
+                    preserveState: true,
+                });
+                setCart(prev => ({ ...prev, [productId]: { ...product, quantity: currentQty + 1 } }));
+            } else {
+                const clicksLeft = 3 - outOfStockClicks.current[productId];
+                openAlert({ title: 'Stok Tidak Cukup', message: `Stok ${product.name} tidak cukup. Klik ${clicksLeft} kali lagi untuk memaksa tambah stok.`, danger: false });
+            }
+            return;
+        }
+
+        setCart(prev => ({ ...prev, [productId]: { ...(prev[productId] || product), quantity: currentQty + 1 } }));
     };
 
     const handleSearchReset = () => {
@@ -100,24 +103,47 @@ export default function Create({
 
     // Handle Search Submit
     const handleSearchSubmit = (e) => {
-        e.preventDefault();
-        
-        router.get(route('transactions.create'), { search: localSearch }, { 
-            preserveState: true, 
+        if (e) e.preventDefault();
+
+        router.get(route('transactions.create'), { search: localSearch }, {
+            preserveState: true,
             preserveScroll: true,
             onSuccess: (page) => {
                 const exactMatch = page.props.products.find(
                     (p) => p.code?.toLowerCase() === localSearch.trim().toLowerCase()
                 );
-                
+
                 if (exactMatch) {
                     // Need to use handleAddToCart logic directly here because handleAddToCart uses stale closure if called directly
                     setCart(prev => {
                         const product = prev[exactMatch.id] || exactMatch;
                         const currentQty = prev[exactMatch.id] ? prev[exactMatch.id].quantity : 0;
                         if (currentQty + 1 > product.stock) {
-                            alert(`Stok ${product.name} tidak cukup.`);
-                            return prev;
+                            if (!outOfStockClicks.current[exactMatch.id]) {
+                                outOfStockClicks.current[exactMatch.id] = 0;
+                            }
+                            outOfStockClicks.current[exactMatch.id] += 1;
+
+                            if (outOfStockClicks.current[exactMatch.id] >= 3) {
+                                outOfStockClicks.current[exactMatch.id] = 0;
+
+                                router.post(route('products.force-increment', exactMatch.id), {}, {
+                                    preserveScroll: true,
+                                    preserveState: true,
+                                });
+
+                                return {
+                                    ...prev,
+                                    [exactMatch.id]: {
+                                        ...product,
+                                        quantity: currentQty + 1
+                                    }
+                                };
+                            } else {
+                                const clicksLeft = 3 - outOfStockClicks.current[exactMatch.id];
+                                openAlert({ title: 'Stok Tidak Cukup', message: `Stok ${product.name} tidak cukup. Scan/Enter ${clicksLeft} kali lagi untuk memaksa tambah stok.`, danger: false });
+                                return prev;
+                            }
                         }
                         return {
                             ...prev,
@@ -127,7 +153,7 @@ export default function Create({
                             }
                         };
                     });
-                    
+
                     // Clear search
                     setLocalSearch('');
                     router.get(route('transactions.create'), {}, { preserveState: true, preserveScroll: true });
@@ -143,23 +169,15 @@ export default function Create({
             return;
         }
 
-        setCart(prev => {
-            const product = prev[productId] || products.find(p => p.id === productId || p.id === parseInt(productId));
-            if (!product) return prev;
+        const product = cart[productId];
+        if (!product) return;
 
-            if (newQty > product.stock) {
-                alert(`Stok hanya tersedia ${product.stock} pcs.`);
-                return prev;
-            }
-            
-            return {
-                ...prev,
-                [productId]: {
-                    ...prev[productId],
-                    quantity: newQty
-                }
-            };
-        });
+        if (newQty > product.stock) {
+            openAlert({ title: 'Stok Tidak Cukup', message: `Stok hanya tersedia ${product.stock} pcs.`, danger: false });
+            return;
+        }
+
+        setCart(prev => ({ ...prev, [productId]: { ...prev[productId], quantity: newQty } }));
     };
 
     // Remove from Cart (Client Side)
@@ -174,22 +192,20 @@ export default function Create({
     // Clear Cart (Client Side)
     const handleClearCart = (e) => {
         e.preventDefault();
-        if (confirm("Kosongkan keranjang?")) {
-            setCart({});
-        }
+        openConfirm({ message: 'Kosongkan keranjang?', danger: false }, () => setCart({}));
     };
 
     // Checkout Submit
     const handleCheckoutSubmit = (e) => {
-        e.preventDefault();
-        
+        if (e) e.preventDefault();
+
         if (addSoundRef.current) {
             addSoundRef.current.currentTime = 0;
             addSoundRef.current
                 .play()
                 .catch((err) => console.log("Audio play failed:", err));
         }
-        
+
         const items = cartItems.map(item => ({
             id: item.id,
             quantity: item.quantity
@@ -198,7 +214,7 @@ export default function Create({
         // Clear local storage IMMEDIATELY before redirect
         localStorage.removeItem("candaria_cart");
 
-        router.post(route("checkout"), { 
+        router.post(route("checkout"), {
             paid_amount: paidAmount,
             items: items
         }, {
@@ -298,7 +314,7 @@ export default function Create({
                                     : "Tidak ada produk yang tersedia (semua stok habis)."}
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 overflow-y-auto max-h-[600px] pr-2 custom-scrollbar">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 overflow-y-auto  pr-2 custom-scrollbar">
                                 {products.map((p) => (
                                     <div
                                         key={p.id}
@@ -697,7 +713,7 @@ export default function Create({
 
                                 {/* Submit Button */}
                                 <button
-                                    id="checkout-btn"
+                                    id="desktop-checkout-btn"
                                     type="submit"
                                     disabled={
                                         paidAmount < totalAmount || !paidAmount
@@ -1051,7 +1067,7 @@ export default function Create({
                                 </div>
 
                                 <button
-                                    id="checkout-btn"
+                                    id="mobile-checkout-btn"
                                     type="submit"
                                     disabled={
                                         paidAmount < totalAmount || !paidAmount
@@ -1068,9 +1084,10 @@ export default function Create({
 
             {/* Custom Keyboard Overlay */}
             {activeInput && (
-                <CustomKeyboard 
+                <CustomKeyboard
                     layout={activeInput === 'paidAmount' ? 'numeric' : 'default'}
                     inputValue={activeInput === 'search' ? localSearch : (paidAmount || "")}
+                    prefixes={prefixes}
                     onChange={(val) => {
                         if (activeInput === 'search') {
                             setLocalSearch(val);
@@ -1078,21 +1095,20 @@ export default function Create({
                             setPaidAmount(parseInt(val) || 0);
                         }
                     }}
-                    onClose={() => setActiveInput(null)}
+                    onClose={() => setTimeout(() => setActiveInput(null), 250)}
                     onSubmit={() => {
                         if (activeInput === 'search') {
-                            const searchBtn = document.getElementById('search-btn');
-                            if (searchBtn) searchBtn.click();
-                            setActiveInput(null);
+                            handleSearchSubmit();
+                            setTimeout(() => setActiveInput(null), 250);
                         } else if (activeInput === 'paidAmount') {
-                            const checkoutBtn = document.getElementById('checkout-btn');
-                            if (checkoutBtn) checkoutBtn.click();
-                            setActiveInput(null);
+                            handleCheckoutSubmit();
+                            setTimeout(() => setActiveInput(null), 250);
                         }
                     }}
                     prefixes={prefixes}
                 />
             )}
+            <ConfirmModal {...dialog} onConfirm={dialogConfirm} onClose={dialogClose} />
         </AuthenticatedLayout>
     );
 }

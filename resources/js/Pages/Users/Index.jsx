@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { Head, Link, useForm, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import ConfirmModal from '@/Components/ConfirmModal';
+import { useDialog } from '@/hooks/useDialog';
+import Pagination from '@/Components/Pagination';
 import FilterBar from '@/Components/FilterBar';
 import SortableHeader from '@/Components/SortableHeader';
 
 export default function Index({ users = { data: [], links: [], total: 0 }, filters = {} }) {
     const { auth } = usePage().props;
     const [editModal, setEditModal] = useState(false);
+    const { dialog, confirm: openConfirm, alert: openAlert, dialogConfirm, dialogClose } = useDialog();
     const [editId, setEditId] = useState('');
 
     // Add Form
@@ -45,9 +49,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
     };
 
     const handleDelete = (id) => {
-        if (confirm('Apakah Anda yakin ingin menghapus user ini?')) {
-            router.delete(route('users.destroy', id));
-        }
+        openConfirm({ message: 'Apakah Anda yakin ingin menghapus user ini?' }, () => router.delete(route('users.destroy', id)));
     };
 
     const openEditModal = (user) => {
@@ -62,35 +64,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
         setEditModal(true);
     };
 
-    const Pagination = ({ links = [] }) => {
-        if (links.length <= 3) return null;
         return (
-            <div className="flex flex-wrap gap-1 justify-center mt-4">
-                {links.map((link, key) => (
-                    link.url === null ? (
-                        <div
-                            key={key}
-                            className="px-3 py-1.5 text-xs text-slate-400 border border-slate-200 rounded-lg bg-slate-50"
-                            dangerouslySetInnerHTML={{ __html: link.label }}
-                        />
-                    ) : (
-                        <Link
-                            key={key}
-                            href={link.url}
-                            className={`px-3 py-1.5 text-xs border rounded-lg transition ${
-                                link.active
-                                    ? 'bg-emerald-600 border-emerald-600 text-white font-bold'
-                                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                            }`}
-                            dangerouslySetInnerHTML={{ __html: link.label }}
-                        />
-                    )
-                ))}
-            </div>
-        );
-    };
-
-    return (
         <AuthenticatedLayout title="User Management">
             <Head title="User Management" />
 
@@ -411,6 +385,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                     </div>
                 </div>
             )}
+            <ConfirmModal {...dialog} onConfirm={dialogConfirm} onClose={dialogClose} />
         </AuthenticatedLayout>
     );
 }

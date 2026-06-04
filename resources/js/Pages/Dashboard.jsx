@@ -1,6 +1,7 @@
 import React from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { formatRupiah } from '@/utils/format';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
 export default function Dashboard({
@@ -26,12 +27,6 @@ export default function Dashboard({
 }) {
     const { auth } = usePage().props;
 
-    const formatRupiah = (value) => {
-        return 'Rp' + new Intl.NumberFormat('id-ID', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(value);
-    };
 
     const formatDate = (dateString) => {
         if (!dateString) return '-';

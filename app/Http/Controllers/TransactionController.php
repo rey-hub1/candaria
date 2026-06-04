@@ -17,6 +17,19 @@ class TransactionController extends Controller
     // List all transactions (for reports/history)
     public function index()
     {
+        // Passive Deletion: Hapus transaksi yang lebih tua dari 7 hari
+        $sevenDaysAgo = now()->subDays(7);
+        $oldTransactions = Transaction::where('created_at', '<', $sevenDaysAgo)->get(['id']);
+        if ($oldTransactions->isNotEmpty()) {
+            $oldIds = $oldTransactions->pluck('id')->toArray();
+            
+            // Hapus juga riwayat di buku kas (opsional, tapi disarankan agar data sinkron jika transaksi dibuang total)
+            \App\Models\Cashbook::where('source', 'transaction')->whereIn('reference_id', $oldIds)->delete();
+            
+            // Hapus transaksi (item akan terhapus otomatis berkat onDelete('cascade'))
+            Transaction::whereIn('id', $oldIds)->delete();
+        }
+
         $filters = request()->only(['search', 'sort', 'dir', 'start_date', 'end_date']);
         $query = Transaction::with(['user', 'items.product'])->filter($filters, ['transaction_code']);
 
@@ -50,7 +63,8 @@ class TransactionController extends Controller
         // Limit to 50 for performance
         $products = $query->take(50)->get();
         
-        $prefixes = \App\Models\Category::select('prefix')->whereNotNull('prefix')->distinct()->pluck('prefix')->values();
+        // Use 'code' column as prefix since 'prefix' column might be null
+        $prefixes = \App\Models\Category::select('code')->whereNotNull('code')->distinct()->pluck('code')->values();
 
         return Inertia::render('Transactions/Create', [
             'products' => $products,
@@ -103,14 +117,19 @@ class TransactionController extends Controller
         try {
             DB::beginTransaction();
 
-            // Generate sequential transaction code
-            $latest = Transaction::orderBy('id', 'desc')->first();
+            // Generate sequential 5-digit transaction code daily
+            $today = now()->toDateString();
+            $latest = Transaction::whereDate('created_at', $today)
+                ->orderBy('id', 'desc')
+                ->first();
+                
             $nextNumber = $latest ? ((int)$latest->transaction_code) + 1 : 1;
-            $transactionCode = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
-            // Ensure uniqueness
-            while (Transaction::where('transaction_code', $transactionCode)->exists()) {
+            $transactionCode = str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+            
+            // Ensure uniqueness for today
+            while (Transaction::whereDate('created_at', $today)->where('transaction_code', $transactionCode)->exists()) {
                 $nextNumber++;
-                $transactionCode = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+                $transactionCode = str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
             }
 
             // Create Transaction

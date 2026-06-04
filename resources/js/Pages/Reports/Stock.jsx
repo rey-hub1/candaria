@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { formatRupiah } from '@/utils/format';
 
 export default function Stock({ reportData = [], date = '' }) {
     const [localDate, setLocalDate] = useState(date);
 
-    const formatRupiah = (value) => {
-        return 'Rp' + new Intl.NumberFormat('id-ID', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(value);
-    };
+    React.useEffect(() => {
+        setLocalDate(date);
+    }, [date]);
+
 
     const formatDateIndonesian = (dateString) => {
         if (!dateString) return '-';

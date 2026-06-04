@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { formatRupiah } from '@/utils/format';
 
 export default function Show({ seller, ledger = [] }) {
     const [payModal, setPayModal] = useState(false);
@@ -11,9 +12,6 @@ export default function Show({ seller, ledger = [] }) {
         notes: `Pencairan dana untuk ${seller.name}`,
     });
 
-    const formatRupiah = (value) => {
-        return 'Rp' + new Intl.NumberFormat('id-ID').format(value || 0);
-    };
 
     const formatDate = (dateString, withTime = true) => {
         if (!dateString) return '-';
@@ -189,7 +187,7 @@ export default function Show({ seller, ledger = [] }) {
                                         type="number"
                                         required
                                         min="1"
-                                        step="500"
+                                        step="1"
                                         max={seller.unpaid_amount}
                                         value={payData.amount}
                                         onChange={(e) => setPayData('amount', e.target.value)}

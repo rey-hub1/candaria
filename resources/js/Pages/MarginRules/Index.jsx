@@ -1,27 +1,16 @@
 import React, { useState } from 'react';
 import { Head, router, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import ConfirmModal from '@/Components/ConfirmModal';
+import { useDialog } from '@/hooks/useDialog';
+import Pagination from '@/Components/Pagination';
 import FilterBar from '@/Components/FilterBar';
 import SortableHeader from '@/Components/SortableHeader';
 
 
-    const Pagination = ({ links = [] }) => {
-        if (links.length <= 3) return null;
-        return (
-            <div className="flex flex-wrap gap-1 justify-center mt-4">
-                {links.map((link, key) => (
-                    link.url === null ? (
-                        <div key={key} className="px-3 py-1.5 text-xs text-slate-400 border border-slate-200 rounded-lg bg-slate-50" dangerouslySetInnerHTML={{ __html: link.label }} />
-                    ) : (
-                        <Link key={key} href={link.url} className={`px-3 py-1.5 text-xs border rounded-lg transition ${link.active ? 'bg-emerald-600 border-emerald-600 text-white font-bold' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
-                    )
-                ))}
-            </div>
-        );
-    };
-
-export default function Index({ rules = { data: [], links: [], total: 0 }, filters = {} }) {
+    export default function Index({ rules = { data: [], links: [], total: 0 }, filters = {} }) {
     const [editModal, setEditModal] = useState(false);
+    const { dialog, confirm: openConfirm, alert: openAlert, dialogConfirm, dialogClose } = useDialog();
     const [editId, setEditId] = useState('');
 
     // Add Form
@@ -38,9 +27,9 @@ export default function Index({ rules = { data: [], links: [], total: 0 }, filte
         margin: '',
     });
 
-    const formatRupiah = (value) => {
+    const formatMargin = (value) => {
         if (value === null || value === undefined || value === '') return 'Tak Terhingga';
-        return "Rp" + new Intl.NumberFormat("id-ID", { minimumFractionDigits: 0 }).format(value);
+        return 'Rp' + new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(value);
     };
 
     const handleAddSubmit = (e) => {
@@ -61,9 +50,7 @@ export default function Index({ rules = { data: [], links: [], total: 0 }, filte
     };
 
     const handleDelete = (id) => {
-        if (confirm('Apakah Anda yakin ingin menghapus aturan profit ini?')) {
-            router.delete(route('margin-rules.destroy', id));
-        }
+        openConfirm({ message: 'Apakah Anda yakin ingin menghapus aturan profit ini?' }, () => router.delete(route('margin-rules.destroy', id)));
     };
 
     const openEditModal = (rule) => {
@@ -167,12 +154,12 @@ export default function Index({ rules = { data: [], links: [], total: 0 }, filte
                                 {rules.data.map((rule) => (
                                     <div key={rule.id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-3">
                                         <div className="flex justify-between items-center">
-                                            <h4 className="font-bold text-slate-950 text-sm">Profit: {formatRupiah(rule.margin)}</h4>
+                                            <h4 className="font-bold text-slate-950 text-sm">Profit: {formatMargin(rule.margin)}</h4>
                                         </div>
                                         <div className="flex justify-between items-center text-xs pt-2 border-t border-slate-100">
                                             <span className="text-slate-400 font-semibold">Rentang Modal</span>
                                             <span className="font-bold text-slate-900">
-                                                {formatRupiah(rule.min_price)} - {formatRupiah(rule.max_price)}
+                                                {formatMargin(rule.min_price)} - {formatMargin(rule.max_price)}
                                             </span>
                                         </div>
                                         <div className="flex justify-end gap-2 pt-1">
@@ -197,9 +184,9 @@ export default function Index({ rules = { data: [], links: [], total: 0 }, filte
                                     <tbody className="divide-y divide-slate-100 bg-white">
                                         {rules.data.map((rule) => (
                                             <tr key={rule.id} className="hover:bg-slate-50 transition">
-                                                <td className="px-6 py-4 text-sm font-semibold text-slate-950">{formatRupiah(rule.min_price)}</td>
-                                                <td className="px-6 py-4 text-sm font-semibold text-slate-950">{formatRupiah(rule.max_price)}</td>
-                                                <td className="px-6 py-4 text-sm font-bold text-emerald-600">+{formatRupiah(rule.margin)}</td>
+                                                <td className="px-6 py-4 text-sm font-semibold text-slate-950">{formatMargin(rule.min_price)}</td>
+                                                <td className="px-6 py-4 text-sm font-semibold text-slate-950">{formatMargin(rule.max_price)}</td>
+                                                <td className="px-6 py-4 text-sm font-bold text-emerald-600">+{formatMargin(rule.margin)}</td>
                                                 <td className="px-6 py-4 text-sm text-center">
                                                     <div className="inline-flex gap-2">
                                                         <button onClick={() => openEditModal(rule)} className="px-2.5 py-1.5 bg-slate-100 font-semibold text-xs rounded">Ubah</button>
@@ -278,6 +265,7 @@ export default function Index({ rules = { data: [], links: [], total: 0 }, filte
                     </div>
                 </div>
             )}
+            <ConfirmModal {...dialog} onConfirm={dialogConfirm} onClose={dialogClose} />
         </AuthenticatedLayout>
     );
 }

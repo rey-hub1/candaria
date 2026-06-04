@@ -11,12 +11,15 @@ class CashbookController extends Controller
 {
     public function index(Request $request)
     {
-        $filters = $request->only(['search', 'sort', 'dir', 'start_date', 'end_date']);
+        $filters = $request->only(['search', 'sort', 'dir', 'start_date', 'end_date', 'preset']);
         
         $query = Cashbook::with('user')->filter($filters, ['description', 'source']);
 
-        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
-            $query->whereBetween('date', [$filters['start_date'], $filters['end_date']]);
+        if (!empty($filters['start_date'])) {
+            $query->whereDate('date', '>=', $filters['start_date']);
+        }
+        if (!empty($filters['end_date'])) {
+            $query->whereDate('date', '<=', $filters['end_date']);
         }
         
         

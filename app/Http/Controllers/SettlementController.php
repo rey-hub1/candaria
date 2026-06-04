@@ -17,7 +17,7 @@ class SettlementController extends Controller
     // View all sellers and their balances
     public function index(Request $request)
     {
-        $filters = $request->only(['search', 'sort', 'dir', 'start_date', 'end_date']);
+        $filters = $request->only(['search', 'sort', 'dir', 'start_date', 'end_date', 'preset']);
         
         $startDate = $filters['start_date'] ?? null;
         $endDate = $filters['end_date'] ?? null;
@@ -31,8 +31,11 @@ class SettlementController extends Controller
                     ->join('products', 'products.id', '=', 'transaction_items.product_id')
                     ->whereColumn('products.seller_id', 'sellers.id');
                 
-                if ($startDate && $endDate) {
-                    $query->whereBetween(DB::raw('DATE(transaction_items.created_at)'), [$startDate, $endDate]);
+                if ($startDate) {
+                    $query->whereDate('transaction_items.created_at', '>=', $startDate);
+                }
+                if ($endDate) {
+                    $query->whereDate('transaction_items.created_at', '<=', $endDate);
                 }
             }, 'total_earnings')
             ->selectSub(function($query) use ($startDate, $endDate) {
@@ -40,8 +43,11 @@ class SettlementController extends Controller
                     ->from('seller_settlements')
                     ->whereColumn('seller_id', 'sellers.id');
 
-                if ($startDate && $endDate) {
-                    $query->whereBetween(DB::raw('DATE(seller_settlements.created_at)'), [$startDate, $endDate]);
+                if ($startDate) {
+                    $query->whereDate('seller_settlements.created_at', '>=', $startDate);
+                }
+                if ($endDate) {
+                    $query->whereDate('seller_settlements.created_at', '<=', $endDate);
                 }
             }, 'total_paid')
             ->filter($filters, ['name', 'class'])
@@ -154,6 +160,33 @@ class SettlementController extends Controller
                 'reference_id' => $settlement->id,
                 'user_id' => Auth::id(),
             ]);
+
+            // Update seller_settlement_id in transaction_items using FIFO
+            $unpaidItems = TransactionItem::whereHas('product', function($q) use ($sellerId) {
+                $q->where('seller_id', $sellerId);
+            })->whereNull('seller_settlement_id')
+              ->where('profit_seller', '>', 0)
+              ->orderBy('created_at', 'asc')
+              ->get();
+
+            $remainingAmount = $amountToPay;
+            $itemsToUpdate = [];
+
+            foreach ($unpaidItems as $item) {
+                if ($remainingAmount >= $item->profit_seller) {
+                    $itemsToUpdate[] = $item->id;
+                    $remainingAmount -= $item->profit_seller;
+                } else {
+                    // Stop if remaining amount cannot fully cover the next item
+                    break;
+                }
+            }
+
+            if (!empty($itemsToUpdate)) {
+                TransactionItem::whereIn('id', $itemsToUpdate)->update([
+                    'seller_settlement_id' => $settlement->id
+                ]);
+            }
 
             DB::commit();
 
