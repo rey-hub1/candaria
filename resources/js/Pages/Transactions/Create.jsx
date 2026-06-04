@@ -6,6 +6,53 @@ import { useDialog } from "@/hooks/useDialog";
 import { formatRupiah } from "@/utils/format";
 import CustomKeyboard from "@/Components/CustomKeyboard";
 
+const ProductCard = React.memo(function ProductCard({ product, onAdd }) {
+    return (
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 md:p-4 flex flex-col justify-between hover:shadow-md hover:border-emerald-300 transition duration-200">
+            <div>
+                <div className="flex justify-between items-start gap-1 flex-wrap">
+                    <span className={`px-1.5 py-0.5 rounded text-[8px] md:text-[9px] font-bold uppercase ${product.type === "kantin" ? "bg-indigo-50 text-indigo-700 border border-indigo-100" : "bg-orange-50 text-orange-700 border border-orange-100"}`}>
+                        {product.type === "kantin" ? "Kantin" : "Siswa"}
+                    </span>
+                    <span className="text-[8px] md:text-[9px] text-slate-400 font-mono">{product.code}</span>
+                </div>
+
+                {product.image_url ? (
+                    <div className="mt-2 mb-1 w-full h-24 md:h-28 rounded-lg overflow-hidden bg-white border border-slate-100 flex items-center justify-center shadow-sm">
+                        <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                    </div>
+                ) : (
+                    <div className="mt-2 mb-1 w-full h-24 md:h-28 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-200 shadow-sm">
+                        <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                )}
+
+                <h4 className="font-bold text-slate-900 text-xs md:text-sm mt-2 leading-snug">{product.name}</h4>
+                <p className="text-[10px] md:text-xs text-slate-400 mt-0.5">{product.category?.name}</p>
+                {product.seller && (
+                    <p className="text-[9px] md:text-[10px] text-slate-500 font-semibold mt-1">Siswa: {product.seller.name}</p>
+                )}
+            </div>
+
+            <div className="mt-3 md:mt-4">
+                <div className="flex justify-between items-baseline mb-2">
+                    <span className="text-[10px] md:text-xs text-slate-400 font-semibold">Stok: {product.stock}</span>
+                    <span className="font-extrabold text-slate-900 text-xs md:text-sm">{formatRupiah(product.selling_price)}</span>
+                </div>
+                <button
+                    onClick={() => onAdd(product.id)}
+                    className="w-full py-1.5 md:py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[10px] md:text-xs rounded-lg shadow-sm transition flex items-center justify-center gap-1"
+                >
+                    <svg className="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+                    </svg>
+                    Tambah
+                </button>
+            </div>
+        </div>
+    );
+});
+
 export default function Create({
     products = [],
     search = "",
@@ -321,89 +368,9 @@ export default function Create({
                                     : "Tidak ada produk yang tersedia (semua stok habis)."}
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 overflow-y-auto  pr-2 custom-scrollbar">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 overflow-y-auto pr-2 custom-scrollbar">
                                 {products.map((p) => (
-                                    <div
-                                        key={p.id}
-                                        className="bg-slate-50 border border-slate-200 rounded-xl p-3 md:p-4 flex flex-col justify-between hover:shadow-md hover:border-emerald-300 transition duration-200"
-                                    >
-                                        <div>
-                                            <div className="flex justify-between items-start gap-1 flex-wrap">
-                                                <span
-                                                    className={`px-1.5 py-0.5 rounded text-[8px] md:text-[9px] font-bold uppercase ${
-                                                        p.type === "kantin"
-                                                            ? "bg-indigo-50 text-indigo-700 border border-indigo-100"
-                                                            : "bg-orange-50 text-orange-700 border border-orange-100"
-                                                    }`}
-                                                >
-                                                    {p.type === "kantin"
-                                                        ? "Kantin"
-                                                        : "Siswa"}
-                                                </span>
-                                                <span className="text-[8px] md:text-[9px] text-slate-400 font-mono">
-                                                    {p.code}
-                                                </span>
-                                            </div>
-
-                                            {p.image_url ? (
-                                                <div className="mt-2 mb-1 w-full h-24 md:h-28 rounded-lg overflow-hidden bg-white border border-slate-100 flex items-center justify-center shadow-sm">
-                                                    <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
-                                                </div>
-                                            ) : (
-                                                <div className="mt-2 mb-1 w-full h-24 md:h-28 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-200 shadow-sm">
-                                                    <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                                </div>
-                                            )}
-
-                                            <h4 className="font-bold text-slate-900 text-xs md:text-sm mt-2 leading-snug">
-                                                {p.name}
-                                            </h4>
-                                            <p className="text-[10px] md:text-xs text-slate-400 mt-0.5">
-                                                {p.category?.name}
-                                            </p>
-                                            {p.seller && (
-                                                <p className="text-[9px] md:text-[10px] text-slate-500 font-semibold mt-1">
-                                                    Siswa: {p.seller.name}
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        <div className="mt-3 md:mt-4">
-                                            <div className="flex justify-between items-baseline mb-2">
-                                                <span className="text-[10px] md:text-xs text-slate-400 font-semibold">
-                                                    Stok: {p.stock}
-                                                </span>
-                                                <span className="font-extrabold text-slate-900 text-xs md:text-sm">
-                                                    {formatRupiah(
-                                                        p.selling_price,
-                                                    )}
-                                                </span>
-                                            </div>
-
-                                            <button
-                                                onClick={() =>
-                                                    handleAddToCart(p.id)
-                                                }
-                                                className="w-full py-1.5 md:py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[10px] md:text-xs rounded-lg shadow-sm transition flex items-center justify-center gap-1"
-                                            >
-                                                <svg
-                                                    className="w-3 h-3 md:w-3.5 md:h-3.5"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2.5"
-                                                    viewBox="0 0 24 24"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M12 4.5v15m7.5-7.5h-15"
-                                                    ></path>
-                                                </svg>
-                                                Tambah
-                                            </button>
-                                        </div>
-                                    </div>
+                                    <ProductCard key={p.id} product={p} onAdd={handleAddToCart} />
                                 ))}
                             </div>
                         )}

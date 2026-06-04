@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
         foreach ($marginRulesData as $rule) {
             MarginRule::create($rule);
         }
+        cache()->forget('margin_rules_all');
 
         // 2. Users
         $admin = User::create([

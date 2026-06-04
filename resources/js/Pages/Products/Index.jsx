@@ -18,6 +18,88 @@ const FormField = ({ label, error, children, hint }) => (
 
 const inputCls = "w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition";
 
+const ProductForm = ({ data, setData, errors, onSubmit, processing, isEdit = false, onCancel, categories, sellers }) => (
+    <form onSubmit={onSubmit} className="space-y-4">
+        <FormField label="Nama Produk" error={errors.name}>
+            <input type="text" required placeholder="Contoh: Roti Cokelat" value={data.name}
+                onChange={e => setData('name', e.target.value)} className={inputCls} autoFocus />
+        </FormField>
+
+        <div className="grid grid-cols-2 gap-3">
+            <FormField label="Kategori" error={errors.category_id}>
+                <select required value={data.category_id} onChange={e => setData('category_id', e.target.value)} className={inputCls}>
+                    <option value="">Pilih...</option>
+                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+            </FormField>
+            <FormField label="Jenis" error={errors.type}>
+                <select required value={data.type} onChange={e => setData('type', e.target.value)} className={inputCls}>
+                    <option value="siswa">Titipan Siswa</option>
+                    <option value="kantin">Produk Kantin</option>
+                </select>
+            </FormField>
+        </div>
+
+        {data.type === 'siswa' && (
+            <FormField label="Siswa Penitip" error={errors.seller_id}>
+                <div className="flex gap-2">
+                    <select required={data.type === 'siswa'} value={data.seller_id}
+                        onChange={e => setData('seller_id', e.target.value)} className={inputCls}>
+                        <option value="">Pilih siswa...</option>
+                        {sellers.map(s => <option key={s.id} value={s.id}>{s.name} ({s.class})</option>)}
+                    </select>
+                    <Link href={route('sellers.index')} title="Kelola Penitip"
+                        className="px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition flex items-center">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                    </Link>
+                </div>
+            </FormField>
+        )}
+
+        <div className="grid grid-cols-2 gap-3">
+            <FormField label={data.type === 'siswa' ? 'Harga Siswa (Modal)' : 'Harga Modal'} error={errors.cost_price}>
+                <input type="number" required min="0" placeholder="Rp 0" value={data.cost_price}
+                    onChange={e => setData('cost_price', e.target.value)} className={inputCls} />
+            </FormField>
+            {data.type === 'kantin' ? (
+                <FormField label="Harga Jual" error={errors.selling_price}>
+                    <input type="number" required min="0" placeholder="Rp 0" value={data.selling_price}
+                        onChange={e => setData('selling_price', e.target.value)} className={inputCls} />
+                </FormField>
+            ) : (
+                <FormField label="Harga Jual">
+                    <div className="flex items-center h-[38px] px-3 bg-emerald-50 border border-emerald-100 rounded-lg text-xs text-emerald-700 font-semibold">
+                        Otomatis dihitung oleh sistem
+                    </div>
+                </FormField>
+            )}
+        </div>
+
+        <FormField label={isEdit ? "Stok Sisa" : "Stok Awal"} error={errors.stock}>
+            <input type="number" required min="0" placeholder="0" value={data.stock}
+                onChange={e => setData('stock', e.target.value)} className={inputCls} />
+        </FormField>
+
+        <FormField label="Foto Produk (Opsional)" error={errors.image}>
+            <input type="file" accept="image/*" onChange={e => setData('image', e.target.files[0])}
+                className="w-full text-sm text-slate-600 file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer" />
+        </FormField>
+
+        <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+            <button type="button" onClick={onCancel}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-lg transition">
+                Batal
+            </button>
+            <button type="submit" disabled={processing}
+                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed">
+                {processing ? 'Menyimpan...' : (isEdit ? 'Simpan Perubahan' : 'Tambah Produk')}
+            </button>
+        </div>
+    </form>
+);
+
 export default function Index({ products = { data: [], links: [], total: 0 }, filters = {}, categories = [], sellers = [] }) {
     const [addModal, setAddModal] = useState(false);
     const { dialog, confirm: openConfirm, alert: openAlert, dialogConfirm, dialogClose } = useDialog();
@@ -29,12 +111,12 @@ export default function Index({ products = { data: [], links: [], total: 0 }, fi
     const sellerTimerRef = useRef(null);
 
     const { data: addData, setData: setAddData, post: postAdd, processing: addProcessing, errors: addErrors, reset: addReset } = useForm({
-        name: '', code: '', category_id: '', type: 'siswa',
+        name: '', category_id: '', type: 'siswa',
         cost_price: '', selling_price: '', seller_id: '', stock: '', image: null,
     });
 
     const { data: editData, setData: setEditData, post: postEdit, processing: editProcessing, errors: editErrors, reset: editReset } = useForm({
-        _method: 'put', name: '', code: '', category_id: '', type: 'siswa',
+        _method: 'put', name: '', category_id: '', type: 'siswa',
         cost_price: '', selling_price: '', seller_id: '', stock: '', image: null,
     });
 
@@ -71,7 +153,7 @@ export default function Index({ products = { data: [], links: [], total: 0 }, fi
     const openEditModal = (product) => {
         setEditId(product.id);
         setEditData({
-            _method: 'put', name: product.name, code: product.code || '',
+            _method: 'put', name: product.name,
             category_id: product.category_id, type: product.type,
             cost_price: Math.round(product.cost_price),
             selling_price: product.selling_price ? Math.round(product.selling_price) : '',
@@ -80,94 +162,6 @@ export default function Index({ products = { data: [], links: [], total: 0 }, fi
         setEditModal(true);
     };
 
-
-    const ProductForm = ({ data, setData, errors, onSubmit, processing, isEdit = false }) => (
-        <form onSubmit={onSubmit} className="space-y-4">
-            <FormField label="Nama Produk" error={errors.name}>
-                <input type="text" required placeholder="Contoh: Roti Cokelat" value={data.name}
-                    onChange={e => setData('name', e.target.value)} className={inputCls} autoFocus />
-            </FormField>
-
-            <FormField label="Kode Produk" error={errors.code}
-                hint={!isEdit ? "Kosongkan untuk buat otomatis berdasarkan kategori." : undefined}>
-                <input type="text" placeholder={!isEdit ? "Otomatis jika kosong..." : ""} value={data.code}
-                    onChange={e => setData('code', e.target.value)} className={inputCls} />
-            </FormField>
-
-            <div className="grid grid-cols-2 gap-3">
-                <FormField label="Kategori" error={errors.category_id}>
-                    <select required value={data.category_id} onChange={e => setData('category_id', e.target.value)} className={inputCls}>
-                        <option value="">Pilih...</option>
-                        {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
-                </FormField>
-                <FormField label="Jenis" error={errors.type}>
-                    <select required value={data.type} onChange={e => setData('type', e.target.value)} className={inputCls}>
-                        <option value="siswa">Titipan Siswa</option>
-                        <option value="kantin">Produk Kantin</option>
-                    </select>
-                </FormField>
-            </div>
-
-            {data.type === 'siswa' && (
-                <FormField label="Siswa Penitip" error={errors.seller_id}>
-                    <div className="flex gap-2">
-                        <select required={data.type === 'siswa'} value={data.seller_id}
-                            onChange={e => setData('seller_id', e.target.value)} className={inputCls}>
-                            <option value="">Pilih siswa...</option>
-                            {sellers.map(s => <option key={s.id} value={s.id}>{s.name} ({s.class})</option>)}
-                        </select>
-                        <Link href={route('sellers.index')} title="Kelola Penitip"
-                            className="px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition flex items-center">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                        </Link>
-                    </div>
-                </FormField>
-            )}
-
-            <div className="grid grid-cols-2 gap-3">
-                <FormField label={data.type === 'siswa' ? 'Harga Siswa (Modal)' : 'Harga Modal'} error={errors.cost_price}>
-                    <input type="number" required min="0" placeholder="Rp 0" value={data.cost_price}
-                        onChange={e => setData('cost_price', e.target.value)} className={inputCls} />
-                </FormField>
-                {data.type === 'kantin' ? (
-                    <FormField label="Harga Jual" error={errors.selling_price}>
-                        <input type="number" required min="0" placeholder="Rp 0" value={data.selling_price}
-                            onChange={e => setData('selling_price', e.target.value)} className={inputCls} />
-                    </FormField>
-                ) : (
-                    <FormField label="Harga Jual">
-                        <div className="flex items-center h-[38px] px-3 bg-emerald-50 border border-emerald-100 rounded-lg text-xs text-emerald-700 font-semibold">
-                            Otomatis dihitung oleh sistem
-                        </div>
-                    </FormField>
-                )}
-            </div>
-
-            <FormField label={isEdit ? "Stok Sisa" : "Stok Awal"} error={errors.stock}>
-                <input type="number" required min="0" placeholder="0" value={data.stock}
-                    onChange={e => setData('stock', e.target.value)} className={inputCls} />
-            </FormField>
-
-            <FormField label="Foto Produk (Opsional)" error={errors.image}>
-                <input type="file" accept="image/*" onChange={e => setData('image', e.target.files[0])}
-                    className="w-full text-sm text-slate-600 file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer" />
-            </FormField>
-
-            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-                <button type="button" onClick={() => isEdit ? setEditModal(false) : setAddModal(false)}
-                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-lg transition">
-                    Batal
-                </button>
-                <button type="submit" disabled={processing}
-                    className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed">
-                    {processing ? 'Menyimpan...' : (isEdit ? 'Simpan Perubahan' : 'Tambah Produk')}
-                </button>
-            </div>
-        </form>
-    );
 
     return (
         <AuthenticatedLayout title="Kelola Produk">
@@ -369,7 +363,9 @@ export default function Index({ products = { data: [], links: [], total: 0 }, fi
                         </div>
                         <div className="px-6 py-5 overflow-y-auto flex-1">
                             <ProductForm data={addData} setData={setAddData} errors={addErrors}
-                                onSubmit={handleAddSubmit} processing={addProcessing} />
+                                onSubmit={handleAddSubmit} processing={addProcessing}
+                                onCancel={() => setAddModal(false)}
+                                categories={categories} sellers={sellers} />
                         </div>
                     </div>
                 </div>
@@ -390,7 +386,9 @@ export default function Index({ products = { data: [], links: [], total: 0 }, fi
                         </div>
                         <div className="px-6 py-5 overflow-y-auto flex-1">
                             <ProductForm data={editData} setData={setEditData} errors={editErrors}
-                                onSubmit={handleEditSubmit} processing={editProcessing} isEdit />
+                                onSubmit={handleEditSubmit} processing={editProcessing} isEdit
+                                onCancel={() => setEditModal(false)}
+                                categories={categories} sellers={sellers} />
                         </div>
                     </div>
                 </div>

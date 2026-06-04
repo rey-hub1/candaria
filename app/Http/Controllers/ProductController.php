@@ -32,7 +32,6 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:50|unique:products,code',
             'category_id' => 'required|exists:categories,id',
             'type' => 'required|in:kantin,siswa',
             'cost_price' => 'required|numeric|min:0',
@@ -42,7 +41,7 @@ class ProductController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $data = $request->only('name', 'code', 'category_id', 'type', 'cost_price', 'stock');
+        $data = $request->only('name', 'category_id', 'type', 'cost_price', 'stock');
 
         if ($request->type === 'kantin') {
             $data['selling_price'] = $request->selling_price;
@@ -65,7 +64,6 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'nullable|string|max:50|unique:products,code,' . $product->id,
             'category_id' => 'required|exists:categories,id',
             'type' => 'required|in:kantin,siswa',
             'cost_price' => 'required|numeric|min:0',
@@ -75,7 +73,7 @@ class ProductController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $data = $request->only('name', 'code', 'category_id', 'type', 'cost_price', 'stock');
+        $data = $request->only('name', 'category_id', 'type', 'cost_price', 'stock');
 
         if ($request->type === 'kantin') {
             $data['selling_price'] = $request->selling_price;

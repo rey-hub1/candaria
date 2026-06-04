@@ -65,12 +65,15 @@ class Product extends Model
     public static function resolveMargin(int|float $costPrice): int
     {
         $rules = cache()->remember('margin_rules_all', 3600, function () {
-            return \App\Models\MarginRule::orderBy('min_price', 'desc')->get(['min_price', 'max_price', 'margin']);
+            return \App\Models\MarginRule::orderBy('min_price', 'desc')
+                ->get(['min_price', 'max_price', 'margin'])
+                ->map(fn($r) => ['min_price' => $r->min_price, 'max_price' => $r->max_price, 'margin' => $r->margin])
+                ->toArray();
         });
 
         foreach ($rules as $rule) {
-            if ($rule->min_price <= $costPrice && (is_null($rule->max_price) || $rule->max_price > $costPrice)) {
-                return (int) $rule->margin;
+            if ($rule['min_price'] <= $costPrice && (is_null($rule['max_price']) || $rule['max_price'] > $costPrice)) {
+                return (int) $rule['margin'];
             }
         }
 
