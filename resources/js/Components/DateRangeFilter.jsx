@@ -121,7 +121,7 @@ export default function DateRangeFilter({
                             id="drf_start"
                             value={localStartDate}
                             onChange={e => setLocalStartDate(e.target.value)}
-                            className="text-sm text-slate-800 font-semibold bg-transparent border-none outline-none cursor-pointer"
+                            className="text-sm text-slate-900 [color-scheme:light] font-semibold bg-transparent border-none outline-none cursor-pointer"
                         />
                     </div>
                     <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -134,7 +134,7 @@ export default function DateRangeFilter({
                             id="drf_end"
                             value={localEndDate}
                             onChange={e => setLocalEndDate(e.target.value)}
-                            className="text-sm text-slate-800 font-semibold bg-transparent border-none outline-none cursor-pointer"
+                            className="text-sm text-slate-900 [color-scheme:light] font-semibold bg-transparent border-none outline-none cursor-pointer"
                         />
                     </div>
                     <button type="submit"

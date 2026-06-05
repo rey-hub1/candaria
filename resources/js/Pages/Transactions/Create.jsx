@@ -6,6 +6,13 @@ import { useDialog } from "@/hooks/useDialog";
 import { formatRupiah } from "@/utils/format";
 import CustomKeyboard from "@/Components/CustomKeyboard";
 
+// Touch detection: only force readOnly (on-screen keyboard) on touch devices,
+// so desktop users can type with the physical keyboard. Computed once.
+const isTouchDevice =
+    typeof window !== "undefined" &&
+    (("ontouchstart" in window) ||
+        window.matchMedia("(pointer: coarse)").matches);
+
 const ProductCard = React.memo(function ProductCard({ product, onAdd }) {
     return (
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 md:p-4 flex flex-col justify-between hover:shadow-md hover:border-emerald-300 transition duration-200">
@@ -308,7 +315,7 @@ export default function Create({
                                     type="text"
                                     name="search"
                                     value={localSearch}
-                                    readOnly // Prevent native keyboard
+                                    readOnly={isTouchDevice} // Prevent native keyboard on touch devices only
                                     onClick={() => setActiveInput('search')}
                                     onChange={(e) =>
                                         setLocalSearch(e.target.value)
@@ -566,13 +573,15 @@ export default function Create({
                                             name="paid_amount"
                                             id="desktop_paid_amount"
                                             required
-                                            readOnly
+                                            inputMode="numeric"
+                                            readOnly={isTouchDevice} // Prevent native keyboard on touch devices only
                                             onClick={() => setActiveInput('paidAmount')}
                                             value={paidAmount || ""}
                                             onChange={(e) =>
                                                 setPaidAmount(
-                                                    parseInt(e.target.value) ||
-                                                        0,
+                                                    parseInt(
+                                                        e.target.value.replace(/\D/g, ""),
+                                                    ) || 0,
                                                 )
                                             }
                                             placeholder="Nominal bayar..."
@@ -917,16 +926,18 @@ export default function Create({
                                             name="paid_amount"
                                             id="mobile_paid_amount"
                                             required
-                                            readOnly // Prevent native keyboard
+                                            inputMode="numeric"
+                                            readOnly={isTouchDevice} // Prevent native keyboard on touch devices only
                                             onClick={(e) => {
-                                                e.target.blur();
+                                                if (isTouchDevice) e.target.blur();
                                                 setActiveInput('paidAmount');
                                             }}
                                             value={paidAmount || ""}
                                             onChange={(e) =>
                                                 setPaidAmount(
-                                                    parseInt(e.target.value) ||
-                                                        0,
+                                                    parseInt(
+                                                        e.target.value.replace(/\D/g, ""),
+                                                    ) || 0,
                                                 )
                                             }
                                             placeholder="Ketuk untuk Keyboard..."

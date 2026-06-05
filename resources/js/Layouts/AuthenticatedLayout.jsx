@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
 import { ToastContainer } from '@/Components/Toast';
 
@@ -6,6 +6,9 @@ export default function AuthenticatedLayout({ children, title }) {
     const { auth, flash } = usePage().props;
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [toasts, setToasts] = useState([]);
+    // Tracks the last flash signature already shown, so the same flash echoed
+    // by both the mount effect and the success listener is only toasted once.
+    const shownFlashRef = useRef(null);
 
     const addToast = (type, message) => {
         if (type === 'success' && route().current('transactions.create')) {
@@ -19,28 +22,31 @@ export default function AuthenticatedLayout({ children, title }) {
         setToasts((prev) => prev.filter((t) => t.id !== id));
     };
 
+    // Show flash exactly once, deduped by signature. Runs both on mount (initial
+    // full page load) and on every Inertia success (subsequent navigations).
+    const showFlash = (pageFlash) => {
+        if (!pageFlash) return;
+        const sig = `${pageFlash.success ?? ''}|${pageFlash.error ?? ''}`;
+        if (sig === '|') return;
+        if (shownFlashRef.current === sig) return;
+        shownFlashRef.current = sig;
+        if (pageFlash.success) {
+            addToast('success', pageFlash.success);
+        }
+        if (pageFlash.error) {
+            addToast('error', pageFlash.error);
+        }
+    };
+
     // Trigger toast on mount if initial flash exists
     useEffect(() => {
-        if (flash?.success) {
-            addToast('success', flash.success);
-        }
-        if (flash?.error) {
-            addToast('error', flash.error);
-        }
+        showFlash(flash);
     }, []);
 
     // Listen for subsequent navigation/Inertia requests
     useEffect(() => {
         const removeListener = router.on('success', (event) => {
-            const pageFlash = event.detail.page.props.flash;
-            if (pageFlash) {
-                if (pageFlash.success) {
-                    addToast('success', pageFlash.success);
-                }
-                if (pageFlash.error) {
-                    addToast('error', pageFlash.error);
-                }
-            }
+            showFlash(event.detail.page.props.flash);
         });
         return () => removeListener();
     }, []);
@@ -223,7 +229,7 @@ export default function AuthenticatedLayout({ children, title }) {
             <aside className="hidden md:flex md:flex-col md:w-64 bg-slate-900 text-white shrink-0 border-r border-slate-800">
                 {/* Brand / Logo */}
                 <div className="flex items-center gap-3 h-16 px-6 bg-slate-950 border-b border-slate-800">
-                    <img src="/logo.jpeg" alt="Logo" className="w-9 h-9 object-contain rounded-lg" />
+                    <img src="/img/logo-white.png" alt="Logo" className="w-9 h-9 object-contain" />
                     <span className="text-base font-bold tracking-wider uppercase text-emerald-400">Kantin Smekda</span>
                 </div>
                 
@@ -261,7 +267,7 @@ export default function AuthenticatedLayout({ children, title }) {
                 {/* Brand / Logo */}
                 <div className="flex items-center justify-between h-16 px-6 bg-slate-950 border-b border-slate-800">
                     <div className="flex items-center gap-2">
-                        <img src="/logo.jpeg" alt="Logo" className="w-8 h-8 object-contain rounded-lg" />
+                        <img src="/img/logo-white.png" alt="Logo" className="w-8 h-8 object-contain" />
                         <span className="text-base font-bold tracking-wider uppercase text-emerald-400">Kantin Smekda</span>
                     </div>
                     <button onClick={() => setSidebarOpen(false)} className="text-slate-400 hover:text-white">

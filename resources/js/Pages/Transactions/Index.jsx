@@ -1,5 +1,5 @@
 import React from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ConfirmModal from '@/Components/ConfirmModal';
 import { useDialog } from '@/hooks/useDialog';
@@ -75,7 +75,7 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
                                         <span className="text-emerald-600 font-bold">Kembalian: {formatRupiah(t.change_amount)}</span>
                                     </div>
 
-                                    <div className="pt-1 flex gap-2">
+                                    <div className="pt-1 flex gap-3">
                                         <Link
                                             href={route('transactions.show', t.id)}
                                             className="flex-1 text-center py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition"
@@ -84,7 +84,7 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
                                         </Link>
                                         <button
                                             onClick={() => {
-                                                openConfirm({ message: 'Yakin batalkan transaksi ini?' }, () => router.delete(route('transactions.destroy', t.id)));
+                                                openConfirm({ message: 'Yakin batalkan transaksi ini?' }, () => router.delete(route('transactions.destroy', t.id), { preserveScroll: true }));
                                             }}
                                             className="flex-1 text-center py-2 bg-red-100 hover:bg-red-200 text-red-700 font-bold text-xs rounded-lg transition"
                                         >
@@ -141,7 +141,7 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
                                                         </Link>
                                                         <button
                                                             onClick={() => {
-                                                                openConfirm({ message: 'Yakin batalkan transaksi ini?' }, () => router.delete(route('transactions.destroy', t.id)));
+                                                                openConfirm({ message: 'Yakin batalkan transaksi ini?' }, () => router.delete(route('transactions.destroy', t.id), { preserveScroll: true }));
                                                             }}
                                                             className="inline-flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 font-semibold text-xs rounded transition"
                                                         >

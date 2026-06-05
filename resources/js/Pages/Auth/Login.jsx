@@ -27,7 +27,7 @@ export default function Login({ status }) {
     };
 
     return (
-        <div className="min-h-screen flex bg-slate-50 font-sans">
+        <div className="min-h-screen flex bg-slate-50 font-sans overflow-x-hidden">
             <Head title="Log In" />
 
             {/* Left Side: Brand Showcase Panel (hidden on mobile) */}

@@ -50,8 +50,8 @@ class TransactionController extends Controller
         // Limit to 50 for performance
         $products = $query->take(50)->get();
         
-        // Use 'code' column as prefix since 'prefix' column might be null
-        $prefixes = \App\Models\Category::select('code')->whereNotNull('code')->distinct()->pluck('code')->values();
+        // Use 'prefix' column (active) for the kasir keyboard prefix buttons
+        $prefixes = \App\Models\Category::whereNotNull('prefix')->distinct()->pluck('prefix')->values();
 
         return Inertia::render('Transactions/Create', [
             'products' => $products,

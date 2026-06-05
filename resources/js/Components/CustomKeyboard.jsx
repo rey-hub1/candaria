@@ -136,7 +136,7 @@ export default function CustomKeyboard({
                         "{shift}": "⇧ Caps",
                         "{space}": "Spasi",
                         "{close}": "Tutup",
-                        "{clear}": "Hapus",
+                        "{clear}": "🗑️ Hapus Semua",
                         "{mode}": isFullMode ? "⌨️ Prefix" : "⌨️ Lengkap"
                     }}
                     theme={"hg-theme-default custom-keyboard-theme"}
