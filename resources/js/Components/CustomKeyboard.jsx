@@ -63,10 +63,10 @@ export default function CustomKeyboard({
         if (layout === "numeric") {
             return {
                 default: [
-                    "1 2 3", 
-                    "4 5 6", 
-                    "7 8 9", 
-                    "{clear} 0 {bksp} {enter}"
+                    "1 2 3",
+                    "4 5 6",
+                    "7 8 9",
+                    "{bksp} 0 {enter}"
                 ]
             };
         }
@@ -137,7 +137,7 @@ export default function CustomKeyboard({
                         "{space}": "Spasi",
                         "{close}": "Tutup",
                         "{clear}": "🗑️ Hapus Semua",
-                        "{mode}": isFullMode ? "⌨️ Prefix" : "⌨️ Lengkap"
+                        "{mode}": isFullMode ? "⌨️ Prefix" : "⌨️ Lengkap",
                     }}
                     theme={"hg-theme-default custom-keyboard-theme"}
                     onChange={handleChange}
@@ -151,6 +151,9 @@ export default function CustomKeyboard({
                 }
                 .custom-keyboard-theme .hg-button {
                     height: 55px !important;
+                    flex: 1 1 0 !important;
+                    min-width: 0 !important;
+                    max-width: none !important;
                     border-radius: 12px !important;
                     font-weight: 800 !important;
                     font-size: 1.1rem !important;

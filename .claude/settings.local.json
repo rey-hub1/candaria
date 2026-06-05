@@ -23,7 +23,11 @@
       "Read(//private/tmp/**)",
       "Bash(npm install *)",
       "Bash(npx playwright *)",
-      "Bash(node /tmp/pwa-check.js)"
+      "Bash(node /tmp/pwa-check.js)",
+      "Bash(mkdir -p public/img)",
+      "Bash(cp \"public/logo baru/logo berwarna.png\" public/img/logo-color.png)",
+      "Bash(cp \"public/logo baru/logo putih.png\" public/img/logo-white.png)",
+      "Bash(cp \"public/logo baru/logo hitam.png\" public/img/logo-black.png)"
     ]
   }
 }

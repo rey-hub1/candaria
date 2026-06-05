@@ -301,9 +301,9 @@ export default function Create({
         <AuthenticatedLayout title="Kasir (Checkout)">
             <Head title="Kasir (Checkout)" />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:h-full">
                 {/* Left Column: Search & Products Grid */}
-                <div className="lg:col-span-2 flex flex-col gap-6">
+                <div className="lg:col-span-2 flex flex-col gap-6 lg:min-h-0 lg:overflow-y-auto">
                     {/* Search Card */}
                     <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                         <form
@@ -387,7 +387,7 @@ export default function Create({
                 </div>
 
                 {/* Right Column: Desktop Sidebar Cart */}
-                <div className="hidden lg:flex lg:flex-col bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden h-[calc(100vh-10rem)] min-h-[500px]">
+                <div className="hidden lg:flex lg:flex-col bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden h-full">
                     {/* Cart Header */}
                     <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
                         <div className="flex items-center gap-2">
@@ -421,7 +421,7 @@ export default function Create({
                     </div>
 
                     {/* Cart Items List */}
-                    <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-2">
                         {cartItems.length === 0 ? (
                             <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 text-sm">
                                 <svg
@@ -448,7 +448,7 @@ export default function Create({
                             cartItems.map((item) => (
                                 <div
                                     key={item.id}
-                                    className="flex justify-between items-start gap-4 pb-4 border-b border-slate-100"
+                                    className="flex justify-between items-start gap-3 pb-2 border-b border-slate-100"
                                 >
                                     <div className="flex-1">
                                         <div className="flex items-center gap-1.5">
@@ -473,7 +473,7 @@ export default function Create({
                                         </p>
 
                                         {/* Qty Update Form */}
-                                        <div className="flex items-center gap-1 mt-2">
+                                        <div className="flex items-center gap-1 mt-1">
                                             <button
                                                 onClick={() =>
                                                     handleUpdateQuantity(
@@ -599,7 +599,7 @@ export default function Create({
                                     </div>
 
                                     {/* Denominations shortcuts */}
-                                    <div className="grid grid-cols-4 gap-1.5 mt-2">
+                                    <div className="grid grid-cols-5 gap-1.5 mt-2">
                                         <button
                                             type="button"
                                             onClick={() => setPaidAmount(0)}
@@ -634,13 +634,22 @@ export default function Create({
                                         >
                                             5k
                                         </button>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                addToPaidAmount(10000)
+                                            }
+                                            className="py-1.5 text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold rounded-lg transition"
+                                        >
+                                            10k
+                                        </button>
 
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 adjustPaidAmount(500)
                                             }
-                                            className="col-span-4 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-extrabold rounded-lg transition flex items-center justify-center gap-1"
+                                            className="col-span-5 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-extrabold rounded-lg transition flex items-center justify-center gap-1"
                                         >
                                             <svg
                                                 className="w-3.5 h-3.5 text-slate-500"
@@ -662,7 +671,7 @@ export default function Create({
                                             onClick={() =>
                                                 adjustPaidAmount(-500)
                                             }
-                                            className="col-span-4 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-extrabold rounded-lg transition flex items-center justify-center gap-1"
+                                            className="col-span-5 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-extrabold rounded-lg transition flex items-center justify-center gap-1"
                                         >
                                             <svg
                                                 className="w-3.5 h-3.5 text-slate-500"
@@ -770,7 +779,7 @@ export default function Create({
                         onClick={() => setShowCartDrawer(false)}
                     ></div>
 
-                    <div className="fixed inset-x-0 bottom-0 max-h-[85vh] bg-white rounded-t-3xl shadow-2xl z-50 flex flex-col overflow-hidden animate-slide-up">
+                    <div className="fixed inset-x-0 bottom-0 h-[100dvh] bg-white rounded-t-3xl shadow-2xl z-50 flex flex-col overflow-hidden animate-slide-up">
                         {/* Pill handle bar for native bottom sheet feel */}
                         <div className="w-12 h-1 bg-slate-300/80 rounded-full mx-auto mt-3 shrink-0"></div>
 
@@ -802,11 +811,11 @@ export default function Create({
                             </button>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                        <div className="flex-1 overflow-y-auto p-3 space-y-2">
                             {cartItems.map((item) => (
                                 <div
                                     key={item.id}
-                                    className="flex justify-between items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-2xl"
+                                    className="flex justify-between items-center gap-3 p-2 bg-slate-50 border border-slate-100 rounded-xl"
                                 >
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-1.5 flex-wrap">
@@ -831,7 +840,7 @@ export default function Create({
                                         </p>
 
                                         {/* Controls */}
-                                        <div className="flex items-center gap-1.5 mt-2.5">
+                                        <div className="flex items-center gap-1 mt-1">
                                             <button
                                                 onClick={() =>
                                                     handleUpdateQuantity(
@@ -839,11 +848,11 @@ export default function Create({
                                                         item.quantity - 1,
                                                     )
                                                 }
-                                                className="w-8 h-8 bg-white border border-slate-200 text-slate-700 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm active:bg-slate-100"
+                                                className="w-7 h-7 bg-white border border-slate-200 text-slate-700 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm active:bg-slate-100"
                                             >
                                                 -
                                             </button>
-                                            <span className="w-8 text-center text-xs font-extrabold text-slate-800">
+                                            <span className="w-7 text-center text-xs font-extrabold text-slate-800">
                                                 {item.quantity}
                                             </span>
                                             <button
@@ -853,7 +862,7 @@ export default function Create({
                                                         item.quantity + 1,
                                                     )
                                                 }
-                                                className="w-8 h-8 bg-white border border-slate-200 text-slate-700 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm active:bg-slate-100"
+                                                className="w-7 h-7 bg-white border border-slate-200 text-slate-700 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm active:bg-slate-100"
                                             >
                                                 +
                                             </button>
@@ -955,7 +964,7 @@ export default function Create({
                                     </div>
 
                                     {/* Quick Denominations Shortcuts on Mobile */}
-                                    <div className="grid grid-cols-4 gap-1.5 mt-2.5">
+                                    <div className="grid grid-cols-5 gap-1.5 mt-2.5">
                                         {/* Row 1 */}
                                         <button
                                             type="button"
@@ -991,6 +1000,15 @@ export default function Create({
                                         >
                                             5k
                                         </button>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                addToPaidAmount(10000)
+                                            }
+                                            className="py-1.5 text-xs bg-white border border-slate-200 text-slate-700 font-bold rounded-lg shadow-sm active:bg-slate-100 transition"
+                                        >
+                                            10k
+                                        </button>
 
                                         {/* Row 2 */}
                                         <button
@@ -998,7 +1016,7 @@ export default function Create({
                                             onClick={() =>
                                                 adjustPaidAmount(500)
                                             }
-                                            className="col-span-2  py-1.5 text-xs bg-white border border-slate-200 text-slate-700 font-extrabold rounded-lg shadow-sm active:bg-slate-100 transition flex items-center justify-center gap-1"
+                                            className="col-span-2 py-1.5 text-xs bg-white border border-slate-200 text-slate-700 font-extrabold rounded-lg shadow-sm active:bg-slate-100 transition flex items-center justify-center gap-1"
                                         >
                                             <svg
                                                 className="w-3.5 h-3.5 text-slate-500"
@@ -1020,7 +1038,7 @@ export default function Create({
                                             onClick={() =>
                                                 adjustPaidAmount(-500)
                                             }
-                                            className="col-span-2  py-1.5 text-xs bg-white border border-slate-200 text-slate-700 font-extrabold rounded-lg shadow-sm active:bg-slate-100 transition flex items-center justify-center gap-1"
+                                            className="col-span-3 py-1.5 text-xs bg-white border border-slate-200 text-slate-700 font-extrabold rounded-lg shadow-sm active:bg-slate-100 transition flex items-center justify-center gap-1"
                                         >
                                             <svg
                                                 className="w-3.5 h-3.5 text-slate-500"

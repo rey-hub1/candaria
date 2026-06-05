@@ -42,20 +42,20 @@ export default function Welcome({ canLogin, popularProducts }) {
             <style>{`
                 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
                 :root {
-                    --gold: #9c6f1c;
-                    --gold-light: #c08f2c;
-                    --gold-pale: rgba(176,125,30,0.12);
-                    --bg: #f8f3ea;
-                    --bg-s: #f1e8d8;
-                    --bg-r: #e9dcc6;
-                    --text: #2a2316;
-                    --muted: #6f6552;
-                    --border: rgba(156,111,28,0.30);
-                    --border-s: rgba(40,30,10,0.10);
+                    --gold: #282888;
+                    --gold-light: #4a4ac0;
+                    --gold-pale: rgba(40,40,136,0.10);
+                    --bg: #f6f7fb;
+                    --bg-s: #eceef7;
+                    --bg-r: #e1e3f2;
+                    --text: #16162e;
+                    --muted: #585874;
+                    --border: rgba(40,40,136,0.28);
+                    --border-s: rgba(20,20,50,0.10);
                 }
                 html { scroll-behavior: smooth; }
                 body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; -webkit-font-smoothing: antialiased; }
-                ::selection { background: rgba(176,125,30,0.25); color: var(--text); }
+                ::selection { background: rgba(40,40,136,0.20); color: var(--text); }
                 ::-webkit-scrollbar { width: 4px; }
                 ::-webkit-scrollbar-track { background: var(--bg); }
                 ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
@@ -90,11 +90,11 @@ export default function Welcome({ canLogin, popularProducts }) {
                 .rs { animation: rotateSlow 28s linear infinite; }
 
                 .gold-text {
-                    background: linear-gradient(135deg, #b8861f 0%, #8a6314 45%, #a87a16 100%);
+                    background: linear-gradient(135deg, #3a3aa8 0%, #282888 45%, #20206b 100%);
                     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
                 }
                 .shimmer {
-                    background: linear-gradient(90deg, #8a6314 0%, #c79a3e 35%, #8a6314 55%, #a87a16 100%);
+                    background: linear-gradient(90deg, #282888 0%, #5a5acc 35%, #282888 55%, #20206b 100%);
                     background-size: 200% auto;
                     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
                     animation: shimmer 4s linear infinite;
@@ -103,19 +103,19 @@ export default function Welcome({ canLogin, popularProducts }) {
 
                 /* navbar */
                 .nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:20px 0; transition:all .4s ease; }
-                .nav.sc { background:rgba(248,243,234,0.82); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:14px 0; border-bottom:1px solid var(--border-s); }
+                .nav.sc { background:rgba(246,247,251,0.85); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:14px 0; border-bottom:1px solid var(--border-s); }
                 .nav-link { color:var(--muted); font-size:.875rem; font-weight:500; text-decoration:none; transition:color .2s; }
                 .nav-link:hover { color:var(--text); }
 
                 /* buttons */
                 .btn-g {
                     display:inline-flex; align-items:center; gap:9px;
-                    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 55%, #8a6a29 100%);
-                    color:#0c0a06; font-weight:600; font-family:'DM Sans',sans-serif;
+                    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 55%, #20206b 100%);
+                    color:#ffffff; font-weight:600; font-family:'DM Sans',sans-serif;
                     border-radius:100px; padding:13px 28px; font-size:.9rem; letter-spacing:.01em;
                     transition:all .3s ease; text-decoration:none; border:none; cursor:pointer;
                 }
-                .btn-g:hover { box-shadow:0 8px 32px rgba(168,130,53,0.45); transform:translateY(-2px); filter:brightness(1.08); }
+                .btn-g:hover { box-shadow:0 8px 32px rgba(40,40,136,0.45); transform:translateY(-2px); filter:brightness(1.08); }
                 .btn-o {
                     display:inline-flex; align-items:center; gap:9px;
                     background:transparent; color:var(--text); font-weight:500;
@@ -135,15 +135,15 @@ export default function Welcome({ canLogin, popularProducts }) {
 
                 /* product card */
                 .pc { background:var(--bg-s); border:1px solid var(--border-s); border-radius:16px; overflow:hidden; transition:all .5s cubic-bezier(.4,0,.2,1); position:relative; }
-                .pc::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(168,130,53,.07) 0%,transparent 60%); opacity:0; transition:opacity .4s; z-index:1; }
-                .pc:hover { border-color:var(--border); transform:translateY(-6px); box-shadow:0 20px 50px rgba(80,60,20,.14), 0 0 30px rgba(176,125,30,.12); }
+                .pc::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(40,40,136,.07) 0%,transparent 60%); opacity:0; transition:opacity .4s; z-index:1; }
+                .pc:hover { border-color:var(--border); transform:translateY(-6px); box-shadow:0 20px 50px rgba(20,20,50,.14), 0 0 30px rgba(40,40,136,.12); }
                 .pc:hover::before { opacity:1; }
 
                 /* feature row */
                 .feat { border-top:1px solid var(--border-s); padding:40px 0; transition:border-color .3s; cursor:default; }
                 .feat:hover { border-color:var(--border); }
-                .feat-n { font-family:'Cormorant Garamond',serif; font-size:3.5rem; font-weight:700; color:rgba(199,154,68,.28); line-height:1; transition:color .35s; min-width:76px; }
-                .feat:hover .feat-n { color:rgba(230,192,116,.7); }
+                .feat-n { font-family:'Cormorant Garamond',serif; font-size:3.5rem; font-weight:700; color:rgba(90,90,204,.28); line-height:1; transition:color .35s; min-width:76px; }
+                .feat:hover .feat-n { color:rgba(120,120,220,.7); }
 
                 /* faq */
                 .faq-i { border-bottom:1px solid var(--border-s); }
@@ -162,7 +162,7 @@ export default function Welcome({ canLogin, popularProducts }) {
                 .soc:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-pale); }
 
                 /* pos mock */
-                .pos { background:#fffdf8; border:1px solid var(--border); border-radius:18px; padding:18px; box-shadow:0 40px 90px rgba(80,60,20,.18), 0 0 70px rgba(176,125,30,.10); }
+                .pos { background:#ffffff; border:1px solid var(--border); border-radius:18px; padding:18px; box-shadow:0 40px 90px rgba(20,20,50,.18), 0 0 70px rgba(40,40,136,.10); }
                 .pos-item { background:var(--bg-r); border-radius:9px; padding:11px 9px; border:1px solid var(--border-s); cursor:pointer; transition:all .25s; }
                 .pos-item:hover { border-color:var(--border); }
 
@@ -181,13 +181,13 @@ export default function Welcome({ canLogin, popularProducts }) {
                 }
             `}</style>
 
-            <div className="grain" style={{ minHeight: '100vh', background: '#f8f3ea', position: 'relative' }}>
+            <div className="grain" style={{ minHeight: '100vh', background: '#f6f7fb', position: 'relative' }}>
 
                 {/* ── NAV ── */}
                 <nav className={`nav ${scrolled ? 'sc' : ''}`}>
                     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <img src="/logo.jpeg" alt="Candaria" style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover', flexShrink: 0, border: '1px solid var(--border)' }} />
+                            <img src="/img/logo-color.png" alt="Candaria" style={{ width: 32, height: 32, objectFit: 'contain', flexShrink: 0 }} />
                             <span className="d" style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--text)', letterSpacing: '-.01em' }}>Candaria</span>
                         </Link>
                         <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
@@ -204,8 +204,8 @@ export default function Welcome({ canLogin, popularProducts }) {
 
                 {/* ── HERO ── */}
                 <header style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden', paddingTop: 80 }}>
-                    <div className="orb fa" style={{ width: 560, height: 560, background: 'radial-gradient(circle, rgba(168,130,53,.13) 0%, transparent 70%)', top: '-8%', left: '-8%' }} />
-                    <div className="orb fb" style={{ width: 440, height: 440, background: 'radial-gradient(circle, rgba(168,130,53,.08) 0%, transparent 70%)', bottom: '0', right: '-4%' }} />
+                    <div className="orb fa" style={{ width: 560, height: 560, background: 'radial-gradient(circle, rgba(40,40,136,.13) 0%, transparent 70%)', top: '-8%', left: '-8%' }} />
+                    <div className="orb fb" style={{ width: 440, height: 440, background: 'radial-gradient(circle, rgba(40,40,136,.08) 0%, transparent 70%)', bottom: '0', right: '-4%' }} />
 
                     <div className="hero-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '60px 32px', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
                         {/* Left */}
@@ -244,8 +244,8 @@ export default function Welcome({ canLogin, popularProducts }) {
 
                         {/* Right — POS mockup */}
                         <div className="hero-right fi d5" style={{ position: 'relative' }}>
-                            <div className="rs" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 460, height: 460, border: '1px solid rgba(168,130,53,.08)', borderRadius: '50%', borderTopColor: 'rgba(168,130,53,.35)' }} />
-                            <div className="rs" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 380, height: 380, border: '1px dashed rgba(168,130,53,.06)', borderRadius: '50%', animationDirection: 'reverse', animationDuration: '40s' }} />
+                            <div className="rs" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 460, height: 460, border: '1px solid rgba(40,40,136,.08)', borderRadius: '50%', borderTopColor: 'rgba(40,40,136,.35)' }} />
+                            <div className="rs" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 380, height: 380, border: '1px dashed rgba(40,40,136,.06)', borderRadius: '50%', animationDirection: 'reverse', animationDuration: '40s' }} />
                             <div className="pos" style={{ position: 'relative', zIndex: 1 }}>
                                 {/* Window chrome */}
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, paddingBottom: 14, borderBottom: '1px solid var(--border-s)' }}>
@@ -290,7 +290,7 @@ export default function Welcome({ canLogin, popularProducts }) {
                                         <span style={{ fontSize: '.72rem', color: 'var(--text)', fontWeight: 600 }}>Total</span>
                                         <span className="d" style={{ fontSize: '.85rem', fontWeight: 700, color: 'var(--gold-light)' }}>Rp 19.000</span>
                                     </div>
-                                    <div style={{ background: 'linear-gradient(135deg, var(--gold-light), var(--gold))', borderRadius: 7, padding: '9px', textAlign: 'center', color: '#0c0a06', fontSize: '.7rem', fontWeight: 700, letterSpacing: '.05em', cursor: 'pointer' }}>
+                                    <div style={{ background: 'linear-gradient(135deg, var(--gold-light), var(--gold))', borderRadius: 7, padding: '9px', textAlign: 'center', color: '#ffffff', fontSize: '.7rem', fontWeight: 700, letterSpacing: '.05em', cursor: 'pointer' }}>
                                         BAYAR SEKARANG
                                     </div>
                                 </div>
@@ -300,7 +300,7 @@ export default function Welcome({ canLogin, popularProducts }) {
                 </header>
 
                 {/* ── TICKER ── */}
-                <div style={{ borderTop: '1px solid var(--border-s)', borderBottom: '1px solid var(--border-s)', padding: '13px 0', background: 'rgba(168,130,53,.04)' }}>
+                <div style={{ borderTop: '1px solid var(--border-s)', borderBottom: '1px solid var(--border-s)', padding: '13px 0', background: 'rgba(40,40,136,.04)' }}>
                     <div className="ticker-wrap">
                         <div className="ticker-inner">
                             {[...tickerItems, ...tickerItems, ...tickerItems, ...tickerItems].map((t, i) => (
@@ -332,7 +332,7 @@ export default function Welcome({ canLogin, popularProducts }) {
                                 <div key={product.id} className="pc">
                                     <div style={{ aspectRatio: '4/3', background: 'var(--bg-r)', position: 'relative', overflow: 'hidden' }}>
                                         {index < 3 && (
-                                            <div style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(255,253,248,.88)', backdropFilter: 'blur(8px)', border: '1px solid var(--border)', borderRadius: 100, padding: '3px 9px', fontSize: '.65rem', fontWeight: 700, color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: 4, zIndex: 2 }}>
+                                            <div style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(246,247,251,.88)', backdropFilter: 'blur(8px)', border: '1px solid var(--border)', borderRadius: 100, padding: '3px 9px', fontSize: '.65rem', fontWeight: 700, color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: 4, zIndex: 2 }}>
                                                     <svg width="9" height="9" fill="var(--gold)" viewBox="0 0 20 20">
                                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                                     </svg>
@@ -429,7 +429,7 @@ export default function Welcome({ canLogin, popularProducts }) {
 
                 {/* ── CTA ── */}
                 <section style={{ position: 'relative', overflow: 'hidden', padding: '110px 32px', textAlign: 'center', background: 'var(--bg-s)', borderTop: '1px solid var(--border-s)' }}>
-                    <div className="orb" style={{ width: 700, height: 700, background: 'radial-gradient(circle, rgba(168,130,53,.14) 0%, transparent 65%)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', zIndex: 0 }} />
+                    <div className="orb" style={{ width: 700, height: 700, background: 'radial-gradient(circle, rgba(40,40,136,.14) 0%, transparent 65%)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', zIndex: 0 }} />
                     <div style={{ position: 'relative', zIndex: 1, maxWidth: 680, margin: '0 auto' }}>
                         <div style={{ display: 'flex', justifyContent: 'center' }}><div className="lbl">Mulai Sekarang</div></div>
                         <h2 className="d" style={{ fontSize: 'clamp(2.4rem,5vw,4.8rem)', fontWeight: 600, lineHeight: 1.06, letterSpacing: '-.03em', marginBottom: 24 }}>
@@ -454,7 +454,7 @@ export default function Welcome({ canLogin, popularProducts }) {
                         <div className="ft-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 56, marginBottom: 52 }}>
                             <div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 18 }}>
-                                    <img src="/logo.jpeg" alt="Candaria" style={{ width: 28, height: 28, borderRadius: 7, objectFit: 'cover', border: '1px solid var(--border)' }} />
+                                    <img src="/img/logo-color.png" alt="Candaria" style={{ width: 28, height: 28, objectFit: 'contain' }} />
                                     <span className="d" style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text)' }}>Candaria</span>
                                 </div>
                                 <p style={{ color: 'var(--muted)', lineHeight: 1.7, fontSize: '.85rem', maxWidth: 280, marginBottom: 22 }}>
