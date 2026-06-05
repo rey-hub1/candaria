@@ -599,7 +599,7 @@ export default function Create({
                                     </div>
 
                                     {/* Denominations shortcuts */}
-                                    <div className="grid grid-cols-5 gap-1.5 mt-2">
+                                    <div className="grid grid-cols-6 gap-1.5 mt-2">
                                         <button
                                             type="button"
                                             onClick={() => setPaidAmount(0)}
@@ -637,11 +637,20 @@ export default function Create({
                                         <button
                                             type="button"
                                             onClick={() =>
-                                                addToPaidAmount(10000)
+                                                addToPaidAmount(20000)
                                             }
                                             className="py-1.5 text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold rounded-lg transition"
                                         >
-                                            10k
+                                            20k
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                addToPaidAmount(50000)
+                                            }
+                                            className="py-1.5 text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-bold rounded-lg transition"
+                                        >
+                                            50k
                                         </button>
 
                                         <button
@@ -649,7 +658,7 @@ export default function Create({
                                             onClick={() =>
                                                 adjustPaidAmount(500)
                                             }
-                                            className="col-span-5 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-extrabold rounded-lg transition flex items-center justify-center gap-1"
+                                            className="col-span-6 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-extrabold rounded-lg transition flex items-center justify-center gap-1"
                                         >
                                             <svg
                                                 className="w-3.5 h-3.5 text-slate-500"
@@ -671,7 +680,7 @@ export default function Create({
                                             onClick={() =>
                                                 adjustPaidAmount(-500)
                                             }
-                                            className="col-span-5 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-extrabold rounded-lg transition flex items-center justify-center gap-1"
+                                            className="col-span-6 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-extrabold rounded-lg transition flex items-center justify-center gap-1"
                                         >
                                             <svg
                                                 className="w-3.5 h-3.5 text-slate-500"
@@ -964,7 +973,7 @@ export default function Create({
                                     </div>
 
                                     {/* Quick Denominations Shortcuts on Mobile */}
-                                    <div className="grid grid-cols-5 gap-1.5 mt-2.5">
+                                    <div className="grid grid-cols-6 gap-1.5 mt-2.5">
                                         {/* Row 1 */}
                                         <button
                                             type="button"
@@ -1003,11 +1012,20 @@ export default function Create({
                                         <button
                                             type="button"
                                             onClick={() =>
-                                                addToPaidAmount(10000)
+                                                addToPaidAmount(20000)
                                             }
                                             className="py-1.5 text-xs bg-white border border-slate-200 text-slate-700 font-bold rounded-lg shadow-sm active:bg-slate-100 transition"
                                         >
-                                            10k
+                                            20k
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                addToPaidAmount(50000)
+                                            }
+                                            className="py-1.5 text-xs bg-white border border-slate-200 text-slate-700 font-bold rounded-lg shadow-sm active:bg-slate-100 transition"
+                                        >
+                                            50k
                                         </button>
 
                                         {/* Row 2 */}
@@ -1016,7 +1034,7 @@ export default function Create({
                                             onClick={() =>
                                                 adjustPaidAmount(500)
                                             }
-                                            className="col-span-2 py-1.5 text-xs bg-white border border-slate-200 text-slate-700 font-extrabold rounded-lg shadow-sm active:bg-slate-100 transition flex items-center justify-center gap-1"
+                                            className="col-span-3 py-1.5 text-xs bg-white border border-slate-200 text-slate-700 font-extrabold rounded-lg shadow-sm active:bg-slate-100 transition flex items-center justify-center gap-1"
                                         >
                                             <svg
                                                 className="w-3.5 h-3.5 text-slate-500"
