@@ -49,6 +49,10 @@ class HandleInertiaRequests extends Middleware
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
             ],
+            'settings' => [
+                'admin_whatsapp' => \App\Models\Setting::get('admin_whatsapp', '6281234567890'),
+                'keyboard_default_mode' => \App\Models\Setting::get('keyboard_default_mode', 'prefix'),
+            ],
         ];
     }
 }

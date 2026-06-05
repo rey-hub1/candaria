@@ -1,9 +1,11 @@
-import { Link, Head } from '@inertiajs/react';
+import { Link, Head, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 
 export default function Welcome({ canLogin, popularProducts }) {
     const [activeFaq, setActiveFaq] = useState(null);
     const [scrolled, setScrolled] = useState(false);
+    const waNumber = usePage().props.settings?.admin_whatsapp || '6281234567890';
+    const waLink = `https://wa.me/${waNumber}?text=Halo%20Admin%20Candaria`;
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 40);
@@ -223,7 +225,7 @@ export default function Welcome({ canLogin, popularProducts }) {
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                     </svg>
                                 </a>
-                                <a href="https://wa.me/6281234567890?text=Halo%20Admin%20Candaria" target="_blank" rel="noopener noreferrer" className="btn-o">
+                                <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn-o">
                                     <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.573-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.205.534 1.292.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.082 21.166c-1.488 0-2.915-.369-4.175-1.06l-4.636 1.218 1.242-4.516c-.768-1.289-1.172-2.784-1.172-4.331 0-4.908 3.993-8.899 8.906-8.899 4.912 0 8.904 3.991 8.904 8.899 0 4.907-3.992 8.899-8.904 8.899z"/>
                                     </svg>
@@ -437,7 +439,7 @@ export default function Welcome({ canLogin, popularProducts }) {
                         <p style={{ color: 'var(--muted)', fontSize: '1rem', lineHeight: 1.75, marginBottom: 44, maxWidth: 460, margin: '0 auto 44px' }}>
                             Tingkatkan efisiensi, transparansi, dan kemudahan manajemen kantin sekolah Anda.
                         </p>
-                        <a href="https://wa.me/6281234567890?text=Halo%20Admin%20Candaria" target="_blank" rel="noopener noreferrer" className="btn-g" style={{ fontSize: '.95rem', padding: '15px 36px' }}>
+                        <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn-g" style={{ fontSize: '.95rem', padding: '15px 36px' }}>
                             <svg width="19" height="19" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.573-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.205.534 1.292.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.082 21.166c-1.488 0-2.915-.369-4.175-1.06l-4.636 1.218 1.242-4.516c-.768-1.289-1.172-2.784-1.172-4.331 0-4.908 3.993-8.899 8.906-8.899 4.912 0 8.904 3.991 8.904 8.899 0 4.907-3.992 8.899-8.904 8.899z"/>
                             </svg>

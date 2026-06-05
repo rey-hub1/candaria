@@ -1,19 +1,18 @@
 <?php
 
-test('registration screen can be rendered', function () {
-    $response = $this->get('/register');
+// Registration is intentionally disabled — accounts are created by admin only.
 
-    $response->assertStatus(200);
+test('registration screen is not available', function () {
+    $this->get('/register')->assertStatus(404);
 });
 
-test('new users can register', function () {
-    $response = $this->post('/register', [
-        'name' => 'Test User',
-        'email' => 'test@example.com',
-        'password' => 'password',
+test('registration endpoint is not available', function () {
+    $this->post('/register', [
+        'name'                  => 'Test User',
+        'email'                 => 'test@example.com',
+        'password'              => 'password',
         'password_confirmation' => 'password',
-    ]);
+    ])->assertStatus(404);
 
-    $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $this->assertGuest();
 });

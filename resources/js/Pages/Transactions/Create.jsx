@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { Head, Link, useForm, router } from "@inertiajs/react";
+import { Head, Link, useForm, router, usePage } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ConfirmModal from "@/Components/ConfirmModal";
 import { useDialog } from "@/hooks/useDialog";
@@ -58,6 +58,8 @@ export default function Create({
     search = "",
     prefixes = [],
 }) {
+    const { props: { settings } } = usePage();
+    const keyboardDefaultMode = settings?.keyboard_default_mode || 'prefix';
     const { dialog, confirm: openConfirm, alert: openAlert, dialogConfirm, dialogClose } = useDialog();
     const [cart, setCart] = useState(() => {
         try {
@@ -1062,6 +1064,7 @@ export default function Create({
                     layout={activeInput === 'paidAmount' ? 'numeric' : 'default'}
                     inputValue={activeInput === 'search' ? localSearch : (paidAmount || "")}
                     prefixes={prefixes}
+                    defaultMode={keyboardDefaultMode}
                     onChange={(val) => {
                         if (activeInput === 'search') {
                             setLocalSearch(val);
@@ -1079,7 +1082,6 @@ export default function Create({
                             setTimeout(() => setActiveInput(null), 250);
                         }
                     }}
-                    prefixes={prefixes}
                 />
             )}
             <ConfirmModal {...dialog} onConfirm={dialogConfirm} onClose={dialogClose} />

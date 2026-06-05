@@ -2,17 +2,18 @@ import React, { useRef, useState, useEffect } from 'react';
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 
-export default function CustomKeyboard({ 
-    inputValue, 
-    onChange, 
+export default function CustomKeyboard({
+    inputValue,
+    onChange,
     layout = "default", // "default" or "numeric"
     onClose,
     onSubmit,
-    prefixes = []
+    prefixes = [],
+    defaultMode = "prefix", // "full" or "prefix"
 }) {
     const keyboard = useRef();
     const [isShift, setIsShift] = useState(false);
-    const [isFullMode, setIsFullMode] = useState(false);
+    const [isFullMode, setIsFullMode] = useState(defaultMode === "full");
 
     // Keep keyboard internal state synced with external value changes
     useEffect(() => {

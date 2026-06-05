@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Cashbook extends Model
 {
-    use \App\Traits\Filterable;
+    use HasFactory, \App\Traits\Filterable;
 
     protected $fillable = [
         'date',

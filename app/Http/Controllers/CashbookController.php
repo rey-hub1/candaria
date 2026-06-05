@@ -43,7 +43,7 @@ class CashbookController extends Controller
             $exportCurrentBalance = $exportTotalDebit - $exportTotalCredit;
 
             if ($request->input('export') === 'pdf') {
-                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.cashbooks_xlsx', compact('exportData', 'exportTotalDebit', 'exportTotalCredit', 'exportCurrentBalance'))
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.cashbooks_pdf', compact('exportData', 'exportTotalDebit', 'exportTotalCredit', 'exportCurrentBalance'))
                     ->setPaper('a4', 'portrait');
                 return $pdf->stream('laporan-buku-kas.pdf');
             }

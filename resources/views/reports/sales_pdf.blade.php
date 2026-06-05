@@ -4,280 +4,217 @@
     <meta charset="utf-8">
     <title>Laporan Penjualan Harian</title>
     <style>
-        @page {
-            margin: 1.5cm;
-        }
+        @page { margin: 1.8cm 1.5cm; }
         body {
-            font-family: sans-serif;
-            font-size: 10.5px;
-            line-height: 1.4;
-            color: #334155;
+            font-family: 'DejaVu Sans', sans-serif;
+            font-size: 10px;
+            line-height: 1.5;
+            color: #1e2d3d;
             margin: 0;
             padding: 0;
         }
-        /* Header style */
-        .report-header {
-            margin-bottom: 20px;
-            border-bottom: 1px solid #cbd5e1;
-            padding-bottom: 10px;
+
+        /* ─── HEADER ─── */
+        .header-wrap {
+            margin-bottom: 22px;
+            border-bottom: 2px solid #1b3a6b;
+            padding-bottom: 12px;
         }
-        .report-header table {
-            width: 100%;
-            border-collapse: collapse;
-            border: none;
-        }
-        .report-header td {
-            border: none;
-            padding: 0;
-        }
-        .brand-title {
-            font-size: 16px;
+        .header-table { width: 100%; border-collapse: collapse; }
+        .header-table td { border: none; padding: 0; vertical-align: top; }
+        .brand-name {
+            font-size: 19px;
             font-weight: bold;
-            color: #1e293b;
+            color: #1b3a6b;
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
-        .brand-subtitle {
-            font-size: 9px;
-            color: #64748b;
-            margin-top: 1px;
-        }
-        .report-title {
+        .brand-tagline { font-size: 8px; color: #8fa3b1; margin-top: 2px; letter-spacing: 0.4px; }
+        .doc-title {
             font-size: 12px;
             font-weight: bold;
-            color: #1e293b;
+            color: #1b3a6b;
             text-align: right;
             text-transform: uppercase;
+            letter-spacing: 0.4px;
         }
-        .report-period {
-            font-size: 9px;
-            color: #64748b;
-            text-align: right;
-            margin-top: 1px;
-        }
+        .doc-sub { font-size: 8px; color: #8fa3b1; text-align: right; margin-top: 3px; }
 
-        /* Summary Cards */
-        .summary-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            border: none;
-        }
-        .summary-table td {
-            border: none;
-            padding: 0 8px 0 0;
-            width: 33.33%;
-        }
-        .summary-table td:last-child {
-            padding-right: 0;
-        }
+        /* ─── SUMMARY CARDS ─── */
+        .cards-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .cards-table td { padding: 0 5px 0 0; width: 33.33%; border: none; vertical-align: top; }
+        .cards-table td:last-child { padding-right: 0; }
         .card {
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            padding: 10px;
-            background-color: #f8fafc;
+            border: 1px solid #dde1eb;
+            border-top: 3px solid #1b3a6b;
+            padding: 9px 11px;
+            background-color: #f9fafc;
         }
-        .card-label {
-            font-size: 8px;
+        .card.emerald { border-top-color: #0c6b3a; }
+        .card.ocean { border-top-color: #1565c0; }
+        .card-lbl {
+            font-size: 7px;
             font-weight: bold;
             text-transform: uppercase;
-            color: #64748b;
-            margin-bottom: 2px;
+            letter-spacing: 0.8px;
+            color: #8fa3b1;
+            margin-bottom: 4px;
         }
-        .card-value {
+        .card-val {
             font-size: 13px;
             font-weight: bold;
-            color: #0f172a;
+            color: #1e2d3d;
+            font-family: 'DejaVu Sans Mono', monospace;
         }
-        .card-desc {
-            font-size: 8px;
-            color: #64748b;
-            margin-top: 1px;
-        }
+        .card-note { font-size: 7px; color: #b0bec5; margin-top: 3px; }
 
-        /* Data Table */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+        /* ─── TABLE ─── */
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .data-table thead tr { background-color: #1b3a6b; }
         .data-table th {
-            background-color: #f1f5f9;
-            color: #1e293b;
+            color: #ffffff;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 8.5px;
+            font-size: 7.5px;
+            letter-spacing: 0.4px;
+            padding: 7px 8px;
+            border: none;
+        }
+        .data-table tbody td {
             padding: 6px 8px;
-            border: 1px solid #cbd5e1;
+            border-bottom: 1px solid #e8edf3;
+            font-size: 9.5px;
         }
-        .data-table td {
-            padding: 6px 8px;
-            border: 1px solid #e2e8f0;
-        }
-        .data-table tr:nth-child(even) {
-            background-color: #f8fafc;
-        }
-        .data-table tr.total-row {
-            background-color: #f1f5f9 !important;
+        .data-table tbody tr:nth-child(even) td { background-color: #f4f7fb; }
+        .total-row td {
+            background-color: #1b3a6b !important;
+            color: #ffffff !important;
             font-weight: bold;
-        }
-        .data-table tr.total-row td {
-            border-top: 1.5px solid #94a3b8;
-            border-bottom: 1.5px solid #94a3b8;
-            font-weight: bold;
-            color: #0f172a;
-        }
-        .text-right {
-            text-align: right;
-        }
-        .text-center {
-            text-align: center;
-        }
-        .font-mono {
-            font-family: 'Courier New', Courier, monospace;
+            font-size: 9.5px;
+            padding: 7px 8px;
+            border: none !important;
         }
 
-        /* Footer / Signatures */
-        .footer-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 30px;
-            border: none;
-        }
-        .footer-table td {
-            border: none;
-            padding: 0;
-            width: 50%;
-            vertical-align: top;
-        }
-        .signature-section {
-            text-align: right;
-            padding-right: 10px;
-        }
-        .signature-title {
-            margin-bottom: 45px;
-            color: #475569;
-        }
-        .signature-line {
+        .r { text-align: right; }
+        .c { text-align: center; }
+        .mn { font-family: 'DejaVu Sans Mono', monospace; }
+
+        /* ─── FOOTER ─── */
+        .footer-wrap { margin-top: 28px; border-top: 1px solid #dde1eb; padding-top: 12px; }
+        .footer-table { width: 100%; border-collapse: collapse; }
+        .footer-table td { border: none; padding: 0; width: 50%; vertical-align: top; }
+        .print-info { font-size: 7.5px; color: #b0bec5; padding-top: 2px; }
+        .sig-area { text-align: right; }
+        .sig-date { font-size: 9px; color: #4a5568; margin-bottom: 38px; }
+        .sig-line {
             font-weight: bold;
-            text-decoration: underline;
-            color: #0f172a;
+            color: #1e2d3d;
+            border-top: 1px solid #718096;
+            padding-top: 3px;
+            font-size: 9px;
         }
-        .signature-role {
-            font-size: 8.5px;
-            color: #64748b;
-            margin-top: 2px;
-        }
-        .print-info {
-            font-size: 8px;
-            color: #94a3b8;
-            margin-top: 35px;
-        }
+        .sig-role { font-size: 7.5px; color: #8fa3b1; margin-top: 2px; }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div class="report-header">
-        <table>
-            <tr>
-                <td>
-                    <div class="brand-title">Kantin Smekda</div>
-                    <div class="brand-subtitle">Laporan Keuangan Sekolah</div>
-                </td>
-                <td>
-                    <div class="report-title">Laporan Penjualan Harian</div>
-                    <div class="report-period">
-                        Periode: {{ \Carbon\Carbon::parse($startDate)->format('d M Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- Summary Cards -->
-    <table class="summary-table">
+<div class="header-wrap">
+    <table class="header-table">
         <tr>
             <td>
-                <div class="card">
-                    <div class="card-label">Total Omset</div>
-                    <div class="card-value">Rp{{ number_format($grandTotalSales, 0, ',', '.') }}</div>
-                    <div class="card-desc">Kotor keseluruhan transaksi</div>
-                </div>
+                <div class="brand-name">Kantin Smekda</div>
+                <div class="brand-tagline">Laporan Keuangan Sekolah</div>
             </td>
             <td>
-                <div class="card">
-                    <div class="card-label">Profit Kantin</div>
-                    <div class="card-value">Rp{{ number_format($grandTotalProfitKantin, 0, ',', '.') }}</div>
-                    <div class="card-desc">Laba bersih kas kantin</div>
-                </div>
-            </td>
-            <td>
-                <div class="card">
-                    <div class="card-label">Uang Penitip (Siswa)</div>
-                    <div class="card-value">Rp{{ number_format($grandTotalProfitSeller, 0, ',', '.') }}</div>
-                    <div class="card-desc">Bagi hasil untuk siswa</div>
+                <div class="doc-title">Laporan Penjualan Harian</div>
+                <div class="doc-sub">
+                    Periode: {{ \Carbon\Carbon::parse($startDate)->format('d M Y') }} &mdash; {{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}
                 </div>
             </td>
         </tr>
     </table>
+</div>
 
-    <!-- Data Table -->
-    <table class="data-table">
-        <thead>
+<table class="cards-table">
+    <tr>
+        <td>
+            <div class="card">
+                <div class="card-lbl">Total Omset</div>
+                <div class="card-val">Rp{{ number_format($grandTotalSales, 0, ',', '.') }}</div>
+                <div class="card-note">Kotor keseluruhan transaksi</div>
+            </div>
+        </td>
+        <td>
+            <div class="card emerald">
+                <div class="card-lbl">Profit Kantin</div>
+                <div class="card-val">Rp{{ number_format($grandTotalProfitKantin, 0, ',', '.') }}</div>
+                <div class="card-note">Laba bersih kas kantin</div>
+            </div>
+        </td>
+        <td>
+            <div class="card ocean">
+                <div class="card-lbl">Uang Penitip Siswa</div>
+                <div class="card-val">Rp{{ number_format($grandTotalProfitSeller, 0, ',', '.') }}</div>
+                <div class="card-note">Bagi hasil untuk siswa</div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th class="c" style="width:5%;">No</th>
+            <th style="width:28%;">Tanggal</th>
+            <th class="c" style="width:15%;">Transaksi</th>
+            <th class="r" style="width:18%;">Total Omset</th>
+            <th class="r" style="width:17%;">Profit Kantin</th>
+            <th class="r" style="width:17%;">Uang Siswa</th>
+        </tr>
+    </thead>
+    <tbody>
+        @forelse($salesData as $index => $data)
             <tr>
-                <th class="text-center" style="width: 5%;">No</th>
-                <th style="width: 25%;">Tanggal</th>
-                <th class="text-center" style="width: 15%;">Transaksi</th>
-                <th class="text-right" style="width: 18%;">Total Omset</th>
-                <th class="text-right" style="width: 18%;">Profit Kantin</th>
-                <th class="text-right" style="width: 19%;">Uang Siswa</th>
+                <td class="c mn">{{ $index + 1 }}</td>
+                <td>{{ \Carbon\Carbon::parse($data->date)->format('d M Y') }}</td>
+                <td class="c mn">{{ $data->transaction_count }}</td>
+                <td class="r mn">Rp{{ number_format($data->total_sales, 0, ',', '.') }}</td>
+                <td class="r mn">Rp{{ number_format($data->profit_kantin, 0, ',', '.') }}</td>
+                <td class="r mn">Rp{{ number_format($data->profit_seller, 0, ',', '.') }}</td>
             </tr>
-        </thead>
-        <tbody>
-            @forelse($salesData as $index => $data)
-                <tr>
-                    <td class="text-center font-mono">{{ $index + 1 }}</td>
-                    <td>{{ \Carbon\Carbon::parse($data->date)->format('d M Y') }}</td>
-                    <td class="text-center font-mono">{{ $data->transaction_count }}</td>
-                    <td class="text-right font-mono">Rp{{ number_format($data->total_sales, 0, ',', '.') }}</td>
-                    <td class="text-right font-mono">Rp{{ number_format($data->profit_kantin, 0, ',', '.') }}</td>
-                    <td class="text-right font-mono">Rp{{ number_format($data->profit_seller, 0, ',', '.') }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="6" class="text-center" style="color: #64748b; padding: 20px;">Tidak ada data penjualan pada rentang tanggal tersebut.</td>
-                </tr>
-            @endforelse
+        @empty
+            <tr>
+                <td colspan="6" class="c" style="color:#b0bec5; padding:20px; font-style:italic;">
+                    Tidak ada data penjualan pada rentang tanggal tersebut.
+                </td>
+            </tr>
+        @endforelse
+        @if(!$salesData->isEmpty())
+            <tr class="total-row">
+                <td colspan="2" class="c">TOTAL KESELURUHAN</td>
+                <td class="c mn">{{ $salesData->sum('transaction_count') }}</td>
+                <td class="r mn">Rp{{ number_format($grandTotalSales, 0, ',', '.') }}</td>
+                <td class="r mn">Rp{{ number_format($grandTotalProfitKantin, 0, ',', '.') }}</td>
+                <td class="r mn">Rp{{ number_format($grandTotalProfitSeller, 0, ',', '.') }}</td>
+            </tr>
+        @endif
+    </tbody>
+</table>
 
-            @if(!$salesData->isEmpty())
-                <tr class="total-row">
-                    <td colspan="2" class="text-center">TOTAL</td>
-                    <td class="text-center font-mono">{{ $salesData->sum('transaction_count') }}</td>
-                    <td class="text-right font-mono">Rp{{ number_format($grandTotalSales, 0, ',', '.') }}</td>
-                    <td class="text-right font-mono">Rp{{ number_format($grandTotalProfitKantin, 0, ',', '.') }}</td>
-                    <td class="text-right font-mono">Rp{{ number_format($grandTotalProfitSeller, 0, ',', '.') }}</td>
-                </tr>
-            @endif
-        </tbody>
-    </table>
-
-    <!-- Footer Signatures -->
+<div class="footer-wrap">
     <table class="footer-table">
         <tr>
+            <td><div class="print-info">Dicetak: {{ \Carbon\Carbon::now()->format('d M Y, H:i:s') }} WIB</div></td>
             <td>
-                <div class="print-info">
-                    Dicetak pada: {{ \Carbon\Carbon::now()->format('d M Y H:i:s') }}
-                </div>
-            </td>
-            <td>
-                <div class="signature-section">
-                    <div class="signature-title">Sidoarjo, {{ \Carbon\Carbon::now()->format('d M Y') }}</div>
-                    <div class="signature-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-                    <div class="signature-role">Pengelola Kantin Smekda</div>
+                <div class="sig-area">
+                    <div class="sig-date">Sidoarjo, {{ \Carbon\Carbon::now()->format('d M Y') }}</div>
+                    <div class="sig-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                    <div class="sig-role">Pengelola Kantin Smekda</div>
                 </div>
             </td>
         </tr>
     </table>
+</div>
 
 </body>
 </html>

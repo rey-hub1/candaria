@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sed -n '745,760p' /Users/reynonawfal/Documents/WEB/project/candaria/resources/js/Pages/Transactions/Create.jsx)",
+      "Bash(sed -n '1099,1110p' /Users/reynonawfal/Documents/WEB/project/candaria/resources/js/Pages/Transactions/Create.jsx)",
+      "Bash(sed -n '748,752p' /Users/reynonawfal/Documents/WEB/project/candaria/resources/js/Pages/Transactions/Create.jsx)",
+      "Bash(sed -n '1102,1106p' /Users/reynonawfal/Documents/WEB/project/candaria/resources/js/Pages/Transactions/Create.jsx)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(php artisan *)",
+      "Bash(php --version)",
+      "Bash(sed -n '1,20p' resources/js/Pages/Welcome.jsx)",
+      "Bash(sed -n '1,20p' resources/js/Pages/Dashboard.jsx)",
+      "Bash(npm run *)",
+      "Bash(git stash *)",
+      "Bash(identify /Users/reynonawfal/Documents/WEB/project/candaria/public/icon-192x192.png /Users/reynonawfal/Documents/WEB/project/candaria/public/icon-512x512.png)",
+      "Bash(sips -s format png icon-192x192.png --out icon-192x192.png)",
+      "Bash(sips -s format png -z 512 512 icon-512x512.png --out icon-512x512.png)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8000)",
+      "Bash(npx --yes playwright --version)",
+      "Bash(curl -s http://localhost:8000)",
+      "Read(//private/tmp/**)",
+      "Bash(npm install *)",
+      "Bash(npx playwright *)",
+      "Bash(node /tmp/pwa-check.js)"
+    ]
+  }
+}

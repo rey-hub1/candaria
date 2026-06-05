@@ -58,7 +58,7 @@ class ReportController extends Controller
         $grandTotalProfitSeller = $salesData->sum('profit_seller');
 
         if ($request->input('export') === 'pdf') {
-            $pdf = Pdf::loadView('reports.sales_xlsx', compact(
+            $pdf = Pdf::loadView('reports.sales_pdf', compact(
                 'salesData', 
                 'startDate', 
                 'endDate',
@@ -127,7 +127,7 @@ class ReportController extends Controller
             ->first();
 
         if ($request->input('export') === 'pdf') {
-            $pdf = Pdf::loadView('reports.titipan_xlsx', compact(
+            $pdf = Pdf::loadView('reports.titipan_pdf', compact(
                 'items', 
                 'startDate', 
                 'endDate', 
@@ -185,7 +185,7 @@ class ReportController extends Controller
             ->values();
 
         if ($request->input('export') === 'pdf') {
-            $pdf = Pdf::loadView('reports.products_xlsx', compact('topProductsKantin', 'topProductsSiswa', 'lowStockProductsKantin', 'lowStockProductsSiswa'))
+            $pdf = Pdf::loadView('reports.products_pdf', compact('topProductsKantin', 'topProductsSiswa', 'lowStockProductsKantin', 'lowStockProductsSiswa'))
                 ->setPaper('a4', 'portrait');
             return $pdf->stream('laporan-produk-terlaris-dan-stok.pdf');
         }
@@ -270,7 +270,7 @@ class ReportController extends Controller
         }
 
         if ($request->input('export') === 'pdf') {
-            $pdf = Pdf::loadView('reports.stock_xlsx', compact('reportData', 'date'))
+            $pdf = Pdf::loadView('reports.stock_pdf', compact('reportData', 'date'))
                 ->setPaper('a4', 'landscape'); // Landscape to fit 10 columns
             return $pdf->stream('laporan-stok-harian-' . $date . '.pdf');
         }

@@ -11,6 +11,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MarginRuleController;
 use App\Http\Controllers\CashbookController;
+use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
 
 // Landing Page with Popular Products
@@ -83,6 +84,10 @@ Route::middleware(['auth'])->group(function () {
 
         // Margin Rules
         Route::resource('margin-rules', MarginRuleController::class)->except(['show']);
+
+        // Pengaturan (nomor WhatsApp admin, dll)
+        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
     });
 });
 

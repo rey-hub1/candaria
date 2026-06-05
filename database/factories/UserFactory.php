@@ -33,13 +33,28 @@ class UserFactory extends Factory
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
     public function unverified(): static
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(['role' => 'admin']);
+    }
+
+    public function cashier(): static
+    {
+        return $this->state(['role' => 'cashier']);
+    }
+
+    public function penitip(): static
+    {
+        return $this->state([
+            'role'  => 'penitip',
+            'phone' => '08' . fake()->unique()->numerify('#########'),
         ]);
     }
 }

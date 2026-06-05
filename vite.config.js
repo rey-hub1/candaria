@@ -6,9 +6,11 @@ export default defineConfig({
     build: {
         rollupOptions: {
             output: {
-                manualChunks: {
-                    vendor: ['react', 'react-dom', '@inertiajs/react'],
-                    charts: ['recharts'],
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        if (id.includes('recharts')) return 'charts';
+                        if (/[\\/](react|react-dom|@inertiajs[\\/]react)[\\/]/.test(id)) return 'vendor';
+                    }
                 },
             },
         },

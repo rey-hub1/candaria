@@ -4,236 +4,163 @@
     <meta charset="utf-8">
     <title>Laporan Stok Harian Produk</title>
     <style>
-        @page {
-            margin: 1.2cm;
-        }
+        @page { margin: 1.5cm 1.2cm; }
         body {
-            font-family: sans-serif;
-            font-size: 9px;
-            line-height: 1.4;
-            color: #334155;
+            font-family: 'DejaVu Sans', sans-serif;
+            font-size: 8.5px;
+            line-height: 1.5;
+            color: #1e2d3d;
             margin: 0;
             padding: 0;
         }
-        /* Header style */
-        .report-header {
-            margin-bottom: 20px;
-            border-bottom: 1px solid #cbd5e1;
-            padding-bottom: 10px;
-        }
-        .report-header table {
-            width: 100%;
-            border-collapse: collapse;
-            border: none;
-        }
-        .report-header td {
-            border: none;
-            padding: 0;
-        }
-        .brand-title {
-            font-size: 15px;
-            font-weight: bold;
-            color: #1e293b;
-            text-transform: uppercase;
-        }
-        .brand-subtitle {
-            font-size: 8px;
-            color: #64748b;
-            margin-top: 1px;
-        }
-        .report-title {
-            font-size: 11px;
-            font-weight: bold;
-            color: #1e293b;
-            text-align: right;
-            text-transform: uppercase;
-        }
-        .report-period {
-            font-size: 8px;
-            color: #64748b;
-            text-align: right;
-            margin-top: 1px;
-        }
 
-        /* Data Table */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+        /* ─── HEADER ─── */
+        .header-wrap { margin-bottom: 18px; border-bottom: 2px solid #1b3a6b; padding-bottom: 11px; }
+        .header-table { width: 100%; border-collapse: collapse; }
+        .header-table td { border: none; padding: 0; vertical-align: top; }
+        .brand-name { font-size: 17px; font-weight: bold; color: #1b3a6b; letter-spacing: 1px; text-transform: uppercase; }
+        .brand-tagline { font-size: 7.5px; color: #8fa3b1; margin-top: 2px; }
+        .doc-title { font-size: 11px; font-weight: bold; color: #1b3a6b; text-align: right; text-transform: uppercase; letter-spacing: 0.3px; }
+        .doc-sub { font-size: 7.5px; color: #8fa3b1; text-align: right; margin-top: 3px; }
+
+        /* ─── TABLE ─── */
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+        .data-table thead tr { background-color: #1b3a6b; }
         .data-table th {
-            background-color: #f1f5f9;
-            color: #1e293b;
+            color: #ffffff;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 7.5px;
-            padding: 5px 6px;
-            border: 1px solid #cbd5e1;
+            font-size: 6.5px;
+            letter-spacing: 0.3px;
+            padding: 6px 5px;
+            border: none;
         }
-        .data-table td {
-            padding: 5px 6px;
-            border: 1px solid #e2e8f0;
-        }
-        .data-table tr:nth-child(even) {
-            background-color: #f8fafc;
-        }
-        .data-table tr.total-row {
-            background-color: #f1f5f9 !important;
+        .data-table tbody td { padding: 5px 5px; border-bottom: 1px solid #e8edf3; font-size: 8px; }
+        .data-table tbody tr:nth-child(even) td { background-color: #f4f7fb; }
+        .total-row td {
+            background-color: #1b3a6b !important;
+            color: #ffffff !important;
             font-weight: bold;
-        }
-        .data-table tr.total-row td {
-            border-top: 1.5px solid #94a3b8;
-            border-bottom: 1.5px solid #94a3b8;
-            font-weight: bold;
-            color: #0f172a;
-        }
-        .text-right {
-            text-align: right;
-        }
-        .text-center {
-            text-align: center;
-        }
-        .font-mono {
-            font-family: 'Courier New', Courier, monospace;
+            font-size: 8px;
+            padding: 6px 5px;
+            border: none !important;
         }
 
-        /* Footer / Signatures */
-        .footer-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 25px;
-            border: none;
-        }
-        .footer-table td {
-            border: none;
-            padding: 0;
-            width: 50%;
-            vertical-align: top;
-        }
-        .signature-section {
-            text-align: right;
-            padding-right: 10px;
-        }
-        .signature-title {
-            margin-bottom: 45px;
-            color: #475569;
-        }
-        .signature-line {
-            font-weight: bold;
-            text-decoration: underline;
-            color: #0f172a;
-        }
-        .signature-role {
-            font-size: 8px;
-            color: #64748b;
-            margin-top: 2px;
-        }
-        .print-info {
-            font-size: 8px;
-            color: #94a3b8;
-            margin-top: 35px;
-        }
+        /* Stock level indicators */
+        .sisa { font-family: 'DejaVu Sans Mono', monospace; font-weight: bold; }
+        .sisa-zero { color: #b91c1c; }
+        .sisa-low  { color: #b45309; }
+        .sisa-ok   { color: #0c6b3a; }
+
+        .r { text-align: right; }
+        .c { text-align: center; }
+        .mn { font-family: 'DejaVu Sans Mono', monospace; }
+
+        /* ─── FOOTER ─── */
+        .footer-wrap { margin-top: 22px; border-top: 1px solid #dde1eb; padding-top: 11px; }
+        .footer-table { width: 100%; border-collapse: collapse; }
+        .footer-table td { border: none; padding: 0; width: 50%; vertical-align: top; }
+        .print-info { font-size: 7px; color: #b0bec5; padding-top: 2px; }
+        .sig-area { text-align: right; }
+        .sig-date { font-size: 8.5px; color: #4a5568; margin-bottom: 36px; }
+        .sig-line { font-weight: bold; color: #1e2d3d; border-top: 1px solid #718096; padding-top: 3px; font-size: 8.5px; }
+        .sig-role { font-size: 7px; color: #8fa3b1; margin-top: 2px; }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div class="report-header">
-        <table>
-            <tr>
-                <td>
-                    <div class="brand-title">Kantin Smekda</div>
-                    <div class="brand-subtitle">Laporan Keuangan & Inventaris Sekolah</div>
-                </td>
-                <td>
-                    <div class="report-title">Laporan Stok Harian Produk</div>
-                    <div class="report-period">
-                        Tanggal: {{ \Carbon\Carbon::parse($date)->format('d F Y') }}
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- Data Table -->
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th class="text-center" style="width: 3%;">No</th>
-                <th style="width: 20%;">Nama Produk</th>
-                <th class="text-center" style="width: 7%;">Stok Pagi</th>
-                <th class="text-center" style="width: 9%;">Tambahan Masuk</th>
-                <th class="text-center" style="width: 7%;">Total Stok</th>
-                <th class="text-center" style="width: 7%;">Sisa Stok</th>
-                <th style="width: 13%;">Pemilik</th>
-                <th class="text-center" style="width: 8%;">Jumlah Terjual</th>
-                <th class="text-right" style="width: 8%;">HPP</th>
-                <th class="text-right" style="width: 8%;">Harga Jual</th>
-                <th class="text-right" style="width: 10%;">Total Harga</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php
-                $grandTotalTerjual = 0;
-                $grandTotalRevenue = 0;
-            @endphp
-            @forelse($reportData as $index => $row)
-                @php
-                    $grandTotalTerjual += $row->qty_sold;
-                    $grandTotalRevenue += $row->total_harga;
-                @endphp
-                <tr>
-                    <td class="text-center font-mono">{{ $index + 1 }}</td>
-                    <td><strong>{{ $row->product->name }}</strong></td>
-                    <td class="text-center font-mono">{{ $row->stok_pagi }}</td>
-                    <td class="text-center font-mono">{{ $row->tambahan_stok }}</td>
-                    <td class="text-center font-mono">{{ $row->total_stok }}</td>
-                    <td class="text-center font-mono">{{ $row->sisa_stok }}</td>
-                    <td>{{ $row->pemilik }}</td>
-                    <td class="text-center font-mono">{{ $row->qty_sold }}</td>
-                    <td class="text-right font-mono">Rp{{ number_format($row->cost_price, 0, ',', '.') }}</td>
-                    <td class="text-right font-mono">Rp{{ number_format($row->selling_price, 0, ',', '.') }}</td>
-                    <td class="text-right font-mono">Rp{{ number_format($row->total_harga, 0, ',', '.') }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="11" class="text-center" style="color: #64748b; padding: 20px;">Tidak ada data produk.</td>
-                </tr>
-            @endforelse
-
-            @if(!empty($reportData))
-                <tr class="total-row">
-                    <td colspan="2" class="text-center">TOTAL</td>
-                    <td class="text-center font-mono">{{ collect($reportData)->sum('stok_pagi') }}</td>
-                    <td class="text-center font-mono">{{ collect($reportData)->sum('tambahan_stok') }}</td>
-                    <td class="text-center font-mono">{{ collect($reportData)->sum('total_stok') }}</td>
-                    <td class="text-center font-mono">{{ collect($reportData)->sum('sisa_stok') }}</td>
-                    <td>-</td>
-                    <td class="text-center font-mono">{{ $grandTotalTerjual }}</td>
-                    <td colspan="2" class="text-center">-</td>
-                    <td class="text-right font-mono">Rp{{ number_format($grandTotalRevenue, 0, ',', '.') }}</td>
-                </tr>
-            @endif
-        </tbody>
-    </table>
-
-    <!-- Footer Signatures -->
-    <table class="footer-table">
+<div class="header-wrap">
+    <table class="header-table">
         <tr>
             <td>
-                <div class="print-info">
-                    Dicetak pada: {{ \Carbon\Carbon::now()->format('d M Y H:i:s') }}
-                </div>
+                <div class="brand-name">Kantin Smekda</div>
+                <div class="brand-tagline">Laporan Keuangan &amp; Inventaris Sekolah</div>
             </td>
             <td>
-                <div class="signature-section">
-                    <div class="signature-title">Sidoarjo, {{ \Carbon\Carbon::now()->format('d F Y') }}</div>
-                    <div class="signature-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-                    <div class="signature-role">Pengelola Kantin Smekda</div>
+                <div class="doc-title">Laporan Stok Harian Produk</div>
+                <div class="doc-sub">Tanggal: {{ \Carbon\Carbon::parse($date)->format('d F Y') }}</div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th class="c" style="width:3%;">No</th>
+            <th style="width:18%;">Nama Produk</th>
+            <th class="c" style="width:7%;">Stok Pagi</th>
+            <th class="c" style="width:8%;">Tambahan</th>
+            <th class="c" style="width:7%;">Total Stok</th>
+            <th class="c" style="width:7%;">Sisa</th>
+            <th style="width:12%;">Pemilik</th>
+            <th class="c" style="width:7%;">Terjual</th>
+            <th class="r" style="width:9%;">HPP</th>
+            <th class="r" style="width:9%;">Harga Jual</th>
+            <th class="r" style="width:13%;">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php
+            $grandTotalTerjual = 0;
+            $grandTotalRevenue = 0;
+        @endphp
+        @forelse($reportData as $index => $row)
+            @php
+                $grandTotalTerjual += $row->qty_sold;
+                $grandTotalRevenue += $row->total_harga;
+                $sisaClass = $row->sisa_stok == 0 ? 'sisa-zero' : ($row->sisa_stok <= 3 ? 'sisa-low' : 'sisa-ok');
+            @endphp
+            <tr>
+                <td class="c mn">{{ $index + 1 }}</td>
+                <td><strong>{{ $row->product->name }}</strong></td>
+                <td class="c mn">{{ $row->stok_pagi }}</td>
+                <td class="c mn">{{ $row->tambahan_stok }}</td>
+                <td class="c mn">{{ $row->total_stok }}</td>
+                <td class="c"><span class="sisa {{ $sisaClass }}">{{ $row->sisa_stok }}</span></td>
+                <td style="font-size:7.5px;">{{ $row->pemilik }}</td>
+                <td class="c mn" style="font-weight:bold;">{{ $row->qty_sold }}</td>
+                <td class="r mn" style="font-size:7.5px;">Rp{{ number_format($row->cost_price, 0, ',', '.') }}</td>
+                <td class="r mn" style="font-size:7.5px;">Rp{{ number_format($row->selling_price, 0, ',', '.') }}</td>
+                <td class="r mn">Rp{{ number_format($row->total_harga, 0, ',', '.') }}</td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="11" class="c" style="color:#b0bec5; padding:20px; font-style:italic;">
+                    Tidak ada data produk.
+                </td>
+            </tr>
+        @endforelse
+        @if(!empty($reportData))
+            <tr class="total-row">
+                <td colspan="2" class="c">TOTAL</td>
+                <td class="c mn">{{ collect($reportData)->sum('stok_pagi') }}</td>
+                <td class="c mn">{{ collect($reportData)->sum('tambahan_stok') }}</td>
+                <td class="c mn">{{ collect($reportData)->sum('total_stok') }}</td>
+                <td class="c mn">{{ collect($reportData)->sum('sisa_stok') }}</td>
+                <td>&mdash;</td>
+                <td class="c mn">{{ $grandTotalTerjual }}</td>
+                <td colspan="2" class="c">&mdash;</td>
+                <td class="r mn">Rp{{ number_format($grandTotalRevenue, 0, ',', '.') }}</td>
+            </tr>
+        @endif
+    </tbody>
+</table>
+
+<div class="footer-wrap">
+    <table class="footer-table">
+        <tr>
+            <td><div class="print-info">Dicetak: {{ \Carbon\Carbon::now()->format('d M Y, H:i:s') }} WIB</div></td>
+            <td>
+                <div class="sig-area">
+                    <div class="sig-date">Sidoarjo, {{ \Carbon\Carbon::now()->format('d F Y') }}</div>
+                    <div class="sig-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                    <div class="sig-role">Pengelola Kantin Smekda</div>
                 </div>
             </td>
         </tr>
     </table>
+</div>
 
 </body>
 </html>
