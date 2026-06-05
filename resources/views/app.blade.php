@@ -17,6 +17,23 @@
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
         <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png">
 
+        <!-- SEO / Social Share (Open Graph + Twitter) -->
+        <meta name="description" content="Candaria - Sistem Informasi Manajemen Kantin Smekda">
+        <meta property="og:type" content="website">
+        <meta property="og:site_name" content="Candaria">
+        <meta property="og:title" content="Candaria - Kantin Smekda">
+        <meta property="og:description" content="Sistem Informasi Manajemen Kantin Smekda">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta property="og:image" content="{{ url('/og-image.png') }}">
+        <meta property="og:image:secure_url" content="{{ url('/og-image.png') }}">
+        <meta property="og:image:type" content="image/png">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:image:alt" content="Logo Candaria SPW Smekda">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="Candaria - Kantin Smekda">
+        <meta name="twitter:description" content="Sistem Informasi Manajemen Kantin Smekda">
+        <meta name="twitter:image" content="{{ url('/og-image.png') }}">
 
         <!-- Scripts & Styles -->
         @routes
