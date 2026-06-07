@@ -59,7 +59,7 @@ export function useDateFilter({ initialStart = '', initialEnd = '', initialPrese
                 start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
                 end   = new Date(today.getFullYear(), today.getMonth(), 0);
                 break;
-            // 'today' → start=end=today, already set
+            // 'today' -> start=end=today, already set
         }
 
         const s = toDateString(start);

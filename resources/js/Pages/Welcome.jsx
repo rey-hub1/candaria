@@ -1,11 +1,9 @@
-import { Link, Head, usePage } from '@inertiajs/react';
+import { Link, Head } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 
 export default function Welcome({ canLogin, popularProducts }) {
     const [activeFaq, setActiveFaq] = useState(null);
     const [scrolled, setScrolled] = useState(false);
-    const waNumber = usePage().props.settings?.admin_whatsapp || '6281234567890';
-    const waLink = `https://wa.me/${waNumber}?text=Halo%20Admin%20Candaria`;
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 40);
@@ -17,186 +15,183 @@ export default function Welcome({ canLogin, popularProducts }) {
         new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
 
     const faqs = [
-        { question: 'Apa itu Candaria?', answer: 'Candaria adalah platform Point of Sale modern yang dirancang khusus untuk memudahkan manajemen kantin sekolah dan mengelola sistem titipan siswa secara transparan.' },
-        { question: 'Bagaimana cara menitipkan makanan?', answer: 'Siswa atau pihak penitip dapat mendaftar melalui admin kantin, kemudian menyerahkan barang titipan. Sistem akan mencatat stok dan hasil penjualan secara otomatis.' },
-        { question: 'Apakah sistem ini bisa memantau stok secara real-time?', answer: 'Ya! Setiap transaksi yang terjadi akan langsung memperbarui data stok di dalam sistem, sehingga Anda bisa memantaunya kapan saja.' },
-        { question: 'Bagaimana sistem pembagian hasil (margin) bekerja?', answer: 'Sistem memungkinkan admin untuk mengatur persentase margin atau potongan tetap dari setiap produk titipan yang terjual, yang akan otomatis dihitung saat pembagian hasil.' },
+        { question: 'Jam berapa kantin buka?', answer: 'Candaria buka setiap hari sekolah mulai pukul 07.30 sampai 12.30. Jam istirahat adalah waktu paling ramai — datang lebih awal biar nggak kehabisan favorit kamu.' },
+        { question: 'Bisa pesan online dulu?', answer: 'Belum bisa, ya. Pemesanan hanya di tempat — datang langsung ke kantin, pilih menu di etalase, lalu bayar di kasir. Mampir pas awal istirahat biar nggak antri panjang.' },
+        { question: 'Bayarnya pakai apa?', answer: 'Tunai dan QRIS, keduanya kami terima. Kasir cepat, kembalian pas, struk jelas — tinggal makan tanpa ribet.' },
+        { question: 'Aku mau nitip jualan, gimana?', answer: 'Gampang. Datang langsung ke kantin dan ngobrol sama admin di tempat. Titip daganganmu, hasil penjualan dibagi transparan otomatis. Cocok buat kamu yang mau cari cuan dari jajanan buatan sendiri.' },
     ];
 
-    const features = [
-        { num: '01', title: 'Transaksi Cepat', desc: 'Proses kasir yang sangat responsif dan efisien untuk menghindari antrean panjang saat jam istirahat.' },
-        { num: '02', title: 'Sistem Titipan Aman', desc: 'Pencatatan barang titipan yang rapi dengan pembagian margin otomatis dan riwayat penjualan yang jelas.' },
-        { num: '03', title: 'Laporan Lengkap', desc: 'Pantau omzet, keuntungan, dan performa setiap produk dengan laporan komprehensif yang mudah dipahami.' },
+    const values = [
+        { num: '01', title: 'Selalu Fresh', desc: 'Masakan dibuat tiap hari, nggak nginep. Nasi masih ngepul, gorengan masih garing pas sampai tanganmu.' },
+        { num: '02', title: 'Harga Pelajar', desc: 'Dompet anak sekolah aman. Porsi mengenyangkan mulai ribuan rupiah — kenyang nggak harus mahal.' },
+        { num: '03', title: 'Antri Cepat', desc: 'Kasir kilat bikin antrean jam istirahat jalan terus. Pesan, bayar, balik ke kelas tepat waktu.' },
     ];
 
-    const tickerItems = ['Manajemen Kasir', 'Sistem Titipan', 'Laporan Real-Time', 'Stok Otomatis', 'Multi-Penitip', 'Ekspor Data'];
+    const tickerItems = ['Nasi Goreng', 'Mie Ayam', 'Bakso Kuah', 'Es Teh Manis', 'Gorengan Anget', 'Jus Segar', 'Pisang Goreng', 'Cireng'];
 
     return (
         <>
-            <Head title="Candaria — Sistem Kantin Modern">
+            <Head title="Candaria — Kantin Sekolah, Jajanan Favorit">
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-                <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+                <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
             </Head>
 
             <style>{`
                 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
                 :root {
-                    --gold: #282888;
-                    --gold-light: #4a4ac0;
-                    --gold-pale: rgba(40,40,136,0.10);
-                    --bg: #f6f7fb;
-                    --bg-s: #eceef7;
-                    --bg-r: #e1e3f2;
-                    --text: #16162e;
-                    --muted: #585874;
-                    --border: rgba(40,40,136,0.28);
-                    --border-s: rgba(20,20,50,0.10);
+                    --paper: #ffffff;
+                    --paper-2: #f4f4fb;
+                    --paper-3: #e9e9f5;
+                    --ink: #1b1a38;
+                    --ink-soft: #5a5982;
+                    --tomato: #2c2a9c;
+                    --tomato-d: #1d1c6e;
+                    --saffron: #ffd60a;
+                    --yellow: #ffd60a;
+                    --yellow-d: #d9af00;
+                    --leaf: #4543c8;
+                    --border: rgba(27,26,56,0.14);
+                    --border-s: rgba(27,26,56,0.09);
                 }
                 html { scroll-behavior: smooth; }
-                body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; -webkit-font-smoothing: antialiased; }
-                ::selection { background: rgba(40,40,136,0.20); color: var(--text); }
+                body { background: var(--paper); color: var(--ink); font-family: 'DM Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+                ::selection { background: rgba(44,42,156,0.22); color: var(--ink); }
                 ::-webkit-scrollbar { width: 4px; }
-                ::-webkit-scrollbar-track { background: var(--bg); }
-                ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+                ::-webkit-scrollbar-track { background: var(--paper); }
+                ::-webkit-scrollbar-thumb { background: var(--tomato); border-radius: 2px; }
 
-                .d { font-family: 'Cormorant Garamond', serif; }
+                .d { font-family: 'Fraunces', serif; }
 
                 /* grain */
                 .grain::after {
                     content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
-                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-                    opacity: 0.28; mix-blend-mode: multiply;
+                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+                    opacity: 0.4; mix-blend-mode: multiply;
                 }
 
                 /* animations */
                 @keyframes fadeUp { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
                 @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-                @keyframes floatA { 0%,100% { transform:translate(0,0) scale(1); } 40% { transform:translate(24px,-18px) scale(1.04); } 70% { transform:translate(-16px,10px) scale(0.96); } }
-                @keyframes floatB { 0%,100% { transform:translate(0,0) scale(1); } 35% { transform:translate(-20px,16px) scale(1.05); } 65% { transform:translate(18px,-12px) scale(0.97); } }
-                @keyframes rotateSlow { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
-                @keyframes shimmer { 0% { background-position:-200% center; } 100% { background-position:200% center; } }
+                @keyframes floatA { 0%,100% { transform:translate(0,0) rotate(-6deg); } 50% { transform:translate(0,-16px) rotate(-3deg); } }
+                @keyframes floatB { 0%,100% { transform:translate(0,0) rotate(8deg); } 50% { transform:translate(0,14px) rotate(5deg); } }
+                @keyframes spinPlate { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
                 @keyframes ticker { from { transform:translateX(0); } to { transform:translateX(-50%); } }
-                @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+                @keyframes steam { 0% { opacity:0; transform:translateY(0) scaleX(1); } 30% { opacity:.5; } 100% { opacity:0; transform:translateY(-26px) scaleX(1.6); } }
+                @keyframes wiggle { 0%,100% { transform:rotate(-2.5deg); } 50% { transform:rotate(2.5deg); } }
 
                 .fu { animation: fadeUp 0.85s cubic-bezier(0.22,1,0.36,1) both; }
                 .fi { animation: fadeIn 1s ease both; }
                 .d1 { animation-delay:.1s; } .d2 { animation-delay:.22s; } .d3 { animation-delay:.36s; }
-                .d4 { animation-delay:.5s; } .d5 { animation-delay:.65s; } .d6 { animation-delay:.8s; }
+                .d4 { animation-delay:.5s; } .d5 { animation-delay:.6s; } .d6 { animation-delay:.8s; }
 
-                .orb { position:absolute; border-radius:50%; filter:blur(90px); pointer-events:none; }
-                .fa { animation: floatA 14s ease-in-out infinite; }
-                .fb { animation: floatB 18s ease-in-out infinite; }
-                .rs { animation: rotateSlow 28s linear infinite; }
+                .ink-em { color: var(--tomato); font-style: italic; }
+                .saffron-em { color: var(--saffron); font-style: italic; }
 
-                .gold-text {
-                    background: linear-gradient(135deg, #3a3aa8 0%, #282888 45%, #20206b 100%);
-                    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-                }
-                .shimmer {
-                    background: linear-gradient(90deg, #282888 0%, #5a5acc 35%, #282888 55%, #20206b 100%);
-                    background-size: 200% auto;
-                    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-                    animation: shimmer 4s linear infinite;
-                }
-                .hr { border:none; height:1px; background: linear-gradient(90deg, transparent 0%, var(--gold) 40%, var(--gold-light) 50%, var(--gold) 60%, transparent 100%); opacity:.3; }
+                .hr { border:none; height:1px; background: repeating-linear-gradient(90deg, var(--border) 0 8px, transparent 8px 16px); opacity:.8; }
 
                 /* navbar */
                 .nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:20px 0; transition:all .4s ease; }
-                .nav.sc { background:rgba(246,247,251,0.85); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:14px 0; border-bottom:1px solid var(--border-s); }
-                .nav-link { color:var(--muted); font-size:.875rem; font-weight:500; text-decoration:none; transition:color .2s; }
-                .nav-link:hover { color:var(--text); }
+                .nav.sc { background:rgba(255,255,255,0.86); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); padding:13px 0; border-bottom:1px solid var(--border-s); }
+                .nav-link { color:var(--ink-soft); font-size:.875rem; font-weight:500; text-decoration:none; transition:color .2s; }
+                .nav-link:hover { color:var(--tomato); }
 
                 /* buttons */
                 .btn-g {
                     display:inline-flex; align-items:center; gap:9px;
-                    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 55%, #20206b 100%);
-                    color:#ffffff; font-weight:600; font-family:'DM Sans',sans-serif;
-                    border-radius:100px; padding:13px 28px; font-size:.9rem; letter-spacing:.01em;
-                    transition:all .3s ease; text-decoration:none; border:none; cursor:pointer;
+                    background: var(--yellow);
+                    color:var(--ink); font-weight:700; font-family:'DM Sans',sans-serif;
+                    border-radius:100px; padding:13px 28px; font-size:.92rem; letter-spacing:.01em;
+                    transition:all .25s ease; text-decoration:none; border:none; cursor:pointer;
+                    box-shadow:0 6px 0 0 var(--yellow-d);
                 }
-                .btn-g:hover { box-shadow:0 8px 32px rgba(40,40,136,0.45); transform:translateY(-2px); filter:brightness(1.08); }
+                .btn-g:hover { transform:translateY(2px); box-shadow:0 3px 0 0 var(--yellow-d); background:#ffe04d; }
+                .btn-g:active { transform:translateY(6px); box-shadow:0 0 0 0 var(--yellow-d); }
                 .btn-o {
                     display:inline-flex; align-items:center; gap:9px;
-                    background:transparent; color:var(--text); font-weight:500;
+                    background:transparent; color:var(--ink); font-weight:600;
                     font-family:'DM Sans',sans-serif; border-radius:100px; padding:12px 24px;
-                    font-size:.9rem; border:1px solid var(--border-s); transition:all .3s ease;
+                    font-size:.92rem; border:1.5px solid var(--ink); transition:all .25s ease;
                     text-decoration:none; cursor:pointer;
                 }
-                .btn-o:hover { border-color:var(--gold); color:var(--gold-light); background:var(--gold-pale); }
+                .btn-o:hover { background:var(--ink); color:var(--paper); }
 
                 /* section label */
                 .lbl {
                     display:inline-flex; align-items:center; gap:8px;
-                    font-size:.72rem; font-weight:500; letter-spacing:.12em;
-                    text-transform:uppercase; color:var(--gold); margin-bottom:20px;
+                    font-size:.72rem; font-weight:600; letter-spacing:.14em;
+                    text-transform:uppercase; color:var(--tomato); margin-bottom:20px;
                 }
-                .lbl::before { content:''; display:block; width:22px; height:1px; background:var(--gold); }
+                .lbl::before { content:'●'; font-size:.6rem; line-height:1; }
 
-                /* product card */
-                .pc { background:var(--bg-s); border:1px solid var(--border-s); border-radius:16px; overflow:hidden; transition:all .5s cubic-bezier(.4,0,.2,1); position:relative; }
-                .pc::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(40,40,136,.07) 0%,transparent 60%); opacity:0; transition:opacity .4s; z-index:1; }
-                .pc:hover { border-color:var(--border); transform:translateY(-6px); box-shadow:0 20px 50px rgba(20,20,50,.14), 0 0 30px rgba(40,40,136,.12); }
-                .pc:hover::before { opacity:1; }
+                /* menu card */
+                .pc { background:var(--paper); border:1.5px solid var(--ink); border-radius:18px; overflow:hidden; transition:all .35s cubic-bezier(.4,0,.2,1); position:relative; box-shadow:5px 5px 0 0 rgba(27,26,56,.16); }
+                .pc:hover { transform:translate(-3px,-3px); box-shadow:9px 9px 0 0 var(--yellow); border-color:var(--tomato); }
 
-                /* feature row */
-                .feat { border-top:1px solid var(--border-s); padding:40px 0; transition:border-color .3s; cursor:default; }
-                .feat:hover { border-color:var(--border); }
-                .feat-n { font-family:'Cormorant Garamond',serif; font-size:3.5rem; font-weight:700; color:rgba(90,90,204,.28); line-height:1; transition:color .35s; min-width:76px; }
-                .feat:hover .feat-n { color:rgba(120,120,220,.7); }
+                /* value row */
+                .feat { border-top:1.5px solid var(--border); padding:40px 0; transition:all .3s; cursor:default; }
+                .feat:hover { border-color:var(--tomato); padding-left:14px; }
+                .feat-n { font-family:'Fraunces',serif; font-size:3.4rem; font-weight:600; font-style:italic; color:var(--paper-3); line-height:1; transition:color .35s; min-width:84px; }
+                .feat:hover .feat-n { color:var(--tomato); }
 
                 /* faq */
-                .faq-i { border-bottom:1px solid var(--border-s); }
-                .faq-btn { width:100%; background:none; border:none; color:var(--text); cursor:pointer; padding:26px 0; display:flex; align-items:center; justify-content:space-between; gap:24px; text-align:left; transition:color .2s; }
-                .faq-btn:hover, .faq-btn.on { color:var(--gold-light); }
-                .faq-ico { width:20px; height:20px; color:var(--gold); flex-shrink:0; transition:transform .35s cubic-bezier(.4,0,.2,1); }
-                .faq-ico.open { transform:rotate(180deg); }
+                .faq-i { border-bottom:1.5px solid var(--border); }
+                .faq-btn { width:100%; background:none; border:none; color:var(--ink); cursor:pointer; padding:26px 0; display:flex; align-items:center; justify-content:space-between; gap:24px; text-align:left; transition:color .2s; }
+                .faq-btn:hover, .faq-btn.on { color:var(--tomato); }
+                .faq-ico { width:26px; height:26px; flex-shrink:0; transition:transform .35s cubic-bezier(.4,0,.2,1); color:var(--tomato); }
+                .faq-ico.open { transform:rotate(45deg); }
                 .faq-body { overflow:hidden; transition:max-height .4s cubic-bezier(.4,0,.2,1), opacity .3s; }
 
                 /* ticker */
                 .ticker-wrap { overflow:hidden; white-space:nowrap; }
-                .ticker-inner { display:inline-flex; gap:56px; animation:ticker 28s linear infinite; }
+                .ticker-inner { display:inline-flex; gap:0; animation:ticker 30s linear infinite; }
+                .tick { font-family:'Fraunces',serif; font-style:italic; font-size:1.5rem; font-weight:500; padding:0 30px; display:inline-flex; align-items:center; gap:30px; }
 
                 /* social */
-                .soc { width:34px; height:34px; border-radius:50%; border:1px solid var(--border-s); display:flex; align-items:center; justify-content:center; color:var(--muted); transition:all .3s; text-decoration:none; }
-                .soc:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-pale); }
+                .soc { width:36px; height:36px; border-radius:50%; border:1.5px solid var(--ink); display:flex; align-items:center; justify-content:center; color:var(--ink); transition:all .25s; text-decoration:none; }
+                .soc:hover { background:var(--tomato); border-color:var(--tomato); color:#ffffff; transform:translateY(-2px); }
 
-                /* pos mock */
-                .pos { background:#ffffff; border:1px solid var(--border); border-radius:18px; padding:18px; box-shadow:0 40px 90px rgba(20,20,50,.18), 0 0 70px rgba(40,40,136,.10); }
-                .pos-item { background:var(--bg-r); border-radius:9px; padding:11px 9px; border:1px solid var(--border-s); cursor:pointer; transition:all .25s; }
-                .pos-item:hover { border-color:var(--border); }
+                /* hero plate */
+                .plate-ring { position:absolute; border-radius:50%; }
+                .food-chip {
+                    position:absolute; background:var(--paper); border:1.5px solid var(--ink);
+                    border-radius:14px; padding:11px 16px; box-shadow:4px 4px 0 0 rgba(27,26,56,.18);
+                    display:flex; align-items:center; gap:10px; white-space:nowrap;
+                }
+                .steam { position:absolute; width:6px; height:24px; border-radius:3px; background:rgba(255,255,255,.7); filter:blur(2px); }
 
                 /* responsive */
-                @media (max-width: 900px) {
-                    .hero-grid { grid-template-columns: 1fr !important; }
-                    .hero-right { display: none !important; }
+                @media (max-width: 920px) {
+                    .hero-grid { grid-template-columns: 1fr !important; gap:48px !important; }
+                    .hero-right { display:none !important; }
                     .feat-grid { grid-template-columns: 1fr !important; }
-                    .feat-left { margin-bottom: 0 !important; }
-                    .ft-grid { grid-template-columns: 1fr 1fr !important; gap: 40px !important; }
+                    .feat-left { position:static !important; margin-bottom:0 !important; }
+                    .ft-grid { grid-template-columns: 1fr 1fr !important; gap:40px !important; }
                 }
                 @media (max-width: 600px) {
-                    .nav-links { display: none !important; }
+                    .nav-links { display:none !important; }
                     .ft-grid { grid-template-columns: 1fr !important; }
-                    .hero-stats { gap: 24px !important; }
+                    .hero-stats { gap:24px !important; }
                 }
             `}</style>
 
-            <div className="grain" style={{ minHeight: '100vh', background: '#f6f7fb', position: 'relative' }}>
+            <div className="grain" style={{ minHeight: '100vh', background: 'var(--paper)', position: 'relative' }}>
 
                 {/* ── NAV ── */}
                 <nav className={`nav ${scrolled ? 'sc' : ''}`}>
                     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <img src="/img/logo-color.png" alt="Candaria" style={{ width: 32, height: 32, objectFit: 'contain', flexShrink: 0 }} />
-                            <span className="d" style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--text)', letterSpacing: '-.01em' }}>Candaria</span>
+                            <img src="/img/logo-color.png" alt="Candaria" style={{ width: 34, height: 34, objectFit: 'contain', flexShrink: 0 }} />
+                            <span className="d" style={{ fontSize: '1.32rem', fontWeight: 600, color: 'var(--ink)', letterSpacing: '-.01em' }}>Candaria</span>
                         </Link>
                         <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-                            <a href="#features" className="nav-link">Fitur</a>
-                            <a href="#products" className="nav-link">Produk</a>
+                            <a href="#menu" className="nav-link">Menu</a>
+                            <a href="#kenapa" className="nav-link">Kenapa Kami</a>
                             <a href="#faq" className="nav-link">FAQ</a>
+                            <Link href={route('menu')} className="btn-g" style={{ padding: '9px 20px', fontSize: '.85rem' }}>Semua Menu</Link>
                             {canLogin
-                                ? <Link href={route('dashboard')} className="btn-g" style={{ padding: '9px 20px', fontSize: '.85rem' }}>Dashboard →</Link>
-                                : <Link href={route('login')} className="btn-g" style={{ padding: '9px 20px', fontSize: '.85rem' }}>Masuk →</Link>
+                                ? <Link href={route('dashboard')} className="nav-link" style={{ opacity: .7 }}>Dashboard</Link>
+                                : <Link href={route('login')} className="nav-link" style={{ opacity: .7 }}>Masuk Staff</Link>
                             }
                         </div>
                     </div>
@@ -204,95 +199,80 @@ export default function Welcome({ canLogin, popularProducts }) {
 
                 {/* ── HERO ── */}
                 <header style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden', paddingTop: 80 }}>
-                    <div className="orb fa" style={{ width: 560, height: 560, background: 'radial-gradient(circle, rgba(40,40,136,.13) 0%, transparent 70%)', top: '-8%', left: '-8%' }} />
-                    <div className="orb fb" style={{ width: 440, height: 440, background: 'radial-gradient(circle, rgba(40,40,136,.08) 0%, transparent 70%)', bottom: '0', right: '-4%' }} />
-
-                    <div className="hero-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '60px 32px', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+                    <div className="hero-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '60px 32px', width: '100%', display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 70, alignItems: 'center' }}>
                         {/* Left */}
                         <div>
-                            <div className="lbl fu">Sistem Kantin #1</div>
-                            <h1 className="d fu d1" style={{ fontSize: 'clamp(2.8rem, 5vw, 5.2rem)', fontWeight: 600, lineHeight: 1.05, letterSpacing: '-.025em', marginBottom: 24 }}>
-                                Kantin Anda,<br />
-                                <em className="gold-text" style={{ fontStyle: 'italic' }}>Lebih Pintar.</em>
+                            <div className="lbl fu">Kantin Sekolah · Buka 07.30–12.30</div>
+                            <h1 className="d fu d1" style={{ fontSize: 'clamp(3rem, 6vw, 6rem)', fontWeight: 600, lineHeight: 0.98, letterSpacing: '-.03em', marginBottom: 26 }}>
+                                Lapar?<br />
+                                Mampir ke <span className="ink-em">Candaria.</span>
                             </h1>
-                            <p className="fu d2" style={{ fontSize: '1.05rem', color: 'var(--muted)', lineHeight: 1.75, marginBottom: 40, maxWidth: 460 }}>
-                                Platform Point of Sale modern untuk manajemen kantin sekolah — transaksi cepat, titipan transparan, laporan real-time.
+                            <p className="fu d2" style={{ fontSize: '1.12rem', color: 'var(--ink-soft)', lineHeight: 1.7, marginBottom: 38, maxWidth: 470 }}>
+                                Jajanan favorit anak sekolah — nasi goreng ngepul, mie ayam gurih, gorengan anget, sampai es segar. Datang langsung ke kantin, pilih di etalase, bayar di kasir.
                             </p>
                             <div className="fu d3" style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-                                <a href="#products" className="btn-g">
-                                    Jelajahi Produk
-                                    <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                <a href="#menu" className="btn-g">
+                                    Lihat Menu Favorit
+                                    <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                                     </svg>
                                 </a>
-                                <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn-o">
-                                    <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.573-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.205.534 1.292.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.082 21.166c-1.488 0-2.915-.369-4.175-1.06l-4.636 1.218 1.242-4.516c-.768-1.289-1.172-2.784-1.172-4.331 0-4.908 3.993-8.899 8.906-8.899 4.912 0 8.904 3.991 8.904 8.899 0 4.907-3.992 8.899-8.904 8.899z"/>
+                                <a href="#faq" className="btn-o">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    WhatsApp
+                                    Jam Buka & Info
                                 </a>
                             </div>
-                            <div className="hero-stats fu d4" style={{ display: 'flex', gap: 40, marginTop: 52, paddingTop: 36, borderTop: '1px solid var(--border-s)' }}>
-                                {[['99.9%','Uptime'], ['< 1s','Respons'], ['∞','Riwayat']].map(([v, l]) => (
+                            <p className="fu d3" style={{ marginTop: 16, fontSize: '.82rem', color: 'var(--ink-soft)', display: 'inline-flex', alignItems: 'center', gap: 7 }}>
+                                <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--leaf)', display: 'inline-block' }} />
+                                Belum melayani pesan online — datang langsung ya.
+                            </p>
+                            <div className="hero-stats fu d4" style={{ display: 'flex', gap: 44, marginTop: 52, paddingTop: 36, borderTop: '1.5px solid var(--border)' }}>
+                                {[['Rp3rb', 'Mulai dari'], ['100%', 'Fresh harian'], ['< 2mnt', 'Antri kasir']].map(([v, l]) => (
                                     <div key={l}>
-                                        <div className="d" style={{ fontSize: '1.7rem', fontWeight: 700, color: 'var(--gold-light)', marginBottom: 4 }}>{v}</div>
-                                        <div style={{ fontSize: '.72rem', color: 'var(--muted)', letterSpacing: '.05em', textTransform: 'uppercase' }}>{l}</div>
+                                        <div className="d" style={{ fontSize: '1.9rem', fontWeight: 600, color: 'var(--tomato)', marginBottom: 4, fontStyle: 'italic' }}>{v}</div>
+                                        <div style={{ fontSize: '.72rem', color: 'var(--ink-soft)', letterSpacing: '.05em', textTransform: 'uppercase' }}>{l}</div>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Right — POS mockup */}
-                        <div className="hero-right fi d5" style={{ position: 'relative' }}>
-                            <div className="rs" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 460, height: 460, border: '1px solid rgba(40,40,136,.08)', borderRadius: '50%', borderTopColor: 'rgba(40,40,136,.35)' }} />
-                            <div className="rs" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 380, height: 380, border: '1px dashed rgba(40,40,136,.06)', borderRadius: '50%', animationDirection: 'reverse', animationDuration: '40s' }} />
-                            <div className="pos" style={{ position: 'relative', zIndex: 1 }}>
-                                {/* Window chrome */}
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, paddingBottom: 14, borderBottom: '1px solid var(--border-s)' }}>
-                                    <div style={{ display: 'flex', gap: 6 }}>
-                                        {['#ff5f57','#ffbd2e','#28c840'].map(c => <div key={c} style={{ width: 9, height: 9, borderRadius: '50%', background: c }} />)}
-                                    </div>
-                                    <span style={{ fontSize: '.65rem', color: 'var(--muted)', fontFamily: 'monospace', letterSpacing: '.05em' }}>CANDARIA POS</span>
-                                    <div style={{ width: 48, height: 5, borderRadius: 3, background: 'var(--bg-r)' }} />
+                        {/* Right — hot plate visual */}
+                        <div className="hero-right fi d5" style={{ position: 'relative', height: 480, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {/* dashed spinning ring */}
+                            <div className="plate-ring" style={{ width: 380, height: 380, border: '2px dashed var(--border)', animation: 'spinPlate 50s linear infinite' }} />
+                            {/* plate */}
+                            <div style={{ position: 'absolute', width: 290, height: 290, borderRadius: '50%', background: 'radial-gradient(circle at 38% 32%, #ffffff 0%, var(--paper-2) 55%, var(--paper-3) 100%)', border: '1.5px solid var(--ink)', boxShadow: '0 30px 60px rgba(27,26,56,.22), inset 0 0 0 14px rgba(27,26,56,.04)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <div style={{ width: 210, height: 210, borderRadius: '50%', border: '1.5px solid var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', background: 'radial-gradient(circle at 50% 40%, rgba(44,42,156,.12), transparent 70%)' }}>
+                                    {/* steam */}
+                                    <div className="steam" style={{ top: 22, left: '42%', animation: 'steam 2.6s ease-in-out infinite' }} />
+                                    <div className="steam" style={{ top: 18, left: '54%', animation: 'steam 2.6s ease-in-out .9s infinite' }} />
+                                    <div className="steam" style={{ top: 26, left: '48%', animation: 'steam 2.6s ease-in-out 1.7s infinite' }} />
+                                    <svg width="92" height="92" fill="none" stroke="var(--tomato)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M12 21a9 9 0 0 0 9-7H3a9 9 0 0 0 9 7Z" /><path d="M7 21h10" /><path d="M19.5 12 22 6" /><path d="M16.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.73 1.62" /><path d="M11.25 3c.27.1.8.53.74 1.36-.05.83-.93 1.2-.98 2.02-.06.78.33 1.24.72 1.62" /><path d="M6.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.74 1.62" /></svg>
+                                    <span className="d" style={{ fontStyle: 'italic', fontSize: '.95rem', color: 'var(--ink-soft)', marginTop: 8 }}>menu hari ini</span>
                                 </div>
-                                {/* Product grid */}
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 14 }}>
-                                    {[
-                                        { n: 'Nasi Goreng', p: 'Rp 8.000', c: '#e8a44a' },
-                                        { n: 'Mie Ayam',    p: 'Rp 7.000', c: '#7ec8a4' },
-                                        { n: 'Es Teh',      p: 'Rp 3.000', c: '#6aabd6' },
-                                        { n: 'Pisang Gr.',  p: 'Rp 5.000', c: '#d4a453' },
-                                        { n: 'Bakso',       p: 'Rp 10.000', c: '#c47d7d' },
-                                        { n: 'Jus Jeruk',   p: 'Rp 8.000', c: '#e8884a' },
-                                    ].map((item, i) => (
-                                        <div key={i} className="pos-item">
-                                            <div style={{ width: '100%', height: 36, borderRadius: 6, background: `${item.c}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 7 }}>
-                                                <div style={{ width: 20, height: 20, borderRadius: 5, background: `${item.c}50` }} />
-                                            </div>
-                                            <div style={{ fontSize: '.6rem', color: 'var(--text)', fontWeight: 500, marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.n}</div>
-                                            <div style={{ fontSize: '.58rem', color: 'var(--gold)', fontWeight: 600 }}>{item.p}</div>
-                                        </div>
-                                    ))}
+                            </div>
+                            {/* floating chips */}
+                            <div className="food-chip" style={{ top: 34, right: 0, animation: 'floatA 5s ease-in-out infinite' }}>
+                                <svg width="20" height="20" fill="none" stroke="var(--tomato)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M12 21a9 9 0 0 0 9-7H3a9 9 0 0 0 9 7Z" /><path d="M7 21h10" /><path d="M16.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.73 1.62" /><path d="M11.25 3c.27.1.8.53.74 1.36-.05.83-.93 1.2-.98 2.02-.06.78.33 1.24.72 1.62" /><path d="M6.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.74 1.62" /></svg>
+                                <div>
+                                    <div style={{ fontSize: '.74rem', fontWeight: 600 }}>Mie Ayam</div>
+                                    <div className="d" style={{ fontSize: '.74rem', fontStyle: 'italic', color: 'var(--tomato)' }}>Rp7.000</div>
                                 </div>
-                                {/* Cart */}
-                                <div style={{ background: 'var(--bg-r)', borderRadius: 11, padding: 13, border: '1px solid var(--border)' }}>
-                                    <div style={{ fontSize: '.65rem', color: 'var(--muted)', marginBottom: 9, letterSpacing: '.07em', textTransform: 'uppercase' }}>Keranjang</div>
-                                    {[{ n: 'Nasi Goreng', q: '×2', t: 'Rp 16.000' }, { n: 'Es Teh', q: '×1', t: 'Rp 3.000' }].map((item, i) => (
-                                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 }}>
-                                            <div>
-                                                <div style={{ fontSize: '.68rem', color: 'var(--text)', fontWeight: 500 }}>{item.n}</div>
-                                                <div style={{ fontSize: '.58rem', color: 'var(--muted)' }}>{item.q}</div>
-                                            </div>
-                                            <div style={{ fontSize: '.68rem', color: 'var(--gold-light)', fontWeight: 600 }}>{item.t}</div>
-                                        </div>
-                                    ))}
-                                    <div style={{ borderTop: '1px solid var(--border-s)', marginTop: 9, paddingTop: 9, display: 'flex', justifyContent: 'space-between', marginBottom: 11 }}>
-                                        <span style={{ fontSize: '.72rem', color: 'var(--text)', fontWeight: 600 }}>Total</span>
-                                        <span className="d" style={{ fontSize: '.85rem', fontWeight: 700, color: 'var(--gold-light)' }}>Rp 19.000</span>
-                                    </div>
-                                    <div style={{ background: 'linear-gradient(135deg, var(--gold-light), var(--gold))', borderRadius: 7, padding: '9px', textAlign: 'center', color: '#ffffff', fontSize: '.7rem', fontWeight: 700, letterSpacing: '.05em', cursor: 'pointer' }}>
-                                        BAYAR SEKARANG
-                                    </div>
+                            </div>
+                            <div className="food-chip" style={{ bottom: 56, left: -6, animation: 'floatB 6s ease-in-out infinite' }}>
+                                <svg width="20" height="20" fill="none" stroke="var(--tomato)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="m6 8 1.75 12.28a2 2 0 0 0 2 1.72h4.54a2 2 0 0 0 2-1.72L18 8" /><path d="M5 8h14" /><path d="M7 15a6.47 6.47 0 0 1 5 0 6.47 6.47 0 0 0 5 0" /><path d="m12 8 1-6h2" /></svg>
+                                <div>
+                                    <div style={{ fontSize: '.74rem', fontWeight: 600 }}>Es Teh</div>
+                                    <div className="d" style={{ fontSize: '.74rem', fontStyle: 'italic', color: 'var(--tomato)' }}>Rp3.000</div>
+                                </div>
+                            </div>
+                            <div className="food-chip" style={{ bottom: 8, right: 30, animation: 'floatA 5.5s ease-in-out .6s infinite' }}>
+                                <svg width="20" height="20" fill="none" stroke="var(--tomato)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" /><path d="M8.5 8.5v.01" /><path d="M16 15.5v.01" /><path d="M12 12v.01" /><path d="M11 17v.01" /><path d="M7 14v.01" /></svg>
+                                <div>
+                                    <div style={{ fontSize: '.74rem', fontWeight: 600 }}>Pisang Gr.</div>
+                                    <div className="d" style={{ fontSize: '.74rem', fontStyle: 'italic', color: 'var(--tomato)' }}>Rp5.000</div>
                                 </div>
                             </div>
                         </div>
@@ -300,66 +280,58 @@ export default function Welcome({ canLogin, popularProducts }) {
                 </header>
 
                 {/* ── TICKER ── */}
-                <div style={{ borderTop: '1px solid var(--border-s)', borderBottom: '1px solid var(--border-s)', padding: '13px 0', background: 'rgba(40,40,136,.04)' }}>
+                <div style={{ borderTop: '1.5px solid var(--ink)', borderBottom: '1.5px solid var(--ink)', padding: '14px 0', background: 'var(--tomato)', color: '#ffffff', overflow: 'hidden' }}>
                     <div className="ticker-wrap">
                         <div className="ticker-inner">
-                            {[...tickerItems, ...tickerItems, ...tickerItems, ...tickerItems].map((t, i) => (
-                                <span key={i} style={{ fontSize: '.75rem', letterSpacing: '.08em', color: i % tickerItems.length === 0 ? 'var(--gold)' : 'var(--muted)' }}>
-                                    {i % tickerItems.length === 0 ? '◆' : '·'} {t}
-                                </span>
+                            {[...tickerItems, ...tickerItems, ...tickerItems].map((t, i) => (
+                                <span key={i} className="tick">{t}<svg width="11" height="11" viewBox="0 0 24 24" fill="var(--yellow)" style={{ display: 'inline-block', verticalAlign: 'middle' }}><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z" /></svg></span>
                             ))}
                         </div>
                     </div>
                 </div>
 
-                {/* ── PRODUCTS ── */}
-                <section id="products" style={{ padding: '110px 32px', maxWidth: 1200, margin: '0 auto' }}>
+                {/* ── MENU ── */}
+                <section id="menu" style={{ padding: '110px 32px', maxWidth: 1200, margin: '0 auto' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24, marginBottom: 56, flexWrap: 'wrap' }}>
                         <div>
-                            <div className="lbl">Produk Unggulan</div>
-                            <h2 className="d" style={{ fontSize: 'clamp(2rem,4vw,3.2rem)', fontWeight: 600, lineHeight: 1.1, letterSpacing: '-.02em' }}>
-                                Terpopuler <em className="gold-text" style={{ fontStyle: 'italic' }}>Hari Ini</em>
+                            <div className="lbl">Paling Laris</div>
+                            <h2 className="d" style={{ fontSize: 'clamp(2.2rem,4.5vw,3.6rem)', fontWeight: 600, lineHeight: 1.04, letterSpacing: '-.02em' }}>
+                                Menu Favorit <span className="ink-em">Hari Ini</span>
                             </h2>
                         </div>
-                        <p style={{ color: 'var(--muted)', maxWidth: 300, lineHeight: 1.65, fontSize: '.9rem' }}>
-                            Jajanan paling dicari siswa, tersedia langsung di kantin Anda.
+                        <p style={{ color: 'var(--ink-soft)', maxWidth: 320, lineHeight: 1.65, fontSize: '.95rem' }}>
+                            Yang paling diburu teman-temanmu pas bel istirahat. Stok terbatas — siapa cepat, dia kenyang.
                         </p>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 18 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 22 }}>
                         {popularProducts && popularProducts.length > 0 ? (
                             popularProducts.map((product, index) => (
                                 <div key={product.id} className="pc">
-                                    <div style={{ aspectRatio: '4/3', background: 'var(--bg-r)', position: 'relative', overflow: 'hidden' }}>
+                                    <div style={{ aspectRatio: '4/3', background: 'var(--paper-2)', position: 'relative', overflow: 'hidden', borderBottom: '1.5px solid var(--ink)' }}>
                                         {index < 3 && (
-                                            <div style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(246,247,251,.88)', backdropFilter: 'blur(8px)', border: '1px solid var(--border)', borderRadius: 100, padding: '3px 9px', fontSize: '.65rem', fontWeight: 700, color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: 4, zIndex: 2 }}>
-                                                    <svg width="9" height="9" fill="var(--gold)" viewBox="0 0 20 20">
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                    Top {index + 1}
-                                                </div>
+                                            <div style={{ position: 'absolute', top: 11, left: 11, background: 'var(--yellow)', borderRadius: 100, padding: '4px 11px', fontSize: '.66rem', fontWeight: 800, color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: 4, zIndex: 2, letterSpacing: '.04em', textTransform: 'uppercase', boxShadow: '2px 2px 0 0 rgba(27,26,56,.28)' }}>
+                                                <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" /></svg>
+                                                Top {index + 1}
+                                            </div>
                                         )}
                                         {product.image_url ? (
                                             <img src={product.image_url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                         ) : (
-                                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--muted)' }}>
-                                                <svg width="32" height="32" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                </svg>
+                                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: .5 }}>
+                                                <svg width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" style={{ color: 'var(--ink-soft)' }}><path d="M12 21a9 9 0 0 0 9-7H3a9 9 0 0 0 9 7Z" /><path d="M7 21h10" /><path d="M19.5 12 22 6" /><path d="M16.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.73 1.62" /><path d="M11.25 3c.27.1.8.53.74 1.36-.05.83-.93 1.2-.98 2.02-.06.78.33 1.24.72 1.62" /><path d="M6.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.74 1.62" /></svg>
                                             </div>
                                         )}
                                     </div>
-                                    <div style={{ padding: '14px 16px 16px', position: 'relative', zIndex: 2 }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 9 }}>
-                                            <h3 style={{ fontSize: '.9rem', fontWeight: 600, color: 'var(--text)', lineHeight: 1.3 }}>{product.name}</h3>
-                                            <span className="d" style={{ fontSize: '.95rem', fontWeight: 700, color: 'var(--gold-light)', whiteSpace: 'nowrap' }}>{formatPrice(product.selling_price)}</span>
+                                    <div style={{ padding: '16px 18px 18px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 11 }}>
+                                            <h3 className="d" style={{ fontSize: '1.18rem', fontWeight: 600, color: 'var(--ink)', lineHeight: 1.2, letterSpacing: '-.01em' }}>{product.name}</h3>
+                                            <span className="d" style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--tomato)', whiteSpace: 'nowrap', fontStyle: 'italic' }}>{formatPrice(product.selling_price)}</span>
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <span style={{ fontSize: '.68rem', color: 'var(--muted)', padding: '2px 8px', border: '1px solid var(--border-s)', borderRadius: 100 }}>{product.category?.name || 'Umum'}</span>
-                                            <span style={{ fontSize: '.68rem', color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 3 }}>
-                                                <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                                </svg>
+                                            <span style={{ fontSize: '.7rem', color: 'var(--ink-soft)', padding: '3px 10px', border: '1px solid var(--border)', borderRadius: 100 }}>{product.category?.name || 'Jajanan'}</span>
+                                            <span style={{ fontSize: '.7rem', color: 'var(--leaf)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                                <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></svg>
                                                 {product.transaction_items_sum_quantity || 0} terjual
                                             </span>
                                         </div>
@@ -367,34 +339,48 @@ export default function Welcome({ canLogin, popularProducts }) {
                                 </div>
                             ))
                         ) : (
-                            <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '80px 0', color: 'var(--muted)', border: '1px dashed var(--border-s)', borderRadius: 14 }}>
-                                Belum ada produk terlaris saat ini.
+                            <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '80px 0', color: 'var(--ink-soft)', border: '1.5px dashed var(--border)', borderRadius: 18, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                                <svg width="40" height="40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z" /><line x1="6" y1="17" x2="18" y2="17" /></svg>
+                                Dapur lagi siap-siap — menu favorit segera tersaji.
                             </div>
                         )}
                     </div>
+
+                    <div style={{ textAlign: 'center', marginTop: 48 }}>
+                        <Link href={route('menu')} className="btn-g" style={{ marginBottom: 16 }}>
+                            Lihat Semua Menu
+                            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                        </Link>
+                        <p style={{ color: 'var(--ink-soft)', fontSize: '.95rem', marginTop: 16, display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+                            <span>Mau yang ini? <span style={{ color: 'var(--tomato)', fontWeight: 600 }}>Datang langsung ke kantin</span> dan pilih di etalase.</span>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M12 21a9 9 0 0 0 9-7H3a9 9 0 0 0 9 7Z" /><path d="M7 21h10" /><path d="M19.5 12 22 6" /><path d="M16.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.73 1.62" /><path d="M11.25 3c.27.1.8.53.74 1.36-.05.83-.93 1.2-.98 2.02-.06.78.33 1.24.72 1.62" /><path d="M6.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.74 1.62" /></svg>
+                        </p>
+                    </div>
                 </section>
 
-                <hr className="hr" style={{ maxWidth: 1200, margin: '0 auto 0' }} />
+                <hr className="hr" style={{ maxWidth: 1200, margin: '0 auto' }} />
 
-                {/* ── FEATURES ── */}
-                <section id="features" style={{ padding: '110px 32px', maxWidth: 1200, margin: '0 auto' }}>
-                    <div className="feat-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 80, alignItems: 'flex-start' }}>
+                {/* ── KENAPA / VALUES ── */}
+                <section id="kenapa" style={{ padding: '110px 32px', maxWidth: 1200, margin: '0 auto' }}>
+                    <div className="feat-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.7fr', gap: 80, alignItems: 'flex-start' }}>
                         <div className="feat-left" style={{ position: 'sticky', top: 120 }}>
-                            <div className="lbl">Keunggulan</div>
-                            <h2 className="d" style={{ fontSize: 'clamp(1.8rem,3vw,3rem)', fontWeight: 600, lineHeight: 1.15, letterSpacing: '-.02em', marginBottom: 20 }}>
-                                Kenapa<br /><em className="gold-text" style={{ fontStyle: 'italic' }}>Candaria?</em>
+                            <div className="lbl">Kenapa Di Sini</div>
+                            <h2 className="d" style={{ fontSize: 'clamp(2rem,3.5vw,3.2rem)', fontWeight: 600, lineHeight: 1.08, letterSpacing: '-.02em', marginBottom: 20 }}>
+                                Bukan cuma<br />kenyang, tapi <span className="ink-em">enak.</span>
                             </h2>
-                            <p style={{ color: 'var(--muted)', lineHeight: 1.7, fontSize: '.9rem' }}>
-                                Dirancang khusus untuk ritme kantin sekolah yang padat dan dinamis.
+                            <p style={{ color: 'var(--ink-soft)', lineHeight: 1.7, fontSize: '.95rem' }}>
+                                Candaria masak buat teman sekolahmu tiap hari — bahan dipilih, porsi pas, harga jujur.
                             </p>
                         </div>
                         <div>
-                            {features.map((f, i) => (
+                            {values.map((f, i) => (
                                 <div key={i} className="feat" style={{ display: 'flex', gap: 36, alignItems: 'flex-start' }}>
                                     <span className="feat-n">{f.num}</span>
                                     <div style={{ paddingTop: 6 }}>
-                                        <h3 className="d" style={{ fontSize: '1.55rem', fontWeight: 600, color: 'var(--text)', marginBottom: 10, letterSpacing: '-.01em' }}>{f.title}</h3>
-                                        <p style={{ color: 'var(--muted)', lineHeight: 1.7, fontSize: '.9rem' }}>{f.desc}</p>
+                                        <h3 className="d" style={{ fontSize: '1.7rem', fontWeight: 600, color: 'var(--ink)', marginBottom: 10, letterSpacing: '-.01em' }}>{f.title}</h3>
+                                        <p style={{ color: 'var(--ink-soft)', lineHeight: 1.7, fontSize: '.95rem', maxWidth: 460 }}>{f.desc}</p>
                                     </div>
                                 </div>
                             ))}
@@ -406,100 +392,101 @@ export default function Welcome({ canLogin, popularProducts }) {
 
                 {/* ── FAQ ── */}
                 <section id="faq" style={{ padding: '110px 32px', maxWidth: 760, margin: '0 auto' }}>
-                    <div style={{ textAlign: 'center', marginBottom: 60 }}>
-                        <div style={{ display: 'flex', justifyContent: 'center' }}><div className="lbl">FAQ</div></div>
-                        <h2 className="d" style={{ fontSize: 'clamp(2rem,4vw,3.2rem)', fontWeight: 600, lineHeight: 1.1, letterSpacing: '-.02em' }}>
-                            Pertanyaan <em className="gold-text" style={{ fontStyle: 'italic' }}>Umum</em>
+                    <div style={{ textAlign: 'center', marginBottom: 56 }}>
+                        <div style={{ display: 'flex', justifyContent: 'center' }}><div className="lbl">Sebelum Mampir</div></div>
+                        <h2 className="d" style={{ fontSize: 'clamp(2.2rem,4.5vw,3.6rem)', fontWeight: 600, lineHeight: 1.04, letterSpacing: '-.02em' }}>
+                            Yang Sering <span className="ink-em">Ditanya</span>
                         </h2>
                     </div>
                     {faqs.map((faq, i) => (
                         <div key={i} className="faq-i">
                             <button className={`faq-btn ${activeFaq === i ? 'on' : ''}`} onClick={() => setActiveFaq(activeFaq === i ? null : i)}>
-                                <span className="d" style={{ fontSize: '1.15rem', fontWeight: 500, letterSpacing: '-.01em' }}>{faq.question}</span>
-                                <svg className={`faq-ico ${activeFaq === i ? 'open' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                                <span className="d" style={{ fontSize: '1.3rem', fontWeight: 500, letterSpacing: '-.01em' }}>{faq.question}</span>
+                                <svg className={`faq-ico ${activeFaq === i ? 'open' : ''}`} fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                                 </svg>
                             </button>
-                            <div className="faq-body" style={{ maxHeight: activeFaq === i ? 180 : 0, opacity: activeFaq === i ? 1 : 0 }}>
-                                <p style={{ color: 'var(--muted)', lineHeight: 1.75, paddingBottom: 26, fontSize: '.9rem' }}>{faq.answer}</p>
+                            <div className="faq-body" style={{ maxHeight: activeFaq === i ? 220 : 0, opacity: activeFaq === i ? 1 : 0 }}>
+                                <p style={{ color: 'var(--ink-soft)', lineHeight: 1.75, paddingBottom: 26, fontSize: '.96rem' }}>{faq.answer}</p>
                             </div>
                         </div>
                     ))}
                 </section>
 
                 {/* ── CTA ── */}
-                <section style={{ position: 'relative', overflow: 'hidden', padding: '110px 32px', textAlign: 'center', background: 'var(--bg-s)', borderTop: '1px solid var(--border-s)' }}>
-                    <div className="orb" style={{ width: 700, height: 700, background: 'radial-gradient(circle, rgba(40,40,136,.14) 0%, transparent 65%)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', zIndex: 0 }} />
+                <section style={{ position: 'relative', overflow: 'hidden', padding: '120px 32px', textAlign: 'center', background: 'var(--ink)', color: 'var(--paper)' }}>
+                    <div className="d" style={{ position: 'absolute', top: '-30px', left: '50%', transform: 'translateX(-50%)', fontSize: 'clamp(6rem,16vw,15rem)', opacity: .06, fontStyle: 'italic', whiteSpace: 'nowrap', pointerEvents: 'none' }}>makan yuk</div>
                     <div style={{ position: 'relative', zIndex: 1, maxWidth: 680, margin: '0 auto' }}>
-                        <div style={{ display: 'flex', justifyContent: 'center' }}><div className="lbl">Mulai Sekarang</div></div>
-                        <h2 className="d" style={{ fontSize: 'clamp(2.4rem,5vw,4.8rem)', fontWeight: 600, lineHeight: 1.06, letterSpacing: '-.03em', marginBottom: 24 }}>
-                            Siap Mengubah<br />
-                            <em className="shimmer" style={{ fontStyle: 'italic' }}>Kantin Anda?</em>
+                        <div style={{ marginBottom: 20, animation: 'wiggle 1.4s ease-in-out infinite', display: 'inline-block' }}>
+                            <svg width="40" height="40" fill="none" stroke="var(--yellow)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2" /><path d="M5 11v11" /><path d="M9 2v20" /><path d="M21 15V2a5 5 0 0 0-3 5v6c0 1.1.9 2 2 2h1Zm0 0v7" /></svg>
+                        </div>
+                        <h2 className="d" style={{ fontSize: 'clamp(2.6rem,5.5vw,5rem)', fontWeight: 600, lineHeight: 1.02, letterSpacing: '-.03em', marginBottom: 24, color: 'var(--paper)' }}>
+                            Perut keroncongan?<br />
+                            <span className="saffron-em">Mampir aja langsung.</span>
                         </h2>
-                        <p style={{ color: 'var(--muted)', fontSize: '1rem', lineHeight: 1.75, marginBottom: 44, maxWidth: 460, margin: '0 auto 44px' }}>
-                            Tingkatkan efisiensi, transparansi, dan kemudahan manajemen kantin sekolah Anda.
+                        <p style={{ color: 'rgba(255,255,255,.72)', fontSize: '1.05rem', lineHeight: 1.7, marginBottom: 40, maxWidth: 480, margin: '0 auto 40px' }}>
+                            Nggak perlu pesan online — cukup datang ke kantin, pilih menu di etalase, bayar di kasir, langsung makan. Datang awal istirahat biar nggak kehabisan.
                         </p>
-                        <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn-g" style={{ fontSize: '.95rem', padding: '15px 36px' }}>
-                            <svg width="19" height="19" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.573-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.205.534 1.292.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.082 21.166c-1.488 0-2.915-.369-4.175-1.06l-4.636 1.218 1.242-4.516c-.768-1.289-1.172-2.784-1.172-4.331 0-4.908 3.993-8.899 8.906-8.899 4.912 0 8.904 3.991 8.904 8.899 0 4.907-3.992 8.899-8.904 8.899z"/>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: 'var(--yellow)', color: 'var(--ink)', borderRadius: 100, padding: '14px 30px', fontWeight: 700, fontSize: '1rem', boxShadow: '0 6px 0 0 var(--yellow-d)' }}>
+                            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Hubungi via WhatsApp
-                        </a>
+                            Buka 07.30 – 12.30 · tiap hari sekolah
+                        </div>
                     </div>
                 </section>
 
                 {/* ── FOOTER ── */}
-                <footer style={{ background: 'var(--bg-s)', borderTop: '1px solid var(--border-s)', padding: '56px 32px 36px' }}>
+                <footer style={{ background: 'var(--paper-2)', borderTop: '1.5px solid var(--ink)', padding: '56px 32px 36px' }}>
                     <div style={{ maxWidth: 1200, margin: '0 auto' }}>
                         <div className="ft-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 56, marginBottom: 52 }}>
                             <div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 18 }}>
-                                    <img src="/img/logo-color.png" alt="Candaria" style={{ width: 28, height: 28, objectFit: 'contain' }} />
-                                    <span className="d" style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text)' }}>Candaria</span>
+                                    <img src="/img/logo-color.png" alt="Candaria" style={{ width: 30, height: 30, objectFit: 'contain' }} />
+                                    <span className="d" style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--ink)' }}>Candaria</span>
                                 </div>
-                                <p style={{ color: 'var(--muted)', lineHeight: 1.7, fontSize: '.85rem', maxWidth: 280, marginBottom: 22 }}>
-                                    Platform inovatif untuk manajemen kantin sekolah yang menyederhanakan transaksi dan pengelolaan sistem titipan.
+                                <p style={{ color: 'var(--ink-soft)', lineHeight: 1.7, fontSize: '.88rem', maxWidth: 290, marginBottom: 22 }}>
+                                    Kantin sekolah yang masak fresh tiap hari. Jajanan favorit, harga pelajar, antri cepat. Mampir, kenyang, balik ke kelas senyum.
                                 </p>
                                 <div style={{ display: 'flex', gap: 8 }}>
                                     {[
                                         <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>,
                                         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>,
-                                    ].map((d, i) => (
+                                    ].map((dp, i) => (
                                         <a key={i} href="#" className="soc">
-                                            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">{d}</svg>
+                                            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">{dp}</svg>
                                         </a>
                                     ))}
                                 </div>
                             </div>
                             <div>
-                                <h4 style={{ fontSize: '.72rem', fontWeight: 600, color: 'var(--text)', letterSpacing: '.09em', textTransform: 'uppercase', marginBottom: 22 }}>Navigasi</h4>
+                                <h4 style={{ fontSize: '.72rem', fontWeight: 600, color: 'var(--ink)', letterSpacing: '.09em', textTransform: 'uppercase', marginBottom: 22 }}>Jelajah</h4>
                                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 13 }}>
-                                    {[['Produk Populer','#products'],['Fitur Kami','#features'],['FAQ','#faq'],['Masuk Sistem', route('login')]].map(([l, h]) => (
-                                        <li key={l}><a href={h} style={{ color: 'var(--muted)', fontSize: '.85rem', textDecoration: 'none', transition: 'color .2s' }}
-                                            onMouseOver={e => e.target.style.color = 'var(--gold-light)'}
-                                            onMouseOut={e => e.target.style.color = 'var(--muted)'}>{l}</a></li>
+                                    {[['Menu Favorit', '#menu'], ['Kenapa Kami', '#kenapa'], ['FAQ', '#faq'], ['Masuk Staff', canLogin ? route('dashboard') : route('login')]].map(([l, h]) => (
+                                        <li key={l}><a href={h} style={{ color: 'var(--ink-soft)', fontSize: '.88rem', textDecoration: 'none', transition: 'color .2s' }}
+                                            onMouseOver={e => e.target.style.color = 'var(--tomato)'}
+                                            onMouseOut={e => e.target.style.color = 'var(--ink-soft)'}>{l}</a></li>
                                     ))}
                                 </ul>
                             </div>
                             <div>
-                                <h4 style={{ fontSize: '.72rem', fontWeight: 600, color: 'var(--text)', letterSpacing: '.09em', textTransform: 'uppercase', marginBottom: 22 }}>Kontak</h4>
+                                <h4 style={{ fontSize: '.72rem', fontWeight: 600, color: 'var(--ink)', letterSpacing: '.09em', textTransform: 'uppercase', marginBottom: 22 }}>Mampir</h4>
                                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 13 }}>
-                                    <li style={{ color: 'var(--muted)', fontSize: '.85rem', lineHeight: 1.55 }}>Jl. Pendidikan No. 123<br />Kota Pelajar, Indonesia</li>
-                                    <li><a href="mailto:hello@candaria.com" style={{ color: 'var(--muted)', fontSize: '.85rem', textDecoration: 'none', transition: 'color .2s' }}
-                                        onMouseOver={e => e.target.style.color = 'var(--gold-light)'}
-                                        onMouseOut={e => e.target.style.color = 'var(--muted)'}>hello@candaria.com</a></li>
-                                    <li style={{ color: 'var(--muted)', fontSize: '.85rem' }}>+62 812 3456 7890</li>
+                                    <li style={{ color: 'var(--ink-soft)', fontSize: '.88rem', lineHeight: 1.55 }}>Kantin Candaria<br />Lingkungan Sekolah</li>
+                                    <li style={{ color: 'var(--ink-soft)', fontSize: '.88rem' }}>Buka 07.30 – 12.30</li>
+                                    <li style={{ color: 'var(--ink-soft)', fontSize: '.88rem' }}>Pesan langsung di tempat</li>
                                 </ul>
                             </div>
                         </div>
                         <hr className="hr" />
                         <div style={{ marginTop: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-                            <p style={{ color: 'var(--muted)', fontSize: '.75rem' }}>&copy; {new Date().getFullYear()} Candaria POS System. All rights reserved.</p>
+                            <p style={{ color: 'var(--ink-soft)', fontSize: '.78rem' }}>&copy; {new Date().getFullYear()} Kantin Candaria. Masak dari hati.</p>
                             <div style={{ display: 'flex', gap: 20 }}>
-                                {['Kebijakan Privasi','Syarat & Ketentuan'].map(t => (
-                                    <a key={t} href="#" style={{ color: 'var(--muted)', fontSize: '.75rem', textDecoration: 'none', transition: 'color .2s' }}
-                                        onMouseOver={e => e.target.style.color = 'var(--text)'}
-                                        onMouseOut={e => e.target.style.color = 'var(--muted)'}>{t}</a>
+                                {['Kebersihan Terjaga', 'Bahan Halal'].map(t => (
+                                    <span key={t} style={{ color: 'var(--ink-soft)', fontSize: '.78rem', display: 'flex', alignItems: 'center', gap: 5 }}>
+                                        <svg width="13" height="13" fill="none" stroke="var(--leaf)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>
+                                        {t}
+                                    </span>
                                 ))}
                             </div>
                         </div>

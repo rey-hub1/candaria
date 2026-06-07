@@ -29,6 +29,22 @@ Route::get('/', function () {
     ]);
 });
 
+// Public menu catalog with search & filter (client-side)
+Route::get('/menu', function () {
+    $products = \App\Models\Product::with(['category'])
+        ->withSum('transactionItems', 'quantity')
+        ->orderBy('name')
+        ->get();
+
+    $categories = \App\Models\Category::orderBy('name')->get(['id', 'name']);
+
+    return \Inertia\Inertia::render('Menu', [
+        'products' => $products,
+        'categories' => $categories,
+        'canLogin' => Route::has('login'),
+    ]);
+})->name('menu');
+
 Route::middleware(['auth'])->group(function () {
     // Dashboard (accessible by both admin & cashier)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

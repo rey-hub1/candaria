@@ -27,7 +27,11 @@
       "Bash(mkdir -p public/img)",
       "Bash(cp \"public/logo baru/logo berwarna.png\" public/img/logo-color.png)",
       "Bash(cp \"public/logo baru/logo putih.png\" public/img/logo-white.png)",
-      "Bash(cp \"public/logo baru/logo hitam.png\" public/img/logo-black.png)"
+      "Bash(cp \"public/logo baru/logo hitam.png\" public/img/logo-black.png)",
+      "Bash(sips -getProperty pixelWidth public/icon-512x512.png)",
+      "mcp__ide__getDiagnostics",
+      "Bash(ls -la favicon-32.png icon-192x192.png icon-512x512.png)",
+      "Bash(cat manifest.json)"
     ]
   }
 }

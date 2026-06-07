@@ -46,7 +46,12 @@ export default function Products({
                             <p className="text-xs text-slate-500 mt-0.5">
                                 {allProducts.length} produk terdaftar
                                 {lowStockAll.length > 0 && (
-                                    <span className="ml-2 text-rose-600 font-bold">⚠ {lowStockAll.length} produk stok kritis</span>
+                                    <span className="ml-2 text-rose-600 font-bold inline-flex items-center gap-1">
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                        </svg>
+                                        {lowStockAll.length} produk stok kritis
+                                    </span>
                                 )}
                             </p>
                         </div>
@@ -65,7 +70,12 @@ export default function Products({
                     {/* Stok Kritis Banner */}
                     {lowStockAll.length > 0 && (
                         <div className="px-6 py-3 bg-rose-50 border-t border-rose-100 flex flex-wrap gap-2 items-center">
-                            <span className="text-xs font-bold text-rose-700">⚠ Stok Kritis (≤5 pcs):</span>
+                            <span className="text-xs font-bold text-rose-700 inline-flex items-center gap-1">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                </svg>
+                                Stok Kritis (≤5 pcs):
+                            </span>
                             {lowStockAll.map(p => (
                                 <span key={p.id} className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-white border border-rose-200 text-rose-800 rounded-full font-semibold">
                                     {p.name}
@@ -191,9 +201,13 @@ export default function Products({
                                                 {products.map((p, i) => (
                                                     <tr key={p.id} className="hover:bg-slate-50 transition">
                                                         <td className="px-4 py-2.5 whitespace-nowrap text-xs font-mono text-slate-400">
-                                                            {i === 0 && <span className="text-amber-500 font-black">🥇</span>}
-                                                            {i === 1 && <span className="text-slate-400 font-black">🥈</span>}
-                                                            {i === 2 && <span className="text-orange-600 font-black">🥉</span>}
+                                                            {i < 3 && (
+                                                                <svg className={`w-4 h-4 inline-block ${i === 0 ? 'text-amber-500' : i === 1 ? 'text-slate-400' : 'text-orange-600'}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15" />
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 12 5.12 2.2M13 12l5.88-9.8M8 7h8" />
+                                                                    <circle cx="12" cy="17" r="5" />
+                                                                </svg>
+                                                            )}
                                                             {i > 2 && `#${i + 1}`}
                                                         </td>
                                                         <td className="px-4 py-2.5 whitespace-nowrap">

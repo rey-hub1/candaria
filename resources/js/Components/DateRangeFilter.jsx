@@ -83,8 +83,11 @@ export default function DateRangeFilter({
                         )}
                         {showPrint && (
                             <button type="button" onClick={() => window.print()}
-                                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-lg transition">
-                                🖨 Cetak
+                                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-lg transition flex items-center gap-1.5">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.617 0-1.11-.474-1.12-1.09L5.87 18M10.5 8.5h3M18 8.5a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                </svg>
+                                Cetak
                             </button>
                         )}
                     </div>
@@ -113,36 +116,49 @@ export default function DateRangeFilter({
             {/* ── Manual range ── */}
             <form onSubmit={handleFilterSubmit} className="px-6 py-4 flex flex-wrap items-center gap-3">
                 <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Atau atur manual:</span>
-                <div className="flex items-center gap-2 flex-wrap">
-                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex-1 sm:flex-none min-w-0">
                         <label htmlFor="drf_start" className="text-xs text-slate-500 font-semibold whitespace-nowrap">Dari</label>
                         <input
                             type="date"
                             id="drf_start"
                             value={localStartDate}
                             onChange={e => setLocalStartDate(e.target.value)}
-                            className="text-sm text-slate-900 [color-scheme:light] font-semibold bg-transparent border-none outline-none cursor-pointer"
+                            style={{ colorScheme: 'light' }}
+                            className="drf-date-input text-sm text-slate-900 font-semibold bg-transparent border-none outline-none cursor-pointer min-w-[120px] w-full sm:w-auto"
                         />
                     </div>
-                    <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-slate-400 hidden sm:block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
-                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 flex-1 sm:flex-none min-w-0">
                         <label htmlFor="drf_end" className="text-xs text-slate-500 font-semibold whitespace-nowrap">Sampai</label>
                         <input
                             type="date"
                             id="drf_end"
                             value={localEndDate}
                             onChange={e => setLocalEndDate(e.target.value)}
-                            className="text-sm text-slate-900 [color-scheme:light] font-semibold bg-transparent border-none outline-none cursor-pointer"
+                            style={{ colorScheme: 'light' }}
+                            className="drf-date-input text-sm text-slate-900 font-semibold bg-transparent border-none outline-none cursor-pointer min-w-[120px] w-full sm:w-auto"
                         />
                     </div>
                     <button type="submit"
-                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition">
+                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition w-full sm:w-auto">
                         Terapkan
                     </button>
                 </div>
             </form>
+
+            <style dangerouslySetInnerHTML={{ __html: `
+                /* Darken native date text + placeholder so tanggal always visible */
+                .drf-date-input::-webkit-datetime-edit { color: #0f172a; }
+                .drf-date-input::-webkit-datetime-edit-fields-wrapper { color: #0f172a; }
+                .drf-date-input:in-range::-webkit-datetime-edit-year-field,
+                .drf-date-input:in-range::-webkit-datetime-edit-month-field,
+                .drf-date-input:in-range::-webkit-datetime-edit-day-field { color: #0f172a; }
+                .drf-date-input::-webkit-datetime-edit-text { color: #475569; }
+                .drf-date-input::-webkit-calendar-picker-indicator { opacity: 0.7; cursor: pointer; }
+            ` }} />
         </div>
     );
 }
