@@ -83,6 +83,19 @@ class DatabaseSeeder extends Seeder
         $sellerModels = [];
         foreach ($sellersData as $data) {
             $sellerModels[] = Seller::create(array_merge($data, ['is_active' => true]));
+
+            // Akun login penitip — login via phone, password default candaria123.
+            // (Mirror SellerController@store agar seller hasil seeder bisa login.)
+            if (!empty($data['phone'])) {
+                User::firstOrCreate(
+                    ['phone' => $data['phone']],
+                    [
+                        'name'     => $data['name'],
+                        'password' => Hash::make('candaria123'),
+                        'role'     => 'penitip',
+                    ]
+                );
+            }
         }
 
         // 5. Products (Kantin)

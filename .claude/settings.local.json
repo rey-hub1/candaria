@@ -31,7 +31,8 @@
       "Bash(sips -getProperty pixelWidth public/icon-512x512.png)",
       "mcp__ide__getDiagnostics",
       "Bash(ls -la favicon-32.png icon-192x192.png icon-512x512.png)",
-      "Bash(cat manifest.json)"
+      "Bash(cat manifest.json)",
+      "Bash(mdls -name kMDItemNumberOfPages \"QC - Check List - Candaria SMEKDA - V2.pdf\")"
     ]
   }
 }

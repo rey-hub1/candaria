@@ -349,10 +349,10 @@ export default function Dashboard({
                             ) : (
                                 <div className="h-64 w-full">
                                     <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={mySalesChart.slice().reverse()} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                        <BarChart data={mySalesChart.slice().reverse()} margin={{ top: 10, right: 10, left: 4, bottom: 0 }}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                                             <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(value) => `Rp${value / 1000}k`} />
+                                            <YAxis width={52} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(value) => `Rp${value / 1000}k`} />
                                             <RechartsTooltip 
                                                 cursor={{ fill: '#f1f5f9' }}
                                                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}

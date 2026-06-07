@@ -186,7 +186,7 @@
             <td><div class="print-info">Dicetak: {{ \Carbon\Carbon::now()->format('d M Y, H:i:s') }} WIB</div></td>
             <td>
                 <div class="sig-area">
-                    <div class="sig-date">Sidoarjo, {{ \Carbon\Carbon::now()->format('d M Y') }}</div>
+                    <div class="sig-date">Purwakarta, {{ \Carbon\Carbon::now()->format('d M Y') }}</div>
                     <div class="sig-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
                     <div class="sig-role">Pengelola Kantin Smekda</div>
                 </div>

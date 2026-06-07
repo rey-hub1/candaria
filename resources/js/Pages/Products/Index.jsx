@@ -6,6 +6,7 @@ import { useDialog } from '@/hooks/useDialog';
 import { formatRupiah } from '@/utils/format';
 import Pagination from '@/Components/Pagination';
 import SortableHeader from '@/Components/SortableHeader';
+import SearchableSelect from '@/Components/SearchableSelect';
 
 const FormField = ({ label, error, children, hint }) => (
     <div>
@@ -43,11 +44,17 @@ const ProductForm = ({ data, setData, errors, onSubmit, processing, isEdit = fal
         {data.type === 'siswa' && (
             <FormField label="Siswa Penitip" error={errors.seller_id}>
                 <div className="flex gap-2">
-                    <select required={data.type === 'siswa'} value={data.seller_id}
-                        onChange={e => setData('seller_id', e.target.value)} className={inputCls}>
-                        <option value="">Pilih siswa...</option>
-                        {sellers.map(s => <option key={s.id} value={s.id}>{s.name} ({s.class})</option>)}
-                    </select>
+                    <div className="flex-1 min-w-0">
+                        <SearchableSelect
+                            required={data.type === 'siswa'}
+                            name="seller_id"
+                            value={data.seller_id}
+                            onChange={val => setData('seller_id', val)}
+                            placeholder="Pilih siswa..."
+                            className={inputCls}
+                            options={sellers.map(s => ({ value: s.id, label: `${s.name} (${s.class})` }))}
+                        />
+                    </div>
                     <Link href={route('sellers.index')} title="Kelola Penitip"
                         className="px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition flex items-center">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">

@@ -18,7 +18,7 @@ export default function CustomKeyboard({
 
     // Mobile = icon-only labels so keys don't wrap/overflow
     useEffect(() => {
-        const check = () => setIsMobile(window.innerWidth < 640);
+        const check = () => setIsMobile(window.innerWidth < 768);
         check();
         window.addEventListener('resize', check);
         return () => window.removeEventListener('resize', check);
@@ -220,7 +220,7 @@ export default function CustomKeyboard({
                 }
                 .custom-keyboard-theme .hg-button > span {
                     white-space: nowrap !important;
-                    overflow: hidden !important;
+                    overflow: visible !important;
                     display: inline-flex !important;
                     align-items: center !important;
                     gap: 6px !important;
@@ -228,7 +228,21 @@ export default function CustomKeyboard({
                 .custom-keyboard-theme .hg-button svg {
                     flex-shrink: 0 !important;
                 }
-                @media (max-width: 639px) {
+                /* Tombol fungsi (punya label teks) butuh lebih lebar + font lebih kecil
+                   agar "Hapus"/"Hapus Semua" muat penuh, tidak kepotong jadi "Hap". */
+                .custom-keyboard-theme .hg-button-bksp,
+                .custom-keyboard-theme .hg-button-enter,
+                .custom-keyboard-theme .hg-button-shift,
+                .custom-keyboard-theme .hg-button-close,
+                .custom-keyboard-theme .hg-button-clear,
+                .custom-keyboard-theme .hg-button-mode,
+                .custom-keyboard-theme .hg-button-space {
+                    flex-grow: 1.7 !important;
+                    font-size: 0.9rem !important;
+                    padding-left: 8px !important;
+                    padding-right: 8px !important;
+                }
+                @media (max-width: 767px) {
                     .custom-keyboard-theme.hg-theme-default {
                         padding: 2px !important;
                     }

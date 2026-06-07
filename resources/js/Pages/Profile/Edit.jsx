@@ -11,11 +11,12 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 
 // Form 1: Update Profile Info
 function UpdateProfileInformation({ mustVerifyEmail, status, className = '' }) {
-    const user = usePage().props.auth.user;
+    // Guard: hindari crash bila auth/user belum tersedia (mis. penitip di mobile).
+    const user = usePage().props?.auth?.user ?? {};
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
-        name: user.name,
-        email: user.email,
+        name: user.name ?? '',
+        email: user.email ?? '',
     });
 
     const submit = (e) => {

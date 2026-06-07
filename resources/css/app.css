@@ -1,3 +1,30 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Fix kontras native date input (BUG B) ──
+   Di mobile/dark-mode OS, teks <input type="date"> bisa jadi putih di atas
+   background putih sehingga tidak terbaca. Paksa color-scheme terang +
+   -webkit-text-fill-color gelap agar tanggal selalu kelihatan di semua device. */
+@layer base {
+    input[type="date"],
+    input[type="datetime-local"],
+    input[type="month"],
+    input[type="time"] {
+        color-scheme: light;
+        color: #0f172a;
+    }
+    input[type="date"]::-webkit-datetime-edit,
+    input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+    input[type="date"]::-webkit-datetime-edit-text,
+    input[type="date"]::-webkit-datetime-edit-month-field,
+    input[type="date"]::-webkit-datetime-edit-day-field,
+    input[type="date"]::-webkit-datetime-edit-year-field {
+        color: #0f172a;
+        -webkit-text-fill-color: #0f172a;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        opacity: 0.7;
+        cursor: pointer;
+    }
+}

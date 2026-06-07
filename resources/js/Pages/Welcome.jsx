@@ -347,13 +347,15 @@ export default function Welcome({ canLogin, popularProducts }) {
                     </div>
 
                     <div style={{ textAlign: 'center', marginTop: 48 }}>
-                        <Link href={route('menu')} className="btn-g" style={{ marginBottom: 16 }}>
-                            Lihat Semua Menu
-                            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                            </svg>
-                        </Link>
-                        <p style={{ color: 'var(--ink-soft)', fontSize: '.95rem', marginTop: 16, display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <div style={{ marginBottom: 20 }}>
+                            <Link href={route('menu')} className="btn-g">
+                                Lihat Semua Menu
+                                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                            </Link>
+                        </div>
+                        <p style={{ color: 'var(--ink-soft)', fontSize: '.95rem', marginTop: 0, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
                             <span>Mau yang ini? <span style={{ color: 'var(--tomato)', fontWeight: 600 }}>Datang langsung ke kantin</span> dan pilih di etalase.</span>
                             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M12 21a9 9 0 0 0 9-7H3a9 9 0 0 0 9 7Z" /><path d="M7 21h10" /><path d="M19.5 12 22 6" /><path d="M16.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.73 1.62" /><path d="M11.25 3c.27.1.8.53.74 1.36-.05.83-.93 1.2-.98 2.02-.06.78.33 1.24.72 1.62" /><path d="M6.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.74 1.62" /></svg>
                         </p>

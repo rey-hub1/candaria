@@ -53,14 +53,14 @@ export default function Show({ transaction = {}, printModal = false }) {
 
             <div className="max-w-2xl mx-auto">
                 {/* Back link */}
-                <div className="mb-6 print:hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="mb-6 print:hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
                     <Link
                         href={route('transactions.create')}
                         className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg shadow-sm transition flex items-center justify-center gap-1.5 w-full sm:w-auto"
                     >
                         Transaksi Selanjutnya &rarr;
                     </Link>
-                    <div className="flex gap-2 w-full sm:w-auto">
+                    <div className="flex gap-3 w-full sm:w-auto">
                         <button
                             onClick={() => {
                                 openConfirm({ message: 'Apakah Anda yakin ingin membatalkan transaksi ini? Stok barang akan dikembalikan.' }, () => router.delete(route('transactions.destroy', transaction.id)));

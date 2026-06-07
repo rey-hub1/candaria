@@ -26,6 +26,6 @@ createInertiaApp({
         );
     },
     progress: {
-        color: '#10b981', // green / emerald matching the theme
+        color: '#6366f1', // indigo — selaras palet brand Candaria
     },
 });
