@@ -61,9 +61,14 @@ export default function Show({ transaction = {}, printModal = false }) {
                         Transaksi Selanjutnya &rarr;
                     </Link>
                     <div className="flex gap-3 w-full sm:w-auto">
+                        {transaction.status !== 'voided' && (
                         <button
                             onClick={() => {
-                                openConfirm({ message: 'Apakah Anda yakin ingin membatalkan transaksi ini? Stok barang akan dikembalikan.' }, () => router.delete(route('transactions.destroy', transaction.id)));
+                                openConfirm({ message: 'Apakah Anda yakin ingin membatalkan transaksi ini? Stok barang akan dikembalikan.' }, () => {
+                                    const reason = window.prompt(`Alasan pembatalan transaksi ${transaction.transaction_code} (opsional):`, '');
+                                    if (reason === null) return;
+                                    router.delete(route('transactions.destroy', transaction.id), { data: { reason } });
+                                });
                             }}
                             className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-lg shadow-sm transition flex items-center justify-center gap-1.5 flex-1 sm:flex-none"
                         >
@@ -72,6 +77,7 @@ export default function Show({ transaction = {}, printModal = false }) {
                             </svg>
                             Void / Batal
                         </button>
+                        )}
                         <button
                             onClick={() => window.print()}
                             className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-lg shadow-sm transition flex items-center justify-center gap-1.5 flex-1 sm:flex-none"
@@ -83,6 +89,19 @@ export default function Show({ transaction = {}, printModal = false }) {
                         </button>
                     </div>
                 </div>
+
+                {/* Voided banner */}
+                {transaction.status === 'voided' && (
+                    <div className="mb-4 rounded-xl border border-rose-300 bg-rose-50 px-5 py-4 print:border-rose-400">
+                        <p className="text-sm font-bold text-rose-700">Transaksi ini telah DIBATALKAN (void)</p>
+                        {transaction.void_reason && (
+                            <p className="text-xs text-rose-600 mt-1">Alasan: {transaction.void_reason}</p>
+                        )}
+                        {transaction.voider?.name && (
+                            <p className="text-xs text-rose-500 mt-0.5">Oleh: {transaction.voider.name}</p>
+                        )}
+                    </div>
+                )}
 
                 {/* Receipt Container */}
                 <div

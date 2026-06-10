@@ -259,7 +259,7 @@ test('void transaction restores stock', function () {
     expect($product->fresh()->stock)->toBe(10);
 });
 
-test('void transaction removes cashbook entry', function () {
+test('void transaction posts a contra cashbook entry instead of deleting', function () {
     $cashier = makeCashierUser();
     $product = makeKantinProduct(1000, 1500, 5);
 
@@ -273,10 +273,16 @@ test('void transaction removes cashbook entry', function () {
     $tx = Transaction::first();
     $this->actingAs(makeAdminUser())->delete("/transactions/{$tx->id}");
 
-    $this->assertDatabaseCount('cashbooks', 0);
+    // Original debit kept + contra credit added → audit trail, net zero
+    $this->assertDatabaseCount('cashbooks', 2);
+    $this->assertDatabaseHas('cashbooks', ['type' => 'credit', 'source' => 'transaction', 'amount' => 1500]);
+
+    $debit  = Cashbook::where('type', 'debit')->sum('amount');
+    $credit = Cashbook::where('type', 'credit')->sum('amount');
+    expect((float) ($debit - $credit))->toEqual(0.0);
 });
 
-test('void transaction deletes transaction record', function () {
+test('void keeps the transaction record with voided status', function () {
     $cashier = makeCashierUser();
     $product = makeKantinProduct(1000, 1500, 5);
 
@@ -285,10 +291,21 @@ test('void transaction deletes transaction record', function () {
         2000
     ));
 
-    $tx = Transaction::first();
-    $this->actingAs(makeAdminUser())->delete("/transactions/{$tx->id}");
+    $tx    = Transaction::first();
+    $admin = makeAdminUser();
+    $this->actingAs($admin)->delete("/transactions/{$tx->id}", ['reason' => 'Salah input']);
 
-    $this->assertDatabaseMissing('transactions', ['id' => $tx->id]);
+    $this->assertDatabaseHas('transactions', [
+        'id'          => $tx->id,
+        'status'      => 'voided',
+        'void_reason' => 'Salah input',
+        'voided_by'   => $admin->id,
+    ]);
+
+    // Items soft-deleted so reports/aggregates exclude them
+    expect(TransactionItem::count())->toBe(0);
+    expect(TransactionItem::withTrashed()->count())->toBe(1);
+    expect((float) TransactionItem::sum('profit_kantin'))->toEqual(0.0);
 });
 
 test('void is blocked when a transaction item is already settled', function () {

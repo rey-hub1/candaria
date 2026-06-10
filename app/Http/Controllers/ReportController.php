@@ -24,7 +24,7 @@ class ReportController extends Controller
         $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', Carbon::now()->toDateString());
 
-        $salesDataQuery = Transaction::select(
+        $salesDataQuery = Transaction::active()->select(
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('COUNT(id) as transaction_count'),
                 DB::raw('SUM(total_amount) as total_sales')
