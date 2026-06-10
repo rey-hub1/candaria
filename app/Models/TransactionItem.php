@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TransactionItem extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'transaction_id',
         'product_id',
@@ -15,7 +18,7 @@ class TransactionItem extends Model
         'selling_price',
         'profit_kantin',
         'profit_seller',
-        'seller_settlement_id'
+        'seller_settlement_id',
     ];
 
     public function transaction(): BelongsTo

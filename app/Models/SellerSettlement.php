@@ -2,21 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Traits\Filterable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SellerSettlement extends Model
 {
-    use \App\Traits\Filterable;
+    use \App\Traits\LogsActivity, Filterable;
 
     protected $fillable = [
         'seller_id',
         'user_id',
         'total_amount',
         'settlement_date',
-        'notes'
+        'notes',
     ];
 
     public function seller(): BelongsTo

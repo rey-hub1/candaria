@@ -20,7 +20,7 @@ class DashboardController extends Controller
         // 1. Common Data for Both
         $today = Carbon::today();
         
-        $todayStats = Transaction::whereDate('created_at', $today)
+        $todayStats = Transaction::active()->whereDate('created_at', $today)
             ->selectRaw('COUNT(id) as count, SUM(total_amount) as total')
             ->first();
         $todaySalesCount = $todayStats->count ?? 0;
@@ -51,7 +51,7 @@ class DashboardController extends Controller
             
             // This month's sales and profit
             $thisMonthStart = Carbon::now()->startOfMonth();
-            $thisMonthSales = Transaction::where('created_at', '>=', $thisMonthStart)->sum('total_amount');
+            $thisMonthSales = Transaction::active()->where('created_at', '>=', $thisMonthStart)->sum('total_amount');
             $thisMonthProfit = TransactionItem::where('created_at', '>=', $thisMonthStart)->sum('profit_kantin');
 
             // Low stock products alert (stock <= 5)

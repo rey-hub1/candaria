@@ -3,7 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Transaction;
+use App\Traits\Filterable;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -15,7 +15,7 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    use \App\Traits\Filterable;
+    use \App\Traits\LogsActivity, Filterable;
 
     public function isAdmin(): bool
     {
@@ -31,6 +31,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class);
     }
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 

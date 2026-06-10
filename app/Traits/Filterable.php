@@ -9,9 +9,8 @@ trait Filterable
     /**
      * Apply search and sorting to the query builder.
      *
-     * @param Builder $query
-     * @param array $filters ['search' => '...', 'sort' => 'column', 'dir' => 'asc|desc']
-     * @param array $searchableColumns Columns to search against (can include relations like 'category.name')
+     * @param  array  $filters  ['search' => '...', 'sort' => 'column', 'dir' => 'asc|desc']
+     * @param  array  $searchableColumns  Columns to search against (can include relations like 'category.name')
      * @return Builder
      */
     public function scopeFilter(Builder $query, array $filters, array $searchableColumns = [])
@@ -33,11 +32,11 @@ trait Filterable
 
         $query->when($filters['sort'] ?? null, function ($query, $sort) use ($filters) {
             $dir = strtolower($filters['dir'] ?? 'asc') === 'asc' ? 'asc' : 'desc';
-            
+
             // Basic handling for relations in sort (e.g., 'category.name')
-            // For true relation sorting in Eloquent, you typically need joins, 
+            // For true relation sorting in Eloquent, you typically need joins,
             // but for simplicity we only sort on the primary table or let collections handle relations.
-            if (!str_contains($sort, '.')) {
+            if (! str_contains($sort, '.')) {
                 $query->orderBy($sort, $dir);
             }
         });

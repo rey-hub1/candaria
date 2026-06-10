@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
 class Setting extends Model
 {
+    use LogsActivity;
+
     protected $fillable = ['key', 'value'];
 
     public $timestamps = true;

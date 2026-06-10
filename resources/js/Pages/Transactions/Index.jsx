@@ -24,10 +24,21 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
         
-        return withDay 
+        return withDay
             ? `${day} ${month} ${year} ${hours}:${minutes}`
             : `${day}/${String(date.getMonth() + 1).padStart(2, '0')}/${year} ${hours}:${minutes}`;
     };
+
+    const voidTransaction = (t) => {
+        if (t.status === 'voided') return;
+        const reason = window.prompt(`Alasan pembatalan transaksi ${t.transaction_code} (opsional):`, '');
+        if (reason === null) return; // dibatalkan oleh user
+        router.delete(route('transactions.destroy', t.id), { data: { reason }, preserveScroll: true });
+    };
+
+    const VoidedBadge = () => (
+        <span className="text-[10px] px-2 py-0.5 bg-rose-100 text-rose-700 font-bold rounded-full uppercase tracking-wide">Dibatalkan</span>
+    );
 
         return (
         <AuthenticatedLayout title="Riwayat Transaksi">
@@ -55,7 +66,10 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
                             {transactions.data.map((t) => (
                                 <div key={t.id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-3">
                                     <div className="flex justify-between items-center">
-                                        <span className="font-bold text-slate-950 font-mono text-sm">{t.transaction_code}</span>
+                                        <span className="font-bold text-slate-950 font-mono text-sm flex items-center gap-2">
+                                            {t.transaction_code}
+                                            {t.status === 'voided' && <VoidedBadge />}
+                                        </span>
                                         <span className="text-[10px] text-slate-400 font-medium">{formatDate(t.created_at)}</span>
                                     </div>
 
@@ -82,14 +96,16 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
                                         >
                                             Lihat Struk
                                         </Link>
-                                        <button
-                                            onClick={() => {
-                                                openConfirm({ message: 'Yakin batalkan transaksi ini?' }, () => router.delete(route('transactions.destroy', t.id), { preserveScroll: true }));
-                                            }}
-                                            className="flex-1 text-center py-2 bg-red-100 hover:bg-red-200 text-red-700 font-bold text-xs rounded-lg transition"
-                                        >
-                                            Batal
-                                        </button>
+                                        {t.status !== 'voided' && (
+                                            <button
+                                                onClick={() => {
+                                                    openConfirm({ message: 'Yakin batalkan transaksi ini?' }, () => voidTransaction(t));
+                                                }}
+                                                className="flex-1 text-center py-2 bg-red-100 hover:bg-red-200 text-red-700 font-bold text-xs rounded-lg transition"
+                                            >
+                                                Batal
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             ))}
@@ -112,9 +128,12 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
                                     </thead>
                                     <tbody className="divide-y divide-slate-100 bg-white">
                                         {transactions.data.map((t) => (
-                                            <tr key={t.id} className="hover:bg-slate-50 transition">
+                                            <tr key={t.id} className={`transition ${t.status === 'voided' ? 'bg-rose-50/50 hover:bg-rose-50' : 'hover:bg-slate-50'}`}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-950 font-mono">
-                                                    {t.transaction_code}
+                                                    <span className="flex items-center gap-2">
+                                                        <span className={t.status === 'voided' ? 'line-through text-slate-400' : ''}>{t.transaction_code}</span>
+                                                        {t.status === 'voided' && <VoidedBadge />}
+                                                    </span>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                                                     {t.user?.name}
@@ -139,14 +158,16 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
                                                         >
                                                             Struk
                                                         </Link>
-                                                        <button
-                                                            onClick={() => {
-                                                                openConfirm({ message: 'Yakin batalkan transaksi ini?' }, () => router.delete(route('transactions.destroy', t.id), { preserveScroll: true }));
-                                                            }}
-                                                            className="inline-flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 font-semibold text-xs rounded transition"
-                                                        >
-                                                            Batal
-                                                        </button>
+                                                        {t.status !== 'voided' && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    openConfirm({ message: 'Yakin batalkan transaksi ini?' }, () => voidTransaction(t));
+                                                                }}
+                                                                className="inline-flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 font-semibold text-xs rounded transition"
+                                                            >
+                                                                Batal
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </tr>

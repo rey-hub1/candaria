@@ -12,38 +12,13 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MarginRuleController;
 use App\Http\Controllers\CashbookController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\PublicController;
+use App\Http\Controllers\ActivityLogController;
 use Illuminate\Support\Facades\Route;
 
-// Landing Page with Popular Products
-Route::get('/', function () {
-    $popularProducts = \App\Models\Product::with(['category'])
-        ->where('stock', '>', 0)
-        ->withSum('transactionItems', 'quantity')
-        ->orderByDesc('transaction_items_sum_quantity')
-        ->take(8)
-        ->get();
-
-    return \Inertia\Inertia::render('Welcome', [
-        'popularProducts' => $popularProducts,
-        'canLogin' => Route::has('login'),
-    ]);
-});
-
-// Public menu catalog with search & filter (client-side)
-Route::get('/menu', function () {
-    $products = \App\Models\Product::with(['category'])
-        ->withSum('transactionItems', 'quantity')
-        ->orderBy('name')
-        ->get();
-
-    $categories = \App\Models\Category::orderBy('name')->get(['id', 'name']);
-
-    return \Inertia\Inertia::render('Menu', [
-        'products' => $products,
-        'categories' => $categories,
-        'canLogin' => Route::has('login'),
-    ]);
-})->name('menu');
+// Public pages
+Route::get('/', [PublicController::class, 'welcome']);
+Route::get('/menu', [PublicController::class, 'menu'])->name('menu');
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard (accessible by both admin & cashier)
@@ -104,6 +79,9 @@ Route::middleware(['auth'])->group(function () {
         // Pengaturan (nomor WhatsApp admin, dll)
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+        // Log Aktivitas (audit trail)
+        Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
     });
 });
 

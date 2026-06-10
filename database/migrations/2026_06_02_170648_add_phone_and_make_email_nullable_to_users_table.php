@@ -2,9 +2,9 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -23,7 +23,7 @@ return new class extends Migration
         foreach ($sellers as $seller) {
             // Check if phone already exists
             $exists = DB::table('users')->where('phone', $seller->phone)->exists();
-            if (!$exists) {
+            if (! $exists) {
                 DB::table('users')->insert([
                     'name' => $seller->name,
                     'phone' => $seller->phone,

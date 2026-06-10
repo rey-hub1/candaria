@@ -4,12 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Cashbook extends Model
 {
-    use HasFactory, \App\Traits\Filterable;
+    use \App\Traits\Filterable, HasFactory;
 
     protected $fillable = [
         'date',
@@ -18,7 +17,7 @@ class Cashbook extends Model
         'amount',
         'source', // manual, transaction, settlement
         'reference_id',
-        'user_id'
+        'user_id',
     ];
 
     protected $casts = [
