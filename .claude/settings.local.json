@@ -32,7 +32,17 @@
       "mcp__ide__getDiagnostics",
       "Bash(ls -la favicon-32.png icon-192x192.png icon-512x512.png)",
       "Bash(cat manifest.json)",
-      "Bash(mdls -name kMDItemNumberOfPages \"QC - Check List - Candaria SMEKDA - V2.pdf\")"
+      "Bash(mdls -name kMDItemNumberOfPages \"QC - Check List - Candaria SMEKDA - V2.pdf\")",
+      "Bash(claude *)",
+      "Bash(sed -n '78,150p' resources/js/pages/Transactions/Index.jsx)",
+      "Bash(sed -n '1,20p' resources/js/pages/Transactions/Index.jsx)",
+      "Bash(vendor/bin/pest)",
+      "Bash(perl -0pi -e 's/\\\\badminUser\\\\\\(/logAdminUser\\(/g; s/\\\\bcashierUser\\\\\\(/logCashierUser\\(/g; s/\\\\bkantinProduct\\\\\\(/logKantinProduct\\(/g; s/function logAdminUser/function logAdminUser/; ' tests/Feature/ActivityLogTest.php)",
+      "Bash(perl -0pi -e 's/function logAdminUser\\\\\\(\\\\\\): User\\\\b/function logAdminUser\\(\\): User/; ' tests/Feature/ActivityLogTest.php)",
+      "Bash(vendor/bin/pint app/Services app/Http/Controllers/TransactionController.php app/Http/Controllers/PublicController.php app/Http/Controllers/ActivityLogController.php app/Models app/Traits app/Http/Requests app/Exceptions database/migrations)",
+      "Bash(git checkout *)",
+      "Bash(gh pr create --base main --head feat/void-audit-hardening --title 'feat: soft void, audit log, race-safe codes & service layer' --body ' *)",
+      "Read(//Users/reynonawfal/.claude/skills/lean-coding/assets/**)"
     ]
   }
 }

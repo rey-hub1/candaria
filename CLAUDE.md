@@ -1,0 +1,53 @@
+# Candaria
+
+School canteen POS + consignment management system, expanding into an external-vendor food marketplace for students.
+
+## Stack
+- Backend: Laravel 13 (PHP 8.3), SQLite
+- Frontend: React 19 + Inertia.js v3, Tailwind CSS v4
+- Excel export: maatwebsite/excel, PDF: barryvdh/laravel-dompdf
+- Test: Pest (`pestphp/pest`)
+
+## Commands
+- Install: `composer install && npm install`
+- Run (dev): `php artisan serve` + `npm run dev` (two terminals)
+- Test: `php artisan test` (or `./vendor/bin/pest`)
+- Build: `npm run build && php artisan optimize`
+- Migrate: `php artisan migrate --seed`
+
+## Structure
+- `app/Models/` — Eloquent models
+- `app/Http/Controllers/` — one controller per resource, Inertia responses
+- `app/Services/` — business logic extracted from controllers (e.g. `TransactionService`)
+- `app/Traits/` — `Filterable` (query filters), `LogsActivity` (audit log)
+- `resources/js/Pages/` — Inertia pages, one folder per resource (mirrors controllers)
+- `database/migrations/` — chronological, never edit old ones — add new migrations
+- `plan/` — design docs for upcoming work (e.g. marketplace expansion)
+- `context/` — short explainers per feature/area (see index below)
+
+## Context index
+- `context/auth-roles.md` — user roles, RoleMiddleware, how access control works
+- `context/pos-transactions.md` — cashier checkout flow, TransactionService, void/audit
+- `context/consignment.md` — sellers, products, settlements, margin rules
+- `context/settings-and-flags.md` — `Setting` model (key-value config) and shared Inertia props
+- `context/marketplace-expansion.md` — status of the vendor marketplace work (see `plan/marketplace-expansion-plan.md` for full design)
+- `context/marketplace.md` — vendors, menu items, option groups/options (Phase 2 implementation)
+- `context/student-accounts.md` — NISN-based student login, forced password change (Phase 3 implementation)
+- `context/marketplace-orders.md` — student browse/cart/checkout/orders + vendor order management (Phase 4 implementation)
+- `context/marketplace-wallet.md` — vendor wallet/ledger + admin settlements (Phase 5 implementation)
+- `context/marketplace-extras.md` — order status history, slot quota, notifications, admin monitoring/reports (Phase 6 implementation)
+
+## Conventions
+- Models needing audit trail use `use LogsActivity` (writes to `activity_logs`).
+- List/search controllers use `Filterable` trait + `->filter($filters, [...columns])`.
+- Image uploads stored via `Storage::disk('public')`, exposed through `appends = ['image_url']` accessor (see `Product::getImageUrlAttribute`).
+- Money amounts: integers/decimals in rupiah, no separate currency field.
+- Auto-generated codes (product code, transaction code) follow a prefix + zero-padded sequence pattern, computed in model `boot()`.
+
+## Gotchas
+- SQLite DB file must exist (`touch database/database.sqlite`) before migrating.
+- `Transaction` has soft-void: use `Transaction::active()` scope, not raw queries — voided transactions stay in DB with `status = 'voided'`.
+- Currently on branch `candaria2` — marketplace expansion work, do not merge into `main` until ready.
+
+## Working style
+Follow the `lean-coding` skill: read the Context index before exploring, read narrowly (grep for the symbol, go straight to named files), plan briefly before multi-file edits, keep diffs small, and keep each session focused on one concern. Whenever you add or change a feature, update the relevant `context/` file and this index so the context never goes stale.

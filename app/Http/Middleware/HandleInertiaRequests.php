@@ -53,6 +53,10 @@ class HandleInertiaRequests extends Middleware
                 'admin_whatsapp' => \App\Models\Setting::get('admin_whatsapp', '6281234567890'),
                 'keyboard_default_mode' => \App\Models\Setting::get('keyboard_default_mode', 'prefix'),
             ],
+            'features' => \App\Models\FeatureFlag::all()->pluck('is_enabled', 'key'),
+            'unreadNotificationsCount' => $request->user()
+                ? $request->user()->unreadNotifications()->count()
+                : 0,
         ];
     }
 }

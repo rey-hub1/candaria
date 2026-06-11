@@ -17,6 +17,18 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
+        if ($user->role === 'vendor') {
+            return redirect()->route('vendor.dashboard');
+        }
+
+        if ($user->role === 'student') {
+            if ($user->student?->must_change_password) {
+                return redirect()->route('student.password.change');
+            }
+
+            return redirect()->route('student.dashboard');
+        }
+
         // 1. Common Data for Both
         $today = Carbon::today();
         
