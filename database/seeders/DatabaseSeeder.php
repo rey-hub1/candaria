@@ -22,6 +22,11 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // 0. Feature Flags
+        $this->call(FeatureFlagSeeder::class);
+        $this->call(StudentSeeder::class);
+        $this->call(MarketplaceSeeder::class);
+
         // 1. Margin Rules (must be before Product creation for siswa type)
         $marginRulesData = [
             ['min_price' => 0,    'max_price' => 2000,  'margin' => 500],
@@ -46,6 +51,13 @@ class DatabaseSeeder extends Seeder
             'email'    => 'cashier@canteen.com',
             'password' => Hash::make('password'),
             'role'     => 'cashier',
+        ]);
+
+        User::create([
+            'name'     => 'Super Admin',
+            'email'    => 'superadmin@candaria.com',
+            'password' => Hash::make('password'),
+            'role'     => 'super_admin',
         ]);
 
         // 3. Categories

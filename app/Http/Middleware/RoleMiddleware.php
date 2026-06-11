@@ -19,6 +19,10 @@ class RoleMiddleware
             return redirect()->route('login');
         }
 
+        if ($request->user()->role === 'super_admin') {
+            return $next($request);
+        }
+
         if (! in_array($request->user()->role, $roles)) {
             abort(403, 'Unauthorized action. You do not have the required permissions.');
         }

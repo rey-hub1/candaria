@@ -14,6 +14,20 @@ use App\Http\Controllers\CashbookController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SuperAdmin\FeatureFlagController;
+use App\Http\Controllers\Admin\VendorController as AdminVendorController;
+use App\Http\Controllers\Admin\Marketplace\OrderController as AdminMarketplaceOrderController;
+use App\Http\Controllers\Admin\MarketplaceReportController;
+use App\Http\Controllers\Vendor\DashboardController as VendorDashboardController;
+use App\Http\Controllers\Vendor\MenuItemController;
+use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
+use App\Http\Controllers\Student\PasswordController as StudentPasswordController;
+use App\Http\Controllers\Student\MarketplaceController;
+use App\Http\Controllers\Student\OrderController as StudentOrderController;
+use App\Http\Controllers\Vendor\OrderController as VendorOrderController;
+use App\Http\Controllers\Vendor\WalletController as VendorWalletController;
+use App\Http\Controllers\Admin\VendorSettlementController;
 use Illuminate\Support\Facades\Route;
 
 // Public pages
@@ -29,6 +43,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // In-app notifications
+    Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifikasi/{id}/baca', [NotificationController::class, 'markRead'])->name('notifications.markRead');
+    Route::post('/notifikasi/baca-semua', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
 
     // Cashier routes (accessible by both admin and cashier)
     Route::middleware(['role:admin,cashier'])->group(function () {
@@ -82,6 +101,69 @@ Route::middleware(['auth'])->group(function () {
 
         // Log Aktivitas (audit trail)
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+    });
+
+    // Marketplace: admin manages vendors/mitra
+    Route::middleware(['role:admin', 'feature:marketplace'])->prefix('admin')->name('admin.')->group(function () {
+        Route::resource('vendors', AdminVendorController::class)->only(['index', 'store', 'update', 'destroy']);
+
+        Route::get('/marketplace/pesanan', [AdminMarketplaceOrderController::class, 'index'])->name('marketplace.orders');
+        Route::get('/reports/marketplace-sales', [MarketplaceReportController::class, 'sales'])->name('reports.marketplace-sales');
+
+        Route::middleware(['feature:vendor_wallet'])->group(function () {
+            Route::get('/vendor-settlements', [VendorSettlementController::class, 'index'])->name('vendor-settlements.index');
+            Route::post('/vendor-settlements', [VendorSettlementController::class, 'store'])->name('vendor-settlements.store');
+        });
+    });
+
+    // Marketplace: vendor/mitra dashboard
+    Route::middleware(['role:vendor', 'feature:marketplace'])->prefix('mitra')->name('vendor.')->group(function () {
+        Route::get('/', [VendorDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/profile', [VendorDashboardController::class, 'profile'])->name('profile');
+        Route::put('/profile', [VendorDashboardController::class, 'updateProfile'])->name('profile.update');
+
+        Route::post('/menu', [MenuItemController::class, 'store'])->name('menu.store');
+        Route::put('/menu/{menuItem}', [MenuItemController::class, 'update'])->name('menu.update');
+        Route::delete('/menu/{menuItem}', [MenuItemController::class, 'destroy'])->name('menu.destroy');
+        Route::post('/menu/{menuItem}/toggle', [MenuItemController::class, 'toggleActive'])->name('menu.toggle');
+        Route::get('/menu', [MenuItemController::class, 'index'])->name('menu.index');
+
+        Route::get('/pesanan', [VendorOrderController::class, 'index'])->name('orders.index');
+        Route::put('/pesanan/{order}/status', [VendorOrderController::class, 'updateStatus'])->name('orders.updateStatus');
+
+        Route::middleware(['feature:vendor_wallet'])->group(function () {
+            Route::get('/saldo', [VendorWalletController::class, 'index'])->name('wallet.index');
+        });
+    });
+
+    // Marketplace: student account
+    Route::middleware(['role:student', 'feature:student_login'])->prefix('siswa')->name('student.')->group(function () {
+        Route::get('/ganti-password', [StudentPasswordController::class, 'edit'])->name('password.change');
+        Route::put('/ganti-password', [StudentPasswordController::class, 'update'])->name('password.update');
+
+        Route::middleware(['student.password_changed'])->group(function () {
+            Route::get('/', [StudentDashboardController::class, 'index'])->name('dashboard');
+        });
+    });
+
+    // Marketplace: student browse & order
+    Route::middleware(['role:student', 'feature:marketplace', 'student.password_changed'])->name('student.')->group(function () {
+        Route::get('/jajan', [MarketplaceController::class, 'index'])->name('marketplace.index');
+        Route::get('/jajan/{vendor:slug}', [MarketplaceController::class, 'show'])->name('marketplace.show');
+
+        Route::middleware(['feature:marketplace_orders'])->group(function () {
+            Route::get('/jajan/checkout', [MarketplaceController::class, 'checkout'])->name('marketplace.checkout');
+            Route::post('/jajan/checkout', [StudentOrderController::class, 'store'])->name('orders.store');
+            Route::get('/siswa/pesanan', [StudentOrderController::class, 'index'])->name('orders.index');
+            Route::get('/siswa/pesanan/{order}', [StudentOrderController::class, 'show'])->name('orders.show');
+            Route::post('/siswa/pesanan/{order}/batal', [StudentOrderController::class, 'cancel'])->name('orders.cancel');
+        });
+    });
+
+    // Super Admin only
+    Route::middleware(['role:super_admin'])->prefix('super-admin')->name('super-admin.')->group(function () {
+        Route::get('/feature-flags', [FeatureFlagController::class, 'index'])->name('feature-flags.index');
+        Route::put('/feature-flags/{featureFlag}', [FeatureFlagController::class, 'update'])->name('feature-flags.update');
     });
 });
 

@@ -27,9 +27,34 @@ class User extends Authenticatable
         return $this->role === 'cashier';
     }
 
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super_admin';
+    }
+
+    public function isVendor(): bool
+    {
+        return $this->role === 'vendor';
+    }
+
+    public function isStudent(): bool
+    {
+        return $this->role === 'student';
+    }
+
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function vendor()
+    {
+        return $this->hasOne(Vendor::class);
+    }
+
+    public function student()
+    {
+        return $this->hasOne(Student::class);
     }
 
     /** @use HasFactory<UserFactory> */
