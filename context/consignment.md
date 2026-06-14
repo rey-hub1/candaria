@@ -18,4 +18,5 @@ Internal "penitipan" model: students/sellers consign products sold through the c
 
 ## Gotchas
 - Margin rule cache (`margin_rules_all`) must be invalidated/forgotten when `MarginRule` changes — check `MarginRuleController` does this.
+- `DashboardController::exportPenitip()` (route `penitip.export`) downloads xlsx by default (`?format=pdf` for PDF), reusing `TitipanReportExport` / `reports.titipan_pdf` scoped to the logged-in penitip's seller. Both desktop sidebar and mobile nav link here.
 - Don't confuse this internal consignment model with the new external "vendor/mitra" marketplace (`plan/marketplace-expansion-plan.md`) — separate domain, separate tables (`vendors`, `menu_items`, not `Seller`/`Product`).

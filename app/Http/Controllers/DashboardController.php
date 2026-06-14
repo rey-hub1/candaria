@@ -189,38 +189,32 @@ class DashboardController extends Controller
             abort(404);
         }
 
+        $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
+        $endDate = $request->input('end_date', Carbon::now()->toDateString());
+        $format = $request->input('format', 'xlsx');
+
         $products = Product::where('seller_id', $seller->id)->pluck('id')->toArray();
-        $items = TransactionItem::with(['transaction', 'product'])
-            ->whereIn('product_id', $products)
+        $items = TransactionItem::whereIn('product_id', $products)
+            ->whereBetween(DB::raw('DATE(created_at)'), [$startDate, $endDate])
+            ->with(['product.seller', 'transaction', 'settlement'])
             ->latest()
             ->get();
 
-        $headers = [
-            "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=laporan_penitipan_" . date('Y-m-d') . ".csv",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
+        $summary = (object) [
+            'total_qty' => $items->sum('quantity'),
+            'total_seller' => $items->sum('profit_seller'),
+            'total_kantin' => $items->sum('profit_kantin'),
         ];
 
-        $callback = function() use($items) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, ['Tanggal', 'No. Transaksi', 'Produk', 'Harga Beli (Modal)', 'Qty', 'Total Profit']);
+        if ($format === 'pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.titipan_pdf', compact('items', 'startDate', 'endDate', 'summary'))
+                ->setPaper('a4', 'landscape');
+            return $pdf->stream('laporan-penitipan-' . $startDate . '-to-' . $endDate . '.pdf');
+        }
 
-            foreach ($items as $item) {
-                fputcsv($file, [
-                    $item->created_at->format('Y-m-d H:i'),
-                    $item->transaction->transaction_code,
-                    $item->product->name ?? 'Unknown',
-                    $item->cost_price,
-                    $item->quantity,
-                    $item->profit_seller,
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\TitipanReportExport($items, $startDate, $endDate, $summary),
+            'laporan-penitipan-' . $startDate . '-to-' . $endDate . '.xlsx'
+        );
     }
 }

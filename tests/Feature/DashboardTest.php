@@ -42,13 +42,13 @@ test('dashboard data contains expected keys for admin', function () {
         );
 });
 
-test('penitip export CSV responds successfully when seller exists', function () {
+test('penitip export xlsx responds successfully when seller exists', function () {
     $penitip = User::factory()->penitip()->create();
     Seller::factory()->create(['phone' => $penitip->phone]);
 
     $this->actingAs($penitip)->get('/dashboard/export')
         ->assertOk()
-        ->assertHeader('Content-type', 'text/csv; charset=UTF-8');
+        ->assertHeader('Content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 });
 
 test('admin cannot access penitip export endpoint', function () {

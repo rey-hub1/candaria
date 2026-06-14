@@ -205,8 +205,7 @@ export default function Welcome({ canLogin, popularProducts, features = {} }) {
                 <nav className={`nav ${scrolled ? 'sc' : ''}`}>
                     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <img src="/img/logo-color.png" alt="Candaria" style={{ width: 34, height: 34, objectFit: 'contain', flexShrink: 0 }} />
-                            <span className="d" style={{ fontSize: '1.32rem', fontWeight: 600, color: 'var(--ink)', letterSpacing: '-.01em' }}>Candaria</span>
+                            <img src="/img/logo-color.png" alt="Candaria" style={{ width: 66, height: 66, objectFit: 'contain', flexShrink: 0 }} />
                         </Link>
                         <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
                             <a href="#menu" className="nav-link">Menu</a>

@@ -20,3 +20,6 @@ Cashier checkout flow with stock deduction, payment, and soft-void/audit support
 - Always query transactions through `Transaction::active()` (= `status = 'completed'`) for sales aggregates/reports — voided ones remain in the table.
 - Code generation has retry logic (`MAX_CODE_ATTEMPTS`) for race-safety on concurrent checkouts.
 - Stock check + deduction happens under row lock inside the same transaction — don't move stock checks outside `checkout()`.
+- `void()` restocks per product (`groupBy('product_id')` + single `increment`) and soft-deletes all items in one `whereIn(...)->update()` — avoid reverting to a per-item loop (N+1).
+- Void confirmation in `Transactions/Index.jsx` uses a custom `Modal` with a reason textarea (not `window.prompt`), with a per-row loading state (`voidingId`) disabling the button during `router.delete`.
+- `Transactions/Create.jsx` `ProductCard` shows `product.stock - cartQty` (remaining stock) so the displayed count reflects items already in cart, without re-fetching.

@@ -1,8 +1,7 @@
 import React from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import ConfirmModal from '@/Components/ConfirmModal';
-import { useDialog } from '@/hooks/useDialog';
+import Modal from '@/Components/Modal';
 import { formatRupiah } from '@/utils/format';
 import Pagination from '@/Components/Pagination';
 import FilterBar from '@/Components/FilterBar';
@@ -10,7 +9,9 @@ import SortableHeader from '@/Components/SortableHeader';
 
 export default function Index({ transactions = { data: [], links: [], total: 0 }, filters = {} }) {
 
-    const { dialog, confirm: openConfirm, alert: openAlert, dialogConfirm, dialogClose } = useDialog();
+    const [voidingId, setVoidingId] = React.useState(null);
+    const [voidTarget, setVoidTarget] = React.useState(null);
+    const [voidReason, setVoidReason] = React.useState('');
 
     const formatDate = (dateString, withDay = false) => {
         if (!dateString) return '-';
@@ -29,11 +30,22 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
             : `${day}/${String(date.getMonth() + 1).padStart(2, '0')}/${year} ${hours}:${minutes}`;
     };
 
-    const voidTransaction = (t) => {
+    const requestVoid = (t) => {
         if (t.status === 'voided') return;
-        const reason = window.prompt(`Alasan pembatalan transaksi ${t.transaction_code} (opsional):`, '');
-        if (reason === null) return; // dibatalkan oleh user
-        router.delete(route('transactions.destroy', t.id), { data: { reason }, preserveScroll: true });
+        setVoidReason('');
+        setVoidTarget(t);
+    };
+
+    const confirmVoid = () => {
+        const t = voidTarget;
+        if (!t) return;
+        setVoidTarget(null);
+        setVoidingId(t.id);
+        router.delete(route('transactions.destroy', t.id), {
+            data: { reason: voidReason },
+            preserveScroll: true,
+            onFinish: () => setVoidingId(null),
+        });
     };
 
     const VoidedBadge = () => (
@@ -98,12 +110,11 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
                                         </Link>
                                         {t.status !== 'voided' && (
                                             <button
-                                                onClick={() => {
-                                                    openConfirm({ message: 'Yakin batalkan transaksi ini?' }, () => voidTransaction(t));
-                                                }}
-                                                className="flex-1 text-center py-2 bg-red-100 hover:bg-red-200 text-red-700 font-bold text-xs rounded-lg transition"
+                                                onClick={() => requestVoid(t)}
+                                                disabled={voidingId === t.id}
+                                                className="flex-1 text-center py-2 bg-red-100 hover:bg-red-200 text-red-700 font-bold text-xs rounded-lg transition disabled:opacity-50"
                                             >
-                                                Batal
+                                                {voidingId === t.id ? 'Membatalkan...' : 'Batal'}
                                             </button>
                                         )}
                                     </div>
@@ -160,12 +171,11 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
                                                         </Link>
                                                         {t.status !== 'voided' && (
                                                             <button
-                                                                onClick={() => {
-                                                                    openConfirm({ message: 'Yakin batalkan transaksi ini?' }, () => voidTransaction(t));
-                                                                }}
-                                                                className="inline-flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 font-semibold text-xs rounded transition"
+                                                                onClick={() => requestVoid(t)}
+                                                                disabled={voidingId === t.id}
+                                                                className="inline-flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 font-semibold text-xs rounded transition disabled:opacity-50"
                                                             >
-                                                                Batal
+                                                                {voidingId === t.id ? 'Membatalkan...' : 'Batal'}
                                                             </button>
                                                         )}
                                                     </div>
@@ -181,7 +191,46 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
                     </>
                 )}
             </div>
-            <ConfirmModal {...dialog} onConfirm={dialogConfirm} onClose={dialogClose} />
+            <Modal show={!!voidTarget} maxWidth="sm" onClose={() => setVoidTarget(null)} closeable>
+                <div className="p-6">
+                    <div className="flex items-start gap-4 mb-5">
+                        <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 bg-rose-100">
+                            <svg className="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                            </svg>
+                        </div>
+                        <div className="pt-0.5">
+                            <h3 className="text-base font-bold text-slate-900 mb-1">Batalkan Transaksi</h3>
+                            <p className="text-sm text-slate-500 leading-relaxed">
+                                Yakin batalkan transaksi {voidTarget?.transaction_code}? Stok produk akan dikembalikan.
+                            </p>
+                        </div>
+                    </div>
+
+                    <label htmlFor="void_reason" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                        Alasan Pembatalan (opsional)
+                    </label>
+                    <textarea
+                        id="void_reason"
+                        rows={3}
+                        value={voidReason}
+                        onChange={(e) => setVoidReason(e.target.value)}
+                        placeholder="Contoh: Salah input pesanan..."
+                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+                    />
+
+                    <div className="flex gap-3 justify-end pt-5 mt-4 border-t border-slate-100">
+                        <button type="button" onClick={() => setVoidTarget(null)}
+                            className="px-4 py-2 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition">
+                            Batal
+                        </button>
+                        <button type="button" onClick={confirmVoid}
+                            className="px-4 py-2 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg transition">
+                            Ya, Batalkan Transaksi
+                        </button>
+                    </div>
+                </div>
+            </Modal>
         </AuthenticatedLayout>
     );
 }
