@@ -258,12 +258,26 @@ export default function Login({ status }) {
                             >
                                 Kasir
                             </button>
-                            <button 
+                            <button
                                 type="button"
                                 onClick={() => setData(d => ({ ...d, login: '081234567890', password: 'candaria123' }))}
                                 className="px-2.5 py-1 text-[11px] font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/50 rounded-lg transition"
                             >
                                 Penitip
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setData(d => ({ ...d, login: 'mitra@candaria.com', password: 'password' }))}
+                                className="px-2.5 py-1 text-[11px] font-medium text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200/50 rounded-lg transition"
+                            >
+                                Mitra
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setData(d => ({ ...d, login: 'superadmin@candaria.com', password: 'password' }))}
+                                className="px-2.5 py-1 text-[11px] font-medium text-violet-700 bg-violet-50 hover:bg-violet-100 border border-violet-200/50 rounded-lg transition"
+                            >
+                                Super Admin
                             </button>
                         </div>
                     </div>

@@ -1,7 +1,9 @@
 import { Link, Head } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 
-export default function Welcome({ canLogin, popularProducts }) {
+export default function Welcome({ canLogin, popularProducts, features = {} }) {
+    const marketplaceOpen = !!features.marketplace;
+    const marketplaceOrders = marketplaceOpen && !!features.marketplace_orders;
     const [activeFaq, setActiveFaq] = useState(null);
     const [scrolled, setScrolled] = useState(false);
 
@@ -16,7 +18,12 @@ export default function Welcome({ canLogin, popularProducts }) {
 
     const faqs = [
         { question: 'Jam berapa kantin buka?', answer: 'Candaria buka setiap hari sekolah mulai pukul 07.30 sampai 12.30. Jam istirahat adalah waktu paling ramai — datang lebih awal biar nggak kehabisan favorit kamu.' },
-        { question: 'Bisa pesan online dulu?', answer: 'Belum bisa, ya. Pemesanan hanya di tempat — datang langsung ke kantin, pilih menu di etalase, lalu bayar di kasir. Mampir pas awal istirahat biar nggak antri panjang.' },
+        {
+            question: 'Bisa pesan online dulu?',
+            answer: marketplaceOrders
+                ? 'Bisa! Khusus jajanan dari mitra sekolah, kamu bisa pesan online lewat menu "Jajan Online" — login pakai NISN, pilih menu, tentukan slot ambil, lalu bayar. Untuk menu kantin sendiri, pemesanan tetap langsung di tempat.'
+                : 'Belum bisa, ya. Pemesanan hanya di tempat — datang langsung ke kantin, pilih menu di etalase, lalu bayar di kasir. Mampir pas awal istirahat biar nggak antri panjang.',
+        },
         { question: 'Bayarnya pakai apa?', answer: 'Tunai dan QRIS, keduanya kami terima. Kasir cepat, kembalian pas, struk jelas — tinggal makan tanpa ribet.' },
         { question: 'Aku mau nitip jualan, gimana?', answer: 'Gampang. Datang langsung ke kantin dan ngobrol sama admin di tempat. Titip daganganmu, hasil penjualan dibagi transparan otomatis. Cocok buat kamu yang mau cari cuan dari jajanan buatan sendiri.' },
     ];
@@ -50,7 +57,9 @@ export default function Welcome({ canLogin, popularProducts }) {
                     --saffron: #ffd60a;
                     --yellow: #ffd60a;
                     --yellow-d: #d9af00;
-                    --leaf: #4543c8;
+                    --leaf: #1f9d55;
+                    --coral: #ff6b4a;
+                    --coral-d: #e6502f;
                     --border: rgba(27,26,56,0.14);
                     --border-s: rgba(27,26,56,0.09);
                 }
@@ -115,6 +124,21 @@ export default function Welcome({ canLogin, popularProducts }) {
                     text-decoration:none; cursor:pointer;
                 }
                 .btn-o:hover { background:var(--ink); color:var(--paper); }
+                .btn-c {
+                    display:inline-flex; align-items:center; gap:9px;
+                    background: var(--coral);
+                    color:#ffffff; font-weight:700; font-family:'DM Sans',sans-serif;
+                    border-radius:100px; padding:13px 28px; font-size:.92rem; letter-spacing:.01em;
+                    transition:all .25s ease; text-decoration:none; border:none; cursor:pointer;
+                    box-shadow:0 6px 0 0 var(--coral-d);
+                }
+                .btn-c:hover { transform:translateY(2px); box-shadow:0 3px 0 0 var(--coral-d); }
+                .btn-c:active { transform:translateY(6px); box-shadow:0 0 0 0 var(--coral-d); }
+
+                /* marketplace promo */
+                .mp-card { background:var(--paper); border:1.5px solid var(--ink); border-radius:18px; padding:28px; box-shadow:5px 5px 0 0 rgba(27,26,56,.16); transition:all .35s cubic-bezier(.4,0,.2,1); }
+                .mp-card:hover { transform:translate(-3px,-3px); box-shadow:9px 9px 0 0 var(--coral); border-color:var(--coral); }
+                .mp-badge { display:inline-flex; align-items:center; gap:8px; background:var(--coral); color:#fff; font-size:.7rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; border-radius:100px; padding:6px 14px; margin-bottom:18px; }
 
                 /* section label */
                 .lbl {
@@ -185,6 +209,7 @@ export default function Welcome({ canLogin, popularProducts }) {
                         </Link>
                         <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
                             <a href="#menu" className="nav-link">Menu</a>
+                            {marketplaceOpen && <a href="#jajan-online" className="nav-link">Jajan Online</a>}
                             <a href="#kenapa" className="nav-link">Kenapa Kami</a>
                             <a href="#faq" className="nav-link">FAQ</a>
                             <Link href={route('menu')} className="btn-g" style={{ padding: '9px 20px', fontSize: '.85rem' }}>Semua Menu</Link>
@@ -225,7 +250,9 @@ export default function Welcome({ canLogin, popularProducts }) {
                             </div>
                             <p className="fu d3" style={{ marginTop: 16, fontSize: '.82rem', color: 'var(--ink-soft)', display: 'inline-flex', alignItems: 'center', gap: 7 }}>
                                 <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--leaf)', display: 'inline-block' }} />
-                                Belum melayani pesan online — datang langsung ya.
+                                {marketplaceOrders
+                                    ? <>Sekarang bisa <span style={{ color: 'var(--coral)', fontWeight: 600 }}>jajan online</span> dari mitra sekolah juga, lho.</>
+                                    : 'Belum melayani pesan online — datang langsung ya.'}
                             </p>
                             <div className="hero-stats fu d4" style={{ display: 'flex', gap: 44, marginTop: 52, paddingTop: 36, borderTop: '1.5px solid var(--border)' }}>
                                 {[['Rp3rb', 'Mulai dari'], ['100%', 'Fresh harian'], ['< 2mnt', 'Antri kasir']].map(([v, l]) => (
@@ -288,6 +315,48 @@ export default function Welcome({ canLogin, popularProducts }) {
                         </div>
                     </div>
                 </div>
+
+                {/* ── JAJAN ONLINE (marketplace promo) ── */}
+                {marketplaceOpen && (
+                    <section id="jajan-online" style={{ padding: '110px 32px', maxWidth: 1200, margin: '0 auto' }}>
+                        <div className="feat-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
+                            <div>
+                                <div className="mp-badge">
+                                    <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M16 16h-2.5a2.5 2.5 0 1 0 0 5H17M3 9h18M3 9l1.5-5h15L21 9M3 9l1.286 9.001A2 2 0 0 0 6.272 20H8" /></svg>
+                                    Baru
+                                </div>
+                                <h2 className="d" style={{ fontSize: 'clamp(2.2rem,4.5vw,3.6rem)', fontWeight: 600, lineHeight: 1.04, letterSpacing: '-.02em', marginBottom: 20 }}>
+                                    Mau jajan dari <span style={{ color: 'var(--coral)', fontStyle: 'italic' }}>mitra sekolah?</span>
+                                </h2>
+                                <p style={{ color: 'var(--ink-soft)', lineHeight: 1.7, fontSize: '.98rem', marginBottom: 32, maxWidth: 460 }}>
+                                    Selain kantin, sekarang ada mitra jajanan luar yang bisa dipesan langsung dari HP-mu. Pilih menu, tentukan slot ambil, bayar — tinggal jemput pas istirahat.
+                                </p>
+                                <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+                                    <Link href={route('student.login')} className="btn-c">
+                                        Mulai Jajan Online
+                                        <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                        </svg>
+                                    </Link>
+                                </div>
+                            </div>
+                            <div style={{ display: 'grid', gap: 16 }}>
+                                <div className="mp-card">
+                                    <h3 className="d" style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: 8 }}>1. Pilih Mitra & Menu</h3>
+                                    <p style={{ color: 'var(--ink-soft)', fontSize: '.92rem', lineHeight: 1.6 }}>Login pakai NISN, lalu jelajahi menu dari berbagai mitra jajanan sekolah.</p>
+                                </div>
+                                <div className="mp-card">
+                                    <h3 className="d" style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: 8 }}>2. Pesan & Pilih Slot Ambil</h3>
+                                    <p style={{ color: 'var(--ink-soft)', fontSize: '.92rem', lineHeight: 1.6 }}>Tentukan jam pengambilan biar pesananmu siap pas kamu sampai.</p>
+                                </div>
+                                <div className="mp-card">
+                                    <h3 className="d" style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: 8 }}>3. Ambil & Makan</h3>
+                                    <p style={{ color: 'var(--ink-soft)', fontSize: '.92rem', lineHeight: 1.6 }}>Pantau status pesanan, dapat notifikasi, lalu ambil di mitra saat siap.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                )}
 
                 {/* ── MENU ── */}
                 <section id="menu" style={{ padding: '110px 32px', maxWidth: 1200, margin: '0 auto' }}>
@@ -463,7 +532,13 @@ export default function Welcome({ canLogin, popularProducts }) {
                             <div>
                                 <h4 style={{ fontSize: '.72rem', fontWeight: 600, color: 'var(--ink)', letterSpacing: '.09em', textTransform: 'uppercase', marginBottom: 22 }}>Jelajah</h4>
                                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 13 }}>
-                                    {[['Menu Favorit', '#menu'], ['Kenapa Kami', '#kenapa'], ['FAQ', '#faq'], ['Masuk Staff', canLogin ? route('dashboard') : route('login')]].map(([l, h]) => (
+                                    {[
+                                        ['Menu Favorit', '#menu'],
+                                        ...(marketplaceOpen ? [['Jajan Online', '#jajan-online']] : []),
+                                        ['Kenapa Kami', '#kenapa'],
+                                        ['FAQ', '#faq'],
+                                        ['Masuk Staff', canLogin ? route('dashboard') : route('login')],
+                                    ].map(([l, h]) => (
                                         <li key={l}><a href={h} style={{ color: 'var(--ink-soft)', fontSize: '.88rem', textDecoration: 'none', transition: 'color .2s' }}
                                             onMouseOver={e => e.target.style.color = 'var(--tomato)'}
                                             onMouseOut={e => e.target.style.color = 'var(--ink-soft)'}>{l}</a></li>

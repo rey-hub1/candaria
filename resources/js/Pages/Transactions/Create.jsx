@@ -13,7 +13,8 @@ const isTouchDevice =
     (("ontouchstart" in window) ||
         window.matchMedia("(pointer: coarse)").matches);
 
-const ProductCard = React.memo(function ProductCard({ product, onAdd }) {
+const ProductCard = React.memo(function ProductCard({ product, cartQty = 0, onAdd }) {
+    const remainingStock = product.stock - cartQty;
     return (
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 md:p-4 flex flex-col justify-between hover:shadow-md hover:border-emerald-300 transition duration-200">
             <div>
@@ -43,7 +44,7 @@ const ProductCard = React.memo(function ProductCard({ product, onAdd }) {
 
             <div className="mt-3 md:mt-4">
                 <div className="flex justify-between items-baseline mb-2">
-                    <span className="text-[10px] md:text-xs text-slate-400 font-semibold">Stok: {product.stock}</span>
+                    <span className={`text-[10px] md:text-xs font-semibold ${remainingStock <= 0 ? 'text-rose-500' : 'text-slate-400'}`}>Stok: {remainingStock}</span>
                     <span className="font-extrabold text-slate-900 text-xs md:text-sm">{formatRupiah(product.selling_price)}</span>
                 </div>
                 <button
@@ -379,7 +380,7 @@ export default function Create({
                         ) : (
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 overflow-y-auto pr-2 custom-scrollbar">
                                 {products.map((p) => (
-                                    <ProductCard key={p.id} product={p} onAdd={handleAddToCart} />
+                                    <ProductCard key={p.id} product={p} cartQty={cart[p.id]?.quantity || 0} onAdd={handleAddToCart} />
                                 ))}
                             </div>
                         )}

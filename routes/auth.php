@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\StudentAuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
@@ -28,6 +29,13 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    Route::middleware('feature:student_login')->group(function () {
+        Route::get('login-siswa', [StudentAuthenticatedSessionController::class, 'create'])
+            ->name('student.login');
+
+        Route::post('login-siswa', [StudentAuthenticatedSessionController::class, 'store']);
+    });
 });
 
 Route::middleware('auth')->group(function () {

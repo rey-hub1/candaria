@@ -1,0 +1,79 @@
+import React from 'react';
+import { Head, router } from '@inertiajs/react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+
+const GROUP_LABELS = {
+    general: 'Umum',
+    marketplace: 'Marketplace Mitra',
+};
+
+function Toggle({ checked, onChange }) {
+    return (
+        <button
+            type="button"
+            role="switch"
+            aria-checked={checked}
+            onClick={onChange}
+            className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
+                checked ? 'bg-emerald-500' : 'bg-slate-300'
+            }`}
+        >
+            <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    checked ? 'translate-x-6' : 'translate-x-1'
+                }`}
+            />
+        </button>
+    );
+}
+
+export default function FeatureFlags({ flags = {} }) {
+    const toggle = (flag) => {
+        router.put(route('super-admin.feature-flags.update', flag.id), {
+            is_enabled: !flag.is_enabled,
+        }, { preserveScroll: true });
+    };
+
+    return (
+        <AuthenticatedLayout>
+            <Head title="Feature Flags" />
+
+            <div className="max-w-3xl mx-auto py-6 px-4">
+                <div className="mb-6">
+                    <h1 className="text-xl font-bold text-slate-900">Feature Flags</h1>
+                    <p className="text-sm text-slate-500 mt-1">
+                        Nyalakan atau matikan fitur aplikasi secara global, tanpa perlu deploy ulang.
+                    </p>
+                </div>
+
+                {Object.entries(flags).map(([group, items]) => (
+                    <div key={group} className="bg-white rounded-xl border border-slate-200 shadow-sm mb-6 overflow-hidden">
+                        <div className="px-5 py-3 bg-slate-50 border-b border-slate-200">
+                            <h2 className="text-sm font-semibold text-slate-700">
+                                {GROUP_LABELS[group] || group}
+                            </h2>
+                        </div>
+                        <div className="divide-y divide-slate-100">
+                            {items.map((flag) => (
+                                <div key={flag.id} className="flex items-center justify-between gap-4 px-5 py-4">
+                                    <div>
+                                        <p className="text-sm font-semibold text-slate-800">{flag.label}</p>
+                                        {flag.description && (
+                                            <p className="text-xs text-slate-500 mt-0.5">{flag.description}</p>
+                                        )}
+                                        <p className="text-[11px] text-slate-400 mt-1 font-mono">{flag.key}</p>
+                                    </div>
+                                    <Toggle checked={flag.is_enabled} onChange={() => toggle(flag)} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+
+                {Object.keys(flags).length === 0 && (
+                    <p className="text-sm text-slate-500">Belum ada feature flag.</p>
+                )}
+            </div>
+        </AuthenticatedLayout>
+    );
+}

@@ -14,7 +14,7 @@ class UserController extends Controller
     public function index()
     {
         $filters = request()->only(['search', 'sort', 'dir']);
-        $users = User::filter($filters, ['name', 'email', 'role'])->paginate(15)->withQueryString();
+        $users = User::whereIn('role', ['admin', 'cashier'])->filter($filters, ['name', 'email', 'role'])->paginate(15)->withQueryString();
         return Inertia::render('Users/Index', ['users' => $users, 'filters' => $filters]);
     }
 

@@ -28,3 +28,9 @@ Thumbs.db
 
 # QC / dokumen internal (jangan masuk repo publik)
 /public/*.pdf
+
+/graphify-out
+.graphifyignore
+/.agents
+/.opencode
+AGENTS.md

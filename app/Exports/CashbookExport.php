@@ -2,11 +2,14 @@
 
 namespace App\Exports;
 
-use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Concerns\FromView;
+use Carbon\Carbon;
+use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class CashbookExport implements FromView, ShouldAutoSize
+class CashbookExport implements FromArray, WithHeadings, ShouldAutoSize, WithStyles
 {
     protected $exportData;
     protected $exportTotalDebit;
@@ -21,13 +24,45 @@ class CashbookExport implements FromView, ShouldAutoSize
         $this->exportCurrentBalance = $exportCurrentBalance;
     }
 
-    public function view(): View
+    public function headings(): array
     {
-        return view('reports.cashbooks_xlsx', [
-            'exportData' => $this->exportData,
-            'exportTotalDebit' => $this->exportTotalDebit,
-            'exportTotalCredit' => $this->exportTotalCredit,
-            'exportCurrentBalance' => $this->exportCurrentBalance,
-        ]);
+        return ['No', 'Tanggal', 'Keterangan', 'Debit (Masuk)', 'Kredit (Keluar)'];
+    }
+
+    public function array(): array
+    {
+        $sourceLabels = [
+            'manual' => 'Manual',
+            'transaction' => 'Penjualan',
+        ];
+
+        $rows = [];
+
+        foreach ($this->exportData as $index => $item) {
+            $sourceLabel = $sourceLabels[$item->source] ?? 'Pelunasan';
+
+            $rows[] = [
+                $index + 1,
+                Carbon::parse($item->date)->format('d/m/Y'),
+                $item->description.' ('.$sourceLabel.')',
+                $item->type === 'debit' ? $item->amount : 0,
+                $item->type === 'credit' ? $item->amount : 0,
+            ];
+        }
+
+        $rows[] = ['', '', 'Total:', $this->exportTotalDebit, $this->exportTotalCredit];
+        $rows[] = ['', '', 'Saldo Saat Ini:', $this->exportCurrentBalance, ''];
+
+        return $rows;
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        $sheet->getStyle('A1:E1')->getFont()->setBold(true);
+
+        $lastRow = $sheet->getHighestRow();
+        $sheet->getStyle('C'.($lastRow - 1).':E'.$lastRow)->getFont()->setBold(true);
+
+        return [];
     }
 }

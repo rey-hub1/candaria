@@ -123,13 +123,17 @@ class TransactionService
         }
 
         return DB::transaction(function () use ($transaction, $reason, $admin) {
-            foreach ($transaction->items as $item) {
-                $product = Product::lockForUpdate()->find($item->product_id);
+            $itemsByProduct = $transaction->items->groupBy('product_id');
+
+            foreach ($itemsByProduct as $productId => $items) {
+                $product = Product::lockForUpdate()->find($productId);
                 if ($product) {
-                    $product->increment('stock', $item->quantity);
+                    $product->increment('stock', $items->sum('quantity'));
                 }
-                $item->delete(); // soft delete — excluded from all aggregates
             }
+
+            // Bulk soft-delete in one query — excluded from all aggregates
+            TransactionItem::whereIn('id', $transaction->items->pluck('id'))->update(['deleted_at' => now()]);
 
             // Contra entry keeps the cashbook audit trail intact (net zero).
             Cashbook::create([
