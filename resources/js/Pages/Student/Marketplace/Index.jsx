@@ -20,7 +20,7 @@ export default function Index({ vendors, categories }) {
                 <div className="flex flex-wrap gap-2 mb-4">
                     <button
                         onClick={() => setCategory('')}
-                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition ${category === '' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-300'}`}
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition ${category === '' ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-slate-600 border-slate-200 hover:border-primary-300'}`}
                     >
                         Semua
                     </button>
@@ -28,7 +28,7 @@ export default function Index({ vendors, categories }) {
                         <button
                             key={cat}
                             onClick={() => setCategory(cat)}
-                            className={`px-3 py-1.5 rounded-full text-xs font-semibold border capitalize transition ${category === cat ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-300'}`}
+                            className={`px-3 py-1.5 rounded-full text-xs font-semibold border capitalize transition ${category === cat ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-slate-600 border-slate-200 hover:border-primary-300'}`}
                         >
                             {cat}
                         </button>
@@ -46,7 +46,7 @@ export default function Index({ vendors, categories }) {
                         <Link
                             key={vendor.id}
                             href={route('student.marketplace.show', vendor.slug)}
-                            className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 hover:border-emerald-300 hover:shadow-md transition flex gap-3"
+                            className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 hover:border-primary-300 hover:shadow-md transition flex gap-3"
                         >
                             <div className="w-16 h-16 rounded-lg bg-slate-100 shrink-0 overflow-hidden flex items-center justify-center">
                                 {vendor.logo_url ? (
@@ -59,7 +59,7 @@ export default function Index({ vendors, categories }) {
                                 <p className="font-semibold text-slate-900 truncate">{vendor.name}</p>
                                 <p className="text-xs text-slate-500 capitalize">{vendor.category}</p>
                                 <p className="text-xs mt-1">
-                                    <span className={`font-semibold ${vendor.is_open ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                    <span className={`font-semibold ${vendor.is_open ? 'text-primary-600' : 'text-rose-600'}`}>
                                         {vendor.is_open ? 'Buka' : 'Tutup'}
                                     </span>
                                 </p>

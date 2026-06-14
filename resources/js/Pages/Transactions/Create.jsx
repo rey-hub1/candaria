@@ -16,7 +16,7 @@ const isTouchDevice =
 const ProductCard = React.memo(function ProductCard({ product, cartQty = 0, onAdd }) {
     const remainingStock = product.stock - cartQty;
     return (
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 md:p-4 flex flex-col justify-between hover:shadow-md hover:border-emerald-300 transition duration-200">
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 md:p-4 flex flex-col justify-between hover:shadow-md hover:border-primary-300 transition duration-200">
             <div>
                 <div className="flex justify-between items-start gap-1 flex-wrap">
                     <span className={`px-1.5 py-0.5 rounded text-[8px] md:text-[9px] font-bold uppercase ${product.type === "kantin" ? "bg-indigo-50 text-indigo-700 border border-indigo-100" : "bg-orange-50 text-orange-700 border border-orange-100"}`}>
@@ -49,7 +49,7 @@ const ProductCard = React.memo(function ProductCard({ product, cartQty = 0, onAd
                 </div>
                 <button
                     onClick={() => onAdd(product.id)}
-                    className="w-full py-1.5 md:py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[10px] md:text-xs rounded-lg shadow-sm transition flex items-center justify-center gap-1"
+                    className="w-full py-1.5 md:py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-[10px] md:text-xs rounded-lg shadow-sm transition flex items-center justify-center gap-1"
                 >
                     <svg className="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
@@ -322,7 +322,7 @@ export default function Create({
                                         setLocalSearch(e.target.value)
                                     }
                                     placeholder="Cari produk (Ketuk untuk Keyboard)..."
-                                    className="w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 cursor-pointer"
+                                    className="w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 cursor-pointer"
                                 />
                                 <div className="absolute left-3 top-3 text-slate-400">
                                     <svg
@@ -499,7 +499,7 @@ export default function Create({
                                                         ) || 1,
                                                     )
                                                 }
-                                                className="w-16 h-6 text-center text-xs font-semibold border border-slate-200 rounded py-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                                className="w-16 h-6 text-center text-xs font-semibold border border-slate-200 rounded py-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:ring-1 focus:ring-primary-500"
                                             />
                                             <button
                                                 onClick={() =>
@@ -586,14 +586,14 @@ export default function Create({
                                                 )
                                             }
                                             placeholder="Nominal bayar..."
-                                            className="w-full pl-9 pr-24 py-2 text-sm font-bold border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                            className="w-full pl-9 pr-24 py-2 text-sm font-bold border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                                         />
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 setPaidAmount(totalAmount)
                                             }
-                                            className="absolute right-2 top-1.5 px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs rounded border border-emerald-200"
+                                            className="absolute right-2 top-1.5 px-2 py-1 bg-primary-50 hover:bg-primary-100 text-primary-700 font-bold text-xs rounded border border-primary-200"
                                         >
                                             Uang Pas
                                         </button>
@@ -706,7 +706,7 @@ export default function Create({
                                     <span className="font-semibold text-slate-500">
                                         Uang Kembalian
                                     </span>
-                                    <span className="font-extrabold text-emerald-600">
+                                    <span className="font-extrabold text-primary-600">
                                         {paidAmount >= totalAmount
                                             ? formatRupiah(
                                                   paidAmount - totalAmount,
@@ -722,7 +722,7 @@ export default function Create({
                                     disabled={
                                         paidAmount < totalAmount || !paidAmount
                                     }
-                                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm rounded-lg shadow transition flex items-center justify-center gap-2"
+                                    className="w-full py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm rounded-lg shadow transition flex items-center justify-center gap-2"
                                 >
                                     Checkout
                                 </button>
@@ -734,9 +734,9 @@ export default function Create({
 
             {/* Floating bottom bar on mobile */}
             {cartItems.length > 0 && (
-                <div className="lg:hidden fixed bottom-16 left-0 right-0 bg-emerald-600 text-white px-5 py-3.5 flex justify-between items-center shadow-2xl z-20 transition border-t border-emerald-500">
+                <div className="lg:hidden fixed bottom-16 left-0 right-0 bg-primary-600 text-white px-5 py-3.5 flex justify-between items-center shadow-2xl z-20 transition border-t border-primary-500">
                     <div>
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-100">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-primary-100">
                             Keranjang
                         </p>
                         <p className="text-sm font-extrabold">
@@ -746,7 +746,7 @@ export default function Create({
                     </div>
                     <button
                         onClick={() => setShowCartDrawer(true)}
-                        className="px-4 py-2 bg-white text-emerald-800 font-bold text-xs rounded-xl shadow-sm transition hover:bg-slate-100 flex items-center gap-1"
+                        className="px-4 py-2 bg-white text-primary-800 font-bold text-xs rounded-xl shadow-sm transition hover:bg-slate-100 flex items-center gap-1"
                     >
                         <svg
                             className="w-4 h-4"
@@ -960,14 +960,14 @@ export default function Create({
                                                 )
                                             }
                                             placeholder="Ketuk untuk Keyboard..."
-                                            className="w-full pl-8 pr-16 py-2.5 text-xs font-extrabold border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 cursor-pointer bg-white"
+                                            className="w-full pl-8 pr-16 py-2.5 text-xs font-extrabold border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 cursor-pointer bg-white"
                                         />
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 setPaidAmount(totalAmount)
                                             }
-                                            className="absolute right-2 top-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 font-extrabold text-[10px] rounded-lg"
+                                            className="absolute right-2 top-1.5 px-2.5 py-1 bg-primary-50 border border-primary-200 text-primary-700 font-extrabold text-[10px] rounded-lg"
                                         >
                                             Pas
                                         </button>
@@ -1081,7 +1081,7 @@ export default function Create({
                                     <span className="font-bold text-slate-500">
                                         Kembalian
                                     </span>
-                                    <span className="font-extrabold text-emerald-600">
+                                    <span className="font-extrabold text-primary-600">
                                         {paidAmount >= totalAmount
                                             ? formatRupiah(
                                                   paidAmount - totalAmount,
@@ -1096,7 +1096,7 @@ export default function Create({
                                     disabled={
                                         paidAmount < totalAmount || !paidAmount
                                     }
-                                    className="w-full py-3 bg-emerald-600 disabled:bg-slate-300 text-white font-extrabold text-xs rounded-xl shadow-lg transition active:scale-[0.99]"
+                                    className="w-full py-3 bg-primary-600 disabled:bg-slate-300 text-white font-extrabold text-xs rounded-xl shadow-lg transition active:scale-[0.99]"
                                 >
                                     Checkout
                                 </button>

@@ -56,7 +56,7 @@ export default function Show({ seller, ledger = [] }) {
                 {/* Saldo Information Card */}
                 <div className="lg:col-span-1 space-y-6">
                     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm text-center">
-                        <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div className="w-16 h-16 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"></path>
                             </svg>
@@ -75,14 +75,14 @@ export default function Show({ seller, ledger = [] }) {
                             </div>
                             <div className="flex justify-between items-center bg-slate-50 p-3 rounded-lg mt-2">
                                 <span className="text-sm font-bold text-slate-700">Sisa Saldo</span>
-                                <span className="text-lg font-black text-emerald-600">{formatRupiah(seller.unpaid_amount)}</span>
+                                <span className="text-lg font-black text-primary-600">{formatRupiah(seller.unpaid_amount)}</span>
                             </div>
                         </div>
 
                         {seller.unpaid_amount > 0 && (
                             <button
                                 onClick={openPayModal}
-                                className="w-full mt-6 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-lg shadow-sm transition"
+                                className="w-full mt-6 px-4 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-lg shadow-sm transition"
                             >
                                 Cairkan Dana (Bayar)
                             </button>
@@ -136,7 +136,7 @@ export default function Show({ seller, ledger = [] }) {
                                                         </div>
                                                     )}
                                                 </td>
-                                                <td className="px-5 py-3 whitespace-nowrap text-right text-xs font-bold text-emerald-600">
+                                                <td className="px-5 py-3 whitespace-nowrap text-right text-xs font-bold text-primary-600">
                                                     {entry.type === 'sale' ? '+' + formatRupiah(entry.amount) : '-'}
                                                 </td>
                                                 <td className="px-5 py-3 whitespace-nowrap text-right text-xs font-bold text-rose-600">
@@ -165,9 +165,9 @@ export default function Show({ seller, ledger = [] }) {
                             </button>
                         </div>
                         
-                        <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-100 mb-6 text-center">
-                            <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">Sisa Saldo Saat Ini</p>
-                            <p className="text-2xl font-black text-emerald-800 mt-1">{formatRupiah(seller.unpaid_amount)}</p>
+                        <div className="bg-primary-50 p-4 rounded-xl border border-primary-100 mb-6 text-center">
+                            <p className="text-xs font-semibold text-primary-700 uppercase tracking-wider">Sisa Saldo Saat Ini</p>
+                            <p className="text-2xl font-black text-primary-800 mt-1">{formatRupiah(seller.unpaid_amount)}</p>
                         </div>
 
                         <form onSubmit={handlePaySubmit}>
@@ -191,7 +191,7 @@ export default function Show({ seller, ledger = [] }) {
                                         max={seller.unpaid_amount}
                                         value={payData.amount}
                                         onChange={(e) => setPayData('amount', e.target.value)}
-                                        className="w-full px-4 py-3 text-lg font-bold text-center text-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                        className="w-full px-4 py-3 text-lg font-bold text-center text-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                                     />
                                     <button
                                         type="button"
@@ -213,7 +213,7 @@ export default function Show({ seller, ledger = [] }) {
                                     rows="2"
                                     value={payData.notes}
                                     onChange={(e) => setPayData('notes', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
                                 ></textarea>
                             </div>
                             
@@ -221,7 +221,7 @@ export default function Show({ seller, ledger = [] }) {
                                 <button type="button" onClick={() => setPayModal(false)} className="flex-1 py-3 bg-slate-100 text-slate-700 font-bold text-sm rounded-xl hover:bg-slate-200 transition">
                                     Batal
                                 </button>
-                                <button type="submit" disabled={payProcessing} className="flex-1 py-3 bg-emerald-600 text-white font-bold text-sm rounded-xl hover:bg-emerald-700 transition disabled:opacity-50">
+                                <button type="submit" disabled={payProcessing} className="flex-1 py-3 bg-primary-600 text-white font-bold text-sm rounded-xl hover:bg-primary-700 transition disabled:opacity-50">
                                     {payProcessing ? 'Memproses...' : 'Proses Pencairan'}
                                 </button>
                             </div>

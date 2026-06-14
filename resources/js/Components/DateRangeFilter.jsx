@@ -16,7 +16,7 @@ const DownloadIcon = () => (
 );
 
 const CalendarIcon = () => (
-    <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+    <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
     </svg>
 );
@@ -58,7 +58,7 @@ export default function DateRangeFilter({
             {/* ── Header ── */}
             <div className="px-6 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
                         <CalendarIcon />
                     </div>
                     <div>
@@ -71,7 +71,7 @@ export default function DateRangeFilter({
                     <div className="flex items-center gap-2">
                         {onExportExcel && (
                             <button type="button" onClick={onExportExcel}
-                                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5">
+                                className="px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5">
                                 <DownloadIcon /> Excel
                             </button>
                         )}
@@ -104,8 +104,8 @@ export default function DateRangeFilter({
                         onClick={() => applyPreset(p.key)}
                         className={`px-4 py-1.5 text-xs font-bold rounded-full border transition-all duration-150 ${
                             activePreset === p.key
-                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                                : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-400 hover:text-emerald-700'
+                                ? 'bg-primary-600 text-white border-primary-600 shadow-sm'
+                                : 'bg-white text-slate-600 border-slate-200 hover:border-primary-400 hover:text-primary-700'
                         }`}
                     >
                         {p.label}
@@ -143,7 +143,7 @@ export default function DateRangeFilter({
                         />
                     </div>
                     <button type="submit"
-                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition w-full sm:w-auto">
+                        className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-xs rounded-lg shadow-sm transition w-full sm:w-auto">
                         Terapkan
                     </button>
                 </div>

@@ -27,8 +27,8 @@ export function Toast({ type = 'success', message, duration = 3000, onClose }) {
 
     const typeConfig = {
         success: {
-            iconColor: 'text-emerald-400',
-            bgGlow: 'shadow-emerald-500/20',
+            iconColor: 'text-primary-400',
+            bgGlow: 'shadow-primary-500/20',
             icon: (
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />

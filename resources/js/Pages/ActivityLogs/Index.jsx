@@ -5,7 +5,7 @@ import Pagination from '@/Components/Pagination';
 import FilterBar from '@/Components/FilterBar';
 
 const EVENT_STYLES = {
-    created:  'bg-emerald-100 text-emerald-700',
+    created:  'bg-primary-100 text-primary-700',
     updated:  'bg-amber-100 text-amber-700',
     deleted:  'bg-red-100 text-red-700',
     checkout: 'bg-blue-100 text-blue-700',

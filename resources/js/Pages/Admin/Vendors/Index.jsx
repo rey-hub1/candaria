@@ -8,7 +8,7 @@ import FilterBar from '@/Components/FilterBar';
 import SortableHeader from '@/Components/SortableHeader';
 
 const STATUS_BADGE = {
-    active: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    active: 'bg-primary-50 text-primary-700 border border-primary-200',
     pending: 'bg-amber-50 text-amber-700 border border-amber-200',
     suspended: 'bg-rose-50 text-rose-700 border border-rose-200',
 };
@@ -84,7 +84,7 @@ export default function Index({ vendors = { data: [], links: [], total: 0 }, fil
                             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Nama Toko</label>
                             <input type="text" required value={addData.name} onChange={(e) => setAddData('name', e.target.value)}
                                 placeholder="Contoh: Batagor Bang Jaja"
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                             {addErrors.name && <p className="text-rose-600 text-xs mt-1">{addErrors.name}</p>}
                         </div>
 
@@ -92,25 +92,25 @@ export default function Index({ vendors = { data: [], links: [], total: 0 }, fil
                             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Kategori</label>
                             <input type="text" value={addData.category} onChange={(e) => setAddData('category', e.target.value)}
                                 placeholder="Contoh: Makanan Berat"
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                         </div>
 
                         <div>
                             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">No. HP / WA</label>
                             <input type="text" value={addData.phone} onChange={(e) => setAddData('phone', e.target.value)}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                         </div>
 
                         <div>
                             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Alamat</label>
                             <input type="text" value={addData.address} onChange={(e) => setAddData('address', e.target.value)}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                         </div>
 
                         <div>
                             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Deskripsi</label>
                             <textarea rows={2} value={addData.description} onChange={(e) => setAddData('description', e.target.value)}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                         </div>
 
                         <div className="pt-2 border-t border-slate-100">
@@ -119,20 +119,20 @@ export default function Index({ vendors = { data: [], links: [], total: 0 }, fil
                                 <div>
                                     <input type="email" required value={addData.owner_email} onChange={(e) => setAddData('owner_email', e.target.value)}
                                         placeholder="Email login mitra"
-                                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                                     {addErrors.owner_email && <p className="text-rose-600 text-xs mt-1">{addErrors.owner_email}</p>}
                                 </div>
                                 <div>
                                     <input type="text" required value={addData.owner_password} onChange={(e) => setAddData('owner_password', e.target.value)}
                                         placeholder="Password awal"
-                                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                                     {addErrors.owner_password && <p className="text-rose-600 text-xs mt-1">{addErrors.owner_password}</p>}
                                 </div>
                             </div>
                         </div>
 
                         <button type="submit" disabled={addProcessing}
-                            className="w-full px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition disabled:opacity-50">
+                            className="w-full px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm rounded-lg shadow-sm transition disabled:opacity-50">
                             {addProcessing ? 'Menyimpan...' : 'Simpan Mitra'}
                         </button>
                     </form>
@@ -179,7 +179,7 @@ export default function Index({ vendors = { data: [], links: [], total: 0 }, fil
                                                     <td className="px-6 py-4 text-sm text-center">
                                                         <div className="inline-flex gap-2">
                                                             <button onClick={() => openEditModal(v)}
-                                                                className="inline-flex items-center px-2.5 py-1.5 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 font-semibold text-xs rounded transition">
+                                                                className="inline-flex items-center px-2.5 py-1.5 bg-slate-100 hover:bg-primary-50 hover:text-primary-700 text-slate-700 font-semibold text-xs rounded transition">
                                                                 Ubah
                                                             </button>
                                                             <button onClick={() => handleDelete(v.id)}
@@ -216,28 +216,28 @@ export default function Index({ vendors = { data: [], links: [], total: 0 }, fil
                             <div>
                                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Nama Toko</label>
                                 <input type="text" required value={editData.name} onChange={(e) => setEditData('name', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                                 {editErrors.name && <p className="text-rose-600 text-xs mt-1">{editErrors.name}</p>}
                             </div>
                             <div>
                                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Kategori</label>
                                 <input type="text" value={editData.category} onChange={(e) => setEditData('category', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                             </div>
                             <div>
                                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">No. HP / WA</label>
                                 <input type="text" value={editData.phone} onChange={(e) => setEditData('phone', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                             </div>
                             <div>
                                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Alamat</label>
                                 <input type="text" value={editData.address} onChange={(e) => setEditData('address', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                             </div>
                             <div>
                                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Status</label>
                                 <select value={editData.status} onChange={(e) => setEditData('status', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                                     <option value="active">Aktif</option>
                                     <option value="pending">Menunggu</option>
                                     <option value="suspended">Ditangguhkan</option>
@@ -250,7 +250,7 @@ export default function Index({ vendors = { data: [], links: [], total: 0 }, fil
                                     Batal
                                 </button>
                                 <button type="submit" disabled={editProcessing}
-                                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-lg shadow-sm transition disabled:opacity-50">
+                                    className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-lg shadow-sm transition disabled:opacity-50">
                                     {editProcessing ? 'Menyimpan...' : 'Simpan Perubahan'}
                                 </button>
                             </div>

@@ -56,7 +56,7 @@ export default function Products({
                             </p>
                         </div>
                         <div className="flex gap-2">
-                            <button onClick={handleExportExcel} className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5">
+                            <button onClick={handleExportExcel} className="px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5">
                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
                                 Excel
                             </button>
@@ -111,7 +111,7 @@ export default function Products({
                                     placeholder="Cari produk..."
                                     value={search}
                                     onChange={e => setSearch(e.target.value)}
-                                    className="pl-8 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 w-44"
+                                    className="pl-8 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 w-44"
                                 />
                             </div>
                         </div>
@@ -154,7 +154,7 @@ export default function Products({
                                                     ? 'bg-rose-50 text-rose-700 border border-rose-100'
                                                     : p.stock <= 15
                                                         ? 'bg-amber-50 text-amber-700 border border-amber-100'
-                                                        : 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                                                        : 'bg-primary-50 text-primary-700 border border-primary-100'
                                             }`}>
                                                 {p.stock} pcs
                                             </span>

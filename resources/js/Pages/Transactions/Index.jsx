@@ -98,7 +98,7 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
 
                                     <div className="flex justify-between items-center text-[11px] text-slate-500">
                                         <span>Tunai: {formatRupiah(t.paid_amount)}</span>
-                                        <span className="text-emerald-600 font-bold">Kembalian: {formatRupiah(t.change_amount)}</span>
+                                        <span className="text-primary-600 font-bold">Kembalian: {formatRupiah(t.change_amount)}</span>
                                     </div>
 
                                     <div className="pt-1 flex gap-3">
@@ -158,7 +158,7 @@ export default function Index({ transactions = { data: [], links: [], total: 0 }
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-slate-600">
                                                     {formatRupiah(t.paid_amount)}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-emerald-600 font-semibold">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-primary-600 font-semibold">
                                                     {formatRupiah(t.change_amount)}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-center">

@@ -45,7 +45,7 @@ export default function Dashboard({
             <Head title="Dashboard" />
 
             {/* Welcome Header */}
-            <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white shadow-lg">
+            <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-primary-950 text-white shadow-lg">
                 <div className="max-w-3xl">
                     <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
                         Selamat Datang, {auth.user.name}!
@@ -63,13 +63,13 @@ export default function Dashboard({
                 {/* Today's Sales Card */}
                 {auth.user.role !== 'penitip' && (
                     <Link href={route('transactions.index')} className="bg-white overflow-hidden rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition duration-200 p-6 flex items-center gap-4 group">
-                        <div className="p-3 bg-emerald-50 rounded-lg text-emerald-600 group-hover:bg-emerald-100 transition">
+                        <div className="p-3 bg-primary-50 rounded-lg text-primary-600 group-hover:bg-primary-100 transition">
                             <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-12 3h10.5m-12 3h12m-12.75 3h13.5"></path>
                             </svg>
                         </div>
                         <div>
-                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider group-hover:text-emerald-600 transition">Penjualan Hari Ini</p>
+                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider group-hover:text-primary-600 transition">Penjualan Hari Ini</p>
                             <h3 className="text-2xl font-bold text-slate-900 mt-1">{formatRupiah(todaySalesTotal || 0)}</h3>
                             <p className="text-xs text-slate-400 mt-1">{todaySalesCount || 0} Transaksi</p>
                         </div>
@@ -148,16 +148,16 @@ export default function Dashboard({
                     </>
                 ) : (
                     /* Cashier Action Card */
-                    <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 overflow-hidden rounded-xl border border-emerald-200 shadow-sm p-6 flex items-center gap-4">
-                        <div className="p-3 bg-emerald-500 rounded-lg text-white">
+                    <div className="bg-gradient-to-br from-primary-50 to-primary-100 overflow-hidden rounded-xl border border-primary-200 shadow-sm p-6 flex items-center gap-4">
+                        <div className="p-3 bg-primary-500 rounded-lg text-white">
                             <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
                             </svg>
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-emerald-800">Buka Kasir Sekarang</p>
-                            <h3 className="text-xs text-emerald-600 mt-1">Mulai melayani pembeli</h3>
-                            <Link href={route('transactions.create')} className="inline-block mt-2 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition">
+                            <p className="text-sm font-semibold text-primary-800">Buka Kasir Sekarang</p>
+                            <h3 className="text-xs text-primary-600 mt-1">Mulai melayani pembeli</h3>
+                            <Link href={route('transactions.create')} className="inline-block mt-2 px-4 py-1.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-xs rounded-lg shadow-sm transition">
                                 Buka Kasir &rarr;
                             </Link>
                         </div>
@@ -178,19 +178,19 @@ export default function Dashboard({
                                 </div>
                                 <div>
                                     <p className="text-xs text-slate-400">Total Keuntungan Kantin</p>
-                                    <p className="text-xl font-bold text-emerald-600">{formatRupiah(thisMonthProfit)}</p>
+                                    <p className="text-xl font-bold text-primary-600">{formatRupiah(thisMonthProfit)}</p>
                                 </div>
                             </div>
                         </div>
                         <div className="bg-white rounded-xl border border-slate-200 p-6 flex justify-around items-center">
                             <Link href={route('products.index')} className="text-center group block hover:bg-slate-50 p-4 rounded-xl transition">
-                                <p className="text-3xl font-extrabold text-slate-800 group-hover:text-emerald-600 transition">{totalProducts}</p>
-                                <p className="text-xs text-slate-400 mt-1 group-hover:text-emerald-500">Total Produk &rarr;</p>
+                                <p className="text-3xl font-extrabold text-slate-800 group-hover:text-primary-600 transition">{totalProducts}</p>
+                                <p className="text-xs text-slate-400 mt-1 group-hover:text-primary-500">Total Produk &rarr;</p>
                             </Link>
                             <div className="h-12 w-px bg-slate-200"></div>
                             <Link href={route('sellers.index')} className="text-center group block hover:bg-slate-50 p-4 rounded-xl transition">
-                                <p className="text-3xl font-extrabold text-slate-800 group-hover:text-emerald-600 transition">{totalSellers}</p>
-                                <p className="text-xs text-slate-400 mt-1 group-hover:text-emerald-500">Siswa Penitip &rarr;</p>
+                                <p className="text-3xl font-extrabold text-slate-800 group-hover:text-primary-600 transition">{totalSellers}</p>
+                                <p className="text-xs text-slate-400 mt-1 group-hover:text-primary-500">Siswa Penitip &rarr;</p>
                             </Link>
                         </div>
                     </div>
@@ -249,7 +249,7 @@ export default function Dashboard({
                 <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-base font-bold text-slate-900">Transaksi Terbaru</h3>
-                        <Link href={route('transactions.index')} className="text-xs font-semibold text-emerald-600 hover:underline">
+                        <Link href={route('transactions.index')} className="text-xs font-semibold text-primary-600 hover:underline">
                             Lihat Semua &rarr;
                         </Link>
                     </div>
@@ -387,7 +387,7 @@ export default function Dashboard({
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-sm font-bold text-emerald-600">{formatRupiah(p.profit)}</p>
+                                                <p className="text-sm font-bold text-primary-600">{formatRupiah(p.profit)}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -420,7 +420,7 @@ export default function Dashboard({
                                                     <td className="px-4 py-3 text-sm font-semibold text-slate-900">
                                                         {p.name}
                                                     </td>
-                                                    <td className="px-4 py-3 text-sm font-bold text-emerald-600">
+                                                    <td className="px-4 py-3 text-sm font-bold text-primary-600">
                                                         {formatRupiah(p.cost_price)}
                                                     </td>
                                                     <td className="px-4 py-3 text-sm text-center font-bold text-slate-900">
@@ -450,8 +450,8 @@ export default function Dashboard({
                                                 <p className="text-xs text-slate-500 mt-0.5">{s.notes || 'Pencairan dana otomatis'}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-sm font-bold text-emerald-600">+{formatRupiah(s.total_amount)}</p>
-                                                <span className="inline-block mt-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded uppercase">Berhasil</span>
+                                                <p className="text-sm font-bold text-primary-600">+{formatRupiah(s.total_amount)}</p>
+                                                <span className="inline-block mt-1 px-2 py-0.5 bg-primary-100 text-primary-700 text-[10px] font-bold rounded uppercase">Berhasil</span>
                                             </div>
                                         </div>
                                     ))}

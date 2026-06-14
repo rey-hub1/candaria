@@ -24,7 +24,7 @@ export default function Dashboard({ student }) {
                         <p className="text-sm text-slate-500 mb-4">
                             Pesan jajanan dari mitra sekolah, ambil sesuai jadwal antar yang kamu pilih.
                         </p>
-                        <Link href={route('student.marketplace.index')} className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition">
+                        <Link href={route('student.marketplace.index')} className="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm rounded-lg shadow-sm transition">
                             Lihat Mitra
                         </Link>
                     </>

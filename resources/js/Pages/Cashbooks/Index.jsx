@@ -21,7 +21,7 @@ const Pagination = ({ links = [] }) => {
                     <Link key={key} href={link.url}
                         className={`px-3 py-1.5 text-xs border rounded-lg transition ${
                             link.active
-                                ? 'bg-emerald-600 border-emerald-600 text-white font-bold'
+                                ? 'bg-primary-600 border-primary-600 text-white font-bold'
                                 : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                         }`}
                         dangerouslySetInnerHTML={{ __html: link.label }} />
@@ -84,7 +84,7 @@ export default function Index({
                         <div className="mb-4">
                             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Tanggal</label>
                             <input type="date" required value={data.date} onChange={e => setData('date', e.target.value)}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500" />
                             {errors.date && <p className="text-rose-600 text-xs mt-1">{errors.date}</p>}
                         </div>
 
@@ -93,8 +93,8 @@ export default function Index({
                             <div className="flex gap-4 mt-2">
                                 <label className="flex items-center gap-2 cursor-pointer">
                                     <input type="radio" name="type" value="debit" checked={data.type === 'debit'}
-                                        onChange={e => setData('type', e.target.value)} className="text-emerald-600 focus:ring-emerald-500" />
-                                    <span className="text-sm font-semibold text-emerald-700">Debit (Masuk)</span>
+                                        onChange={e => setData('type', e.target.value)} className="text-primary-600 focus:ring-primary-500" />
+                                    <span className="text-sm font-semibold text-primary-700">Debit (Masuk)</span>
                                 </label>
                                 <label className="flex items-center gap-2 cursor-pointer">
                                     <input type="radio" name="type" value="credit" checked={data.type === 'credit'}
@@ -109,7 +109,7 @@ export default function Index({
                             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Nominal (Rp)</label>
                             <input type="number" required min="1" placeholder="Contoh: 50000" value={data.amount}
                                 onChange={e => setData('amount', e.target.value)}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500" />
                             {errors.amount && <p className="text-rose-600 text-xs mt-1">{errors.amount}</p>}
                         </div>
 
@@ -117,7 +117,7 @@ export default function Index({
                             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Keterangan / Deskripsi</label>
                             <textarea required rows="2" placeholder="Contoh: Beli sabun cuci piring" value={data.description}
                                 onChange={e => setData('description', e.target.value)}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none" />
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none" />
                             {errors.description && <p className="text-rose-600 text-xs mt-1">{errors.description}</p>}
                         </div>
 
@@ -135,16 +135,16 @@ export default function Index({
                     <div className="grid grid-cols-3 gap-3 md:gap-4">
                         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
                             <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider">Total Debit</p>
-                            <p className="text-sm md:text-lg font-extrabold text-emerald-600 mt-1">{formatRupiah(totalDebit)}</p>
+                            <p className="text-sm md:text-lg font-extrabold text-primary-600 mt-1">{formatRupiah(totalDebit)}</p>
                         </div>
                         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
                             <p className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wider">Total Kredit</p>
                             <p className="text-sm md:text-lg font-extrabold text-rose-600 mt-1">{formatRupiah(totalCredit)}</p>
                         </div>
-                        <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 shadow-sm flex flex-col justify-center relative overflow-hidden">
-                            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-emerald-200 rounded-full blur-xl opacity-50" />
-                            <p className="text-[10px] md:text-xs font-bold text-emerald-700/70 uppercase tracking-wider relative z-10">Saldo Kas Saat Ini</p>
-                            <p className="text-base md:text-2xl font-black text-emerald-800 mt-1 relative z-10">{formatRupiah(currentBalance)}</p>
+                        <div className="bg-primary-50 p-4 rounded-xl border border-primary-200 shadow-sm flex flex-col justify-center relative overflow-hidden">
+                            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-primary-200 rounded-full blur-xl opacity-50" />
+                            <p className="text-[10px] md:text-xs font-bold text-primary-700/70 uppercase tracking-wider relative z-10">Saldo Kas Saat Ini</p>
+                            <p className="text-base md:text-2xl font-black text-primary-800 mt-1 relative z-10">{formatRupiah(currentBalance)}</p>
                         </div>
                     </div>
 
@@ -162,7 +162,7 @@ export default function Index({
                                 Export PDF
                             </a>
                             <a href={route('cashbooks.index', { ...filters, export: 'xlsx' })} target="_blank"
-                                className="inline-flex items-center px-4 py-2.5 bg-emerald-50 text-emerald-700 font-semibold text-xs rounded-lg border border-emerald-200 hover:bg-emerald-100 transition shadow-sm">
+                                className="inline-flex items-center px-4 py-2.5 bg-primary-50 text-primary-700 font-semibold text-xs rounded-lg border border-primary-200 hover:bg-primary-100 transition shadow-sm">
                                 <svg className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clipRule="evenodd" />
                                 </svg>
@@ -206,7 +206,7 @@ export default function Index({
                                                                 : 'Pelunasan Otomatis'}
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-extrabold text-emerald-600">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-extrabold text-primary-600">
                                                     {item.type === 'debit' ? formatRupiah(item.amount) : '-'}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-extrabold text-rose-600">

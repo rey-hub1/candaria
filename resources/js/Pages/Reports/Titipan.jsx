@@ -16,7 +16,7 @@ const Pagination = ({ links = [] }) => {
                     <Link key={key} href={link.url}
                         className={`px-3 py-1.5 text-xs border rounded-lg transition ${
                             link.active
-                                ? 'bg-emerald-600 border-emerald-600 text-white font-bold'
+                                ? 'bg-primary-600 border-primary-600 text-white font-bold'
                                 : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                         }`}
                         dangerouslySetInnerHTML={{ __html: link.label }} />
@@ -31,13 +31,19 @@ export default function Titipan({
     startDate = '',
     endDate = '',
     summary = { total_qty: 0, total_seller: 0, total_kantin: 0 },
+    sellerId = '',
+    sellers = [],
 }) {
     const filter = useDateFilter({
         initialStart: startDate,
         initialEnd: endDate,
         onNavigate: (start, end) =>
-            router.get(route('reports.titipan'), { start_date: start, end_date: end }),
+            router.get(route('reports.titipan'), { start_date: start, end_date: end, seller_id: sellerId }),
     });
+
+    const handleSellerChange = (e) => {
+        router.get(route('reports.titipan'), { start_date: startDate, end_date: endDate, seller_id: e.target.value });
+    };
 
     const formatRupiah = (value) =>
         'Rp' + new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
@@ -51,11 +57,11 @@ export default function Titipan({
     const padZero = (num, size) => String(num).padStart(size, '0');
 
     const handleExportExcel = () => {
-        window.location.href = route('reports.titipan', { start_date: startDate, end_date: endDate, export: 'xlsx' });
+        window.location.href = route('reports.titipan', { start_date: startDate, end_date: endDate, seller_id: sellerId, export: 'xlsx' });
     };
 
     const handleExportPdf = () => {
-        window.open(route('reports.titipan', { start_date: startDate, end_date: endDate, export: 'pdf' }), '_blank');
+        window.open(route('reports.titipan', { start_date: startDate, end_date: endDate, seller_id: sellerId, export: 'pdf' }), '_blank');
     };
 
     return (
@@ -73,12 +79,29 @@ export default function Titipan({
 
             <div className="space-y-6">
 
-                <DateRangeFilter
-                    {...filter}
-                    onExportExcel={handleExportExcel}
-                    onExportPdf={handleExportPdf}
-                    showPrint
-                />
+                <div className="flex flex-col md:flex-row gap-6">
+                    <div className="flex-1">
+                        <DateRangeFilter
+                            {...filter}
+                            onExportExcel={handleExportExcel}
+                            onExportPdf={handleExportPdf}
+                            showPrint
+                        />
+                    </div>
+                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm print:hidden md:w-[300px]">
+                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Filter Penitip</label>
+                        <select
+                            value={sellerId || ''}
+                            onChange={handleSellerChange}
+                            className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                        >
+                            <option value="">Semua Penitip</option>
+                            {sellers.map((s) => (
+                                <option key={s.id} value={s.id}>{s.name} ({s.class})</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
 
                 {/* Summary */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -94,8 +117,8 @@ export default function Titipan({
                     </div>
                     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                         <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Keuntungan Kantin (Bagi Hasil Rp500)</p>
-                        <h3 className="text-2xl font-extrabold text-emerald-600 mt-1">{formatRupiah(summary.total_kantin || 0)}</h3>
-                        <p className="text-xs text-emerald-500 font-semibold mt-1">Bersih untuk kantin (Rp500 / barang)</p>
+                        <h3 className="text-2xl font-extrabold text-primary-600 mt-1">{formatRupiah(summary.total_kantin || 0)}</h3>
+                        <p className="text-xs text-primary-500 font-semibold mt-1">Bersih untuk kantin (Rp500 / barang)</p>
                     </div>
                 </div>
 
@@ -149,14 +172,14 @@ export default function Titipan({
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-blue-600">
                                                 {formatRupiah(item.profit_seller)}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-emerald-600">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-primary-600">
                                                 {formatRupiah(item.profit_kantin)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                                                 {item.seller_settlement_id ? (
                                                     <Link
                                                         href={route('settlements.show', item.seller_settlement_id)}
-                                                        className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:underline"
+                                                        className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-primary-50 text-primary-700 border border-primary-200 hover:underline"
                                                     >
                                                         Lunas (#SET-{padZero(item.seller_settlement_id, 4)})
                                                     </Link>

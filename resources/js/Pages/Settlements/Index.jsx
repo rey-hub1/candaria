@@ -137,12 +137,12 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
             <Head title="Pembayaran Penitip (Pencairan Dana)" />
 
             <div className="space-y-4">
-                <div className="bg-emerald-50 px-5 py-4 rounded-xl border border-emerald-200 shadow-sm flex items-center justify-between">
+                <div className="bg-primary-50 px-5 py-4 rounded-xl border border-primary-200 shadow-sm flex items-center justify-between">
                     <div>
-                        <h3 className="text-sm md:text-base font-bold text-emerald-900">Total Tanggungan (Belum Dibayar)</h3>
-                        <p className="text-xs text-emerald-700 mt-1">Total hutang ke semua siswa penitip yang belum dicairkan.</p>
+                        <h3 className="text-sm md:text-base font-bold text-primary-900">Total Tanggungan (Belum Dibayar)</h3>
+                        <p className="text-xs text-primary-700 mt-1">Total hutang ke semua siswa penitip yang belum dicairkan.</p>
                     </div>
-                    <span className="text-xl md:text-2xl text-emerald-700 font-black">
+                    <span className="text-xl md:text-2xl text-primary-700 font-black">
                         {formatRupiah(totalUnpaid)}
                     </span>
                 </div>
@@ -150,12 +150,12 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-4">
                     <div className="mb-4 pb-4 border-b border-slate-100 flex flex-wrap gap-2 items-center">
                         <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mr-2">Pilih Cepat:</span>
-                        <button type="button" onClick={() => applyPreset('all')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'all' || (!filters.start_date && !filters.end_date && !filters.preset) ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Semuanya</button>
-                        <button type="button" onClick={() => applyPreset('today')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'today' ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Hari Ini</button>
-                        <button type="button" onClick={() => applyPreset('yesterday')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'yesterday' ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Kemarin</button>
-                        <button type="button" onClick={() => applyPreset('last7')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'last7' ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>7 Hari Terakhir</button>
-                        <button type="button" onClick={() => applyPreset('thisMonth')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'thisMonth' ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Bulan Ini</button>
-                        <button type="button" onClick={() => applyPreset('lastMonth')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'lastMonth' ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Bulan Lalu</button>
+                        <button type="button" onClick={() => applyPreset('all')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'all' || (!filters.start_date && !filters.end_date && !filters.preset) ? 'bg-primary-50 text-primary-700 hover:bg-primary-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Semuanya</button>
+                        <button type="button" onClick={() => applyPreset('today')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'today' ? 'bg-primary-50 text-primary-700 hover:bg-primary-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Hari Ini</button>
+                        <button type="button" onClick={() => applyPreset('yesterday')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'yesterday' ? 'bg-primary-50 text-primary-700 hover:bg-primary-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Kemarin</button>
+                        <button type="button" onClick={() => applyPreset('last7')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'last7' ? 'bg-primary-50 text-primary-700 hover:bg-primary-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>7 Hari Terakhir</button>
+                        <button type="button" onClick={() => applyPreset('thisMonth')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'thisMonth' ? 'bg-primary-50 text-primary-700 hover:bg-primary-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Bulan Ini</button>
+                        <button type="button" onClick={() => applyPreset('lastMonth')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'lastMonth' ? 'bg-primary-50 text-primary-700 hover:bg-primary-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Bulan Lalu</button>
                     </div>
                     <form onSubmit={handleFilterSubmit} className="flex flex-wrap items-end gap-4">
                         <div>
@@ -164,7 +164,7 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                                 type="date"
                                 value={localStartDate}
                                 onChange={(e) => setLocalStartDate(e.target.value)}
-                                className="px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                className="px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                             />
                         </div>
                         <div>
@@ -173,10 +173,10 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                                 type="date"
                                 value={localEndDate}
                                 onChange={(e) => setLocalEndDate(e.target.value)}
-                                className="px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                className="px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                             />
                         </div>
-                        <button type="submit" className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition">
+                        <button type="submit" className="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm rounded-lg shadow-sm transition">
                             Filter
                         </button>
                     </form>
@@ -216,14 +216,14 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-rose-600">
                                                 {formatRupiah(seller.total_paid)}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-extrabold text-emerald-600">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-extrabold text-primary-600">
                                                 {formatRupiah(seller.unpaid_amount)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-center flex justify-center gap-2">
                                                 {seller.unpaid_amount > 0 && (
                                                     <button
                                                         onClick={() => openPayModal(seller)}
-                                                        className="inline-flex items-center px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold text-xs rounded transition"
+                                                        className="inline-flex items-center px-3 py-1.5 bg-primary-100 hover:bg-primary-200 text-primary-700 font-bold text-xs rounded transition"
                                                     >
                                                         Cairkan
                                                     </button>
@@ -259,9 +259,9 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                             </button>
                         </div>
                         
-                        <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-100 mb-6 text-center">
-                            <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">Sisa Saldo Saat Ini</p>
-                            <p className="text-2xl font-black text-emerald-800 mt-1">{formatRupiah(selectedSeller.unpaid_amount)}</p>
+                        <div className="bg-primary-50 p-4 rounded-xl border border-primary-100 mb-6 text-center">
+                            <p className="text-xs font-semibold text-primary-700 uppercase tracking-wider">Sisa Saldo Saat Ini</p>
+                            <p className="text-2xl font-black text-primary-800 mt-1">{formatRupiah(selectedSeller.unpaid_amount)}</p>
                         </div>
 
                         <form onSubmit={handlePaySubmit}>
@@ -285,7 +285,7 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                                         max={selectedSeller.unpaid_amount}
                                         value={payData.amount}
                                         onChange={(e) => setPayData('amount', e.target.value)}
-                                        className="w-full px-4 py-3 text-lg font-bold text-center text-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                        className="w-full px-4 py-3 text-lg font-bold text-center text-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                                     />
                                     <button
                                         type="button"
@@ -307,7 +307,7 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                                     rows="2"
                                     value={payData.notes}
                                     onChange={(e) => setPayData('notes', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
                                 ></textarea>
                             </div>
                             
@@ -315,7 +315,7 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                                 <button type="button" onClick={() => setPayModal(false)} className="flex-1 py-3 bg-slate-100 text-slate-700 font-bold text-sm rounded-xl hover:bg-slate-200 transition">
                                     Batal
                                 </button>
-                                <button type="submit" disabled={payProcessing} className="flex-1 py-3 bg-emerald-600 text-white font-bold text-sm rounded-xl hover:bg-emerald-700 transition disabled:opacity-50">
+                                <button type="submit" disabled={payProcessing} className="flex-1 py-3 bg-primary-600 text-white font-bold text-sm rounded-xl hover:bg-primary-700 transition disabled:opacity-50">
                                     {payProcessing ? 'Memproses...' : 'Proses Pencairan'}
                                 </button>
                             </div>

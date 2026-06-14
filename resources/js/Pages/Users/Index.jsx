@@ -85,7 +85,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                 placeholder="Contoh: Ahmad Kasir"
                                 value={addData.name}
                                 onChange={(e) => setAddData('name', e.target.value)}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                             />
                             {addErrors.name && <p className="text-rose-600 text-xs mt-1">{addErrors.name}</p>}
                         </div>
@@ -100,7 +100,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                 placeholder="Contoh: ahmad@canteen.com"
                                 value={addData.email}
                                 onChange={(e) => setAddData('email', e.target.value)}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                             />
                             {addErrors.email && <p className="text-rose-600 text-xs mt-1">{addErrors.email}</p>}
                         </div>
@@ -113,7 +113,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                 required
                                 value={addData.role}
                                 onChange={(e) => setAddData('role', e.target.value)}
-                                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                             >
                                 <option value="cashier">Kasir (Petugas Canteen)</option>
                                 <option value="admin">Admin (Pengelola)</option>
@@ -131,7 +131,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                 placeholder="Minimal 8 karakter..."
                                 value={addData.password}
                                 onChange={(e) => setAddData('password', e.target.value)}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                             />
                             {addErrors.password && <p className="text-rose-600 text-xs mt-1">{addErrors.password}</p>}
                         </div>
@@ -146,14 +146,14 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                 placeholder="Ulangi password..."
                                 value={addData.password_confirmation}
                                 onChange={(e) => setAddData('password_confirmation', e.target.value)}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                             />
                         </div>
                         
                         <button
                             type="submit"
                             disabled={addProcessing}
-                            className="w-full px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition disabled:opacity-50"
+                            className="w-full px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm rounded-lg shadow-sm transition disabled:opacity-50"
                         >
                             {addProcessing ? 'Menyimpan...' : 'Simpan User'}
                         </button>
@@ -187,7 +187,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                             </div>
                                             <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold ${
                                                 u.role === 'admin' 
-                                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                                                    ? 'bg-primary-50 text-primary-700 border border-primary-200' 
                                                     : 'bg-blue-50 text-blue-700 border border-blue-200'
                                             } capitalize`}>
                                                 {u.role}
@@ -197,7 +197,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                         <div className="flex justify-end gap-2 pt-1 border-t border-slate-100">
                                             <button
                                                 onClick={() => openEditModal(u)}
-                                                className="px-3 py-1.5 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 font-bold text-xs rounded-lg transition"
+                                                className="px-3 py-1.5 bg-slate-100 hover:bg-primary-50 hover:text-primary-700 text-slate-700 font-bold text-xs rounded-lg transition"
                                             >
                                                 Ubah
                                             </button>
@@ -238,7 +238,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-semibold ${
                                                             u.role === 'admin' 
-                                                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                                                                ? 'bg-primary-50 text-primary-700 border border-primary-200' 
                                                                 : 'bg-blue-50 text-blue-700 border border-blue-200'
                                                         } capitalize`}>
                                                             {u.role}
@@ -248,7 +248,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                                         <div className="inline-flex gap-2">
                                                             <button
                                                                 onClick={() => openEditModal(u)}
-                                                                className="inline-flex items-center px-2.5 py-1.5 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 font-semibold text-xs rounded transition"
+                                                                className="inline-flex items-center px-2.5 py-1.5 bg-slate-100 hover:bg-primary-50 hover:text-primary-700 text-slate-700 font-semibold text-xs rounded transition"
                                                             >
                                                                 Ubah
                                                             </button>
@@ -299,7 +299,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                     required
                                     value={editData.name}
                                     onChange={(e) => setEditData('name', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                                 />
                                 {editErrors.name && <p className="text-rose-600 text-xs mt-1">{editErrors.name}</p>}
                             </div>
@@ -313,7 +313,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                     required
                                     value={editData.email}
                                     onChange={(e) => setEditData('email', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                                 />
                                 {editErrors.email && <p className="text-rose-600 text-xs mt-1">{editErrors.email}</p>}
                             </div>
@@ -326,7 +326,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                     required
                                     value={editData.role}
                                     onChange={(e) => setEditData('role', e.target.value)}
-                                    className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                                 >
                                     <option value="cashier">Kasir (Petugas Canteen)</option>
                                     <option value="admin">Admin (Pengelola)</option>
@@ -347,7 +347,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                     placeholder="Kosongkan jika tidak diubah..."
                                     value={editData.password}
                                     onChange={(e) => setEditData('password', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                                 />
                                 {editErrors.password && <p className="text-rose-600 text-xs mt-1">{editErrors.password}</p>}
                             </div>
@@ -361,7 +361,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                     placeholder="Kosongkan jika tidak diubah..."
                                     value={editData.password_confirmation}
                                     onChange={(e) => setEditData('password_confirmation', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                                 />
                             </div>
                             
@@ -376,7 +376,7 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                 <button
                                     type="submit"
                                     disabled={editProcessing}
-                                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-lg shadow-sm transition disabled:opacity-50"
+                                    className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-lg shadow-sm transition disabled:opacity-50"
                                 >
                                     {editProcessing ? 'Menyimpan...' : 'Simpan Perubahan'}
                                 </button>

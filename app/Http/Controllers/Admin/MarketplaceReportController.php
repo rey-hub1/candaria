@@ -14,12 +14,14 @@ class MarketplaceReportController extends Controller
 {
     public function sales(Request $request): Response
     {
-        $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
-        $endDate = $request->input('end_date', Carbon::now()->toDateString());
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
         $sales = Order::join('vendors', 'vendors.id', '=', 'orders.vendor_id')
             ->whereIn('orders.status', ['confirmed', 'preparing', 'ready', 'delivered'])
-            ->whereBetween(DB::raw('DATE(orders.delivery_date)'), [$startDate, $endDate])
+            ->when($startDate && $endDate, function ($q) use ($startDate, $endDate) {
+                return $q->whereBetween(DB::raw('DATE(orders.delivery_date)'), [$startDate, $endDate]);
+            })
             ->groupBy('vendors.id', 'vendors.name')
             ->orderBy('vendors.name')
             ->get([

@@ -80,7 +80,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                 placeholder="Contoh: Snack, Makanan Berat"
                                 value={addData.name}
                                 onChange={(e) => setAddData('name', e.target.value)}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                             />
                             {addErrors.name && (
                                 <p className="text-rose-600 text-xs mt-1">{addErrors.name}</p>
@@ -99,7 +99,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                 value={addData.prefix}
                                 onChange={(e) => setAddData('prefix', e.target.value.toUpperCase())}
                                 maxLength={5}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 uppercase"
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 uppercase"
                             />
                             <p className="text-[10px] text-slate-400 mt-1">Jika kosong, otomatis ambil huruf pertama (Maks. 5 huruf).</p>
                             {addErrors.prefix && (
@@ -110,7 +110,7 @@ import SortableHeader from '@/Components/SortableHeader';
                         <button
                             type="submit"
                             disabled={addProcessing}
-                            className="w-full px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition disabled:opacity-50"
+                            className="w-full px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm rounded-lg shadow-sm transition disabled:opacity-50"
                         >
                             {addProcessing ? 'Menyimpan...' : 'Simpan Kategori'}
                         </button>
@@ -141,7 +141,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                         <div className="flex justify-between items-center">
                                             <div className="flex items-center gap-2">
                                                 <h4 className="font-bold text-slate-950 text-sm">{c.name}</h4>
-                                                <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded uppercase">{c.prefix}</span>
+                                                <span className="text-xs font-bold text-primary-700 bg-primary-100 px-2 py-0.5 rounded uppercase">{c.prefix}</span>
                                             </div>
                                             <span className="text-xs text-slate-500 font-mono">{c.slug}</span>
                                         </div>
@@ -154,7 +154,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                         <div className="flex justify-end gap-2 pt-1">
                                             <button
                                                 onClick={() => openEditModal(c)}
-                                                className="px-3 py-1.5 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 font-bold text-xs rounded-lg transition"
+                                                className="px-3 py-1.5 bg-slate-100 hover:bg-primary-50 hover:text-primary-700 text-slate-700 font-bold text-xs rounded-lg transition"
                                             >
                                                 Ubah
                                             </button>
@@ -189,7 +189,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                                     <td className="px-6 py-4 text-sm font-semibold text-slate-500">{index + 1}</td>
                                                     <td className="px-6 py-4 text-sm font-bold text-slate-950">{c.name}</td>
                                                     <td className="px-6 py-4 text-sm text-center">
-                                                        <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full uppercase">{c.prefix}</span>
+                                                        <span className="text-xs font-bold text-primary-700 bg-primary-100 px-2.5 py-1 rounded-full uppercase">{c.prefix}</span>
                                                     </td>
                                                     <td className="px-6 py-4 text-sm text-slate-600 font-mono">{c.slug}</td>
                                                     <td className="px-6 py-4 text-sm text-center font-semibold text-slate-600">{c.products_count}</td>
@@ -197,7 +197,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                                         <div className="inline-flex gap-2">
                                                             <button
                                                                 onClick={() => openEditModal(c)}
-                                                                className="inline-flex items-center px-2.5 py-1.5 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 font-semibold text-xs rounded transition"
+                                                                className="inline-flex items-center px-2.5 py-1.5 bg-slate-100 hover:bg-primary-50 hover:text-primary-700 text-slate-700 font-semibold text-xs rounded transition"
                                                             >
                                                                 Ubah
                                                             </button>
@@ -246,7 +246,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                     required
                                     value={editData.name}
                                     onChange={(e) => setEditData('name', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                                 />
                                 {editErrors.name && (
                                     <p className="text-rose-600 text-xs mt-1">{editErrors.name}</p>
@@ -265,7 +265,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                     value={editData.prefix}
                                     onChange={(e) => setEditData('prefix', e.target.value.toUpperCase())}
                                     maxLength={5}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 uppercase"
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 uppercase"
                                 />
                                 {editErrors.prefix && (
                                     <p className="text-rose-600 text-xs mt-1">{editErrors.prefix}</p>
@@ -283,7 +283,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                 <button
                                     type="submit"
                                     disabled={editProcessing}
-                                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition disabled:opacity-50"
+                                    className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm rounded-lg shadow-sm transition disabled:opacity-50"
                                 >
                                     {editProcessing ? 'Menyimpan...' : 'Simpan Perubahan'}
                                 </button>

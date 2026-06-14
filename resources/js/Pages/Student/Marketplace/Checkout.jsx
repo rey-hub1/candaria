@@ -88,7 +88,7 @@ export default function Checkout({ slots, now, paymentQrisEnabled }) {
                 </div>
                 <div className="flex items-center justify-between pt-3 mt-2 border-t border-slate-100">
                     <span className="font-bold text-slate-900">Total</span>
-                    <span className="font-bold text-emerald-600">{formatRupiah(cartTotal(cart))}</span>
+                    <span className="font-bold text-primary-600">{formatRupiah(cartTotal(cart))}</span>
                 </div>
             </div>
 
@@ -98,7 +98,7 @@ export default function Checkout({ slots, now, paymentQrisEnabled }) {
                     {['09:00', '12:00'].map((key) => {
                         const available = slotAvailable(key);
                         return (
-                            <label key={key} className={`flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border ${available ? 'border-slate-200 cursor-pointer hover:border-emerald-300' : 'border-slate-100 bg-slate-50 cursor-not-allowed opacity-60'}`}>
+                            <label key={key} className={`flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg border ${available ? 'border-slate-200 cursor-pointer hover:border-primary-300' : 'border-slate-100 bg-slate-50 cursor-not-allowed opacity-60'}`}>
                                 <span className="flex items-center gap-2 text-sm text-slate-700">
                                     <input
                                         type="radio"
@@ -106,7 +106,7 @@ export default function Checkout({ slots, now, paymentQrisEnabled }) {
                                         checked={slot === key}
                                         disabled={!available}
                                         onChange={() => setSlot(key)}
-                                        className="accent-emerald-600"
+                                        className="accent-primary-600"
                                     />
                                     Jam {key}
                                 </span>
@@ -128,12 +128,12 @@ export default function Checkout({ slots, now, paymentQrisEnabled }) {
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 mb-4">
                 <h2 className="text-sm font-bold text-slate-900 mb-3">Pembayaran</h2>
                 <div className="space-y-2">
-                    <label className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 cursor-pointer hover:border-emerald-300 text-sm text-slate-700">
-                        <input type="radio" name="payment" checked={paymentMethod === 'cash'} onChange={() => setPaymentMethod('cash')} className="accent-emerald-600" />
+                    <label className="flex items-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 cursor-pointer hover:border-primary-300 text-sm text-slate-700">
+                        <input type="radio" name="payment" checked={paymentMethod === 'cash'} onChange={() => setPaymentMethod('cash')} className="accent-primary-600" />
                         Bayar Tunai di Tempat
                     </label>
-                    <label className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm ${paymentQrisEnabled ? 'border-slate-200 cursor-pointer hover:border-emerald-300 text-slate-700' : 'border-slate-100 bg-slate-50 text-slate-400 cursor-not-allowed'}`}>
-                        <input type="radio" name="payment" checked={paymentMethod === 'qris'} disabled={!paymentQrisEnabled} onChange={() => setPaymentMethod('qris')} className="accent-emerald-600" />
+                    <label className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm ${paymentQrisEnabled ? 'border-slate-200 cursor-pointer hover:border-primary-300 text-slate-700' : 'border-slate-100 bg-slate-50 text-slate-400 cursor-not-allowed'}`}>
+                        <input type="radio" name="payment" checked={paymentMethod === 'qris'} disabled={!paymentQrisEnabled} onChange={() => setPaymentMethod('qris')} className="accent-primary-600" />
                         QRIS {!paymentQrisEnabled && '(belum tersedia)'}
                     </label>
                 </div>
@@ -146,7 +146,7 @@ export default function Checkout({ slots, now, paymentQrisEnabled }) {
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     rows={2}
-                    className="mt-2 w-full rounded-lg border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                    className="mt-2 w-full rounded-lg border-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500"
                 />
             </div>
 
@@ -156,7 +156,7 @@ export default function Checkout({ slots, now, paymentQrisEnabled }) {
             <button
                 onClick={submit}
                 disabled={processing || !slotAvailable('09:00') && !slotAvailable('12:00')}
-                className="w-full px-4 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white font-semibold text-sm"
+                className="w-full px-4 py-3 rounded-lg bg-primary-600 hover:bg-primary-700 disabled:opacity-60 text-white font-semibold text-sm"
             >
                 {processing ? 'Memproses...' : `Pesan Sekarang · ${formatRupiah(cartTotal(cart))}`}
             </button>

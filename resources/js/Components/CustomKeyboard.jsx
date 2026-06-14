@@ -144,7 +144,7 @@ export default function CustomKeyboard({
                     <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                     Keyboard Kasir
                 </div>
-                <button onClick={onClose} className="px-3 py-1 sm:px-4 sm:py-1.5 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-bold hover:bg-emerald-200 transition shadow-sm active:scale-95">SELESAI</button>
+                <button onClick={onClose} className="px-3 py-1 sm:px-4 sm:py-1.5 bg-primary-100 text-primary-700 rounded-lg text-xs font-bold hover:bg-primary-200 transition shadow-sm active:scale-95">SELESAI</button>
             </div>
             <div className="max-w-4xl mx-auto">
                 <Keyboard

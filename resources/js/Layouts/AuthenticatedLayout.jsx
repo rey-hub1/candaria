@@ -64,14 +64,14 @@ export default function AuthenticatedLayout({ children, title }) {
     const linkClass = (active) => {
         return `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition ${
             active
-                ? 'bg-slate-800 text-emerald-400 font-semibold'
+                ? 'bg-slate-800 text-primary-400 font-semibold'
                 : 'text-slate-300 hover:bg-slate-800 hover:text-white'
         }`;
     };
 
     const mobileLinkClass = (active) => {
         return `flex flex-col items-center justify-center flex-1 text-center py-2 transition ${
-            active ? 'text-emerald-600' : 'text-slate-400'
+            active ? 'text-primary-600' : 'text-slate-400'
         }`;
     };
 
@@ -373,7 +373,7 @@ export default function AuthenticatedLayout({ children, title }) {
                 {/* Brand / Logo */}
                 <div className="flex items-center gap-3 h-16 px-6 bg-slate-950 border-b border-slate-800">
                     <img src="/img/logo-white.png" alt="Logo" className="w-9 h-9 object-contain" />
-                    <span className="text-base font-bold tracking-wider uppercase text-emerald-400">Kantin Smekda</span>
+                    <span className="text-base font-bold tracking-wider uppercase text-primary-400">Kantin Smekda</span>
                 </div>
                 
                 {/* Nav Items */}
@@ -411,7 +411,7 @@ export default function AuthenticatedLayout({ children, title }) {
                 <div className="flex items-center justify-between h-16 px-6 bg-slate-950 border-b border-slate-800">
                     <div className="flex items-center gap-2">
                         <img src="/img/logo-white.png" alt="Logo" className="w-8 h-8 object-contain" />
-                        <span className="text-base font-bold tracking-wider uppercase text-emerald-400">Kantin Smekda</span>
+                        <span className="text-base font-bold tracking-wider uppercase text-primary-400">Kantin Smekda</span>
                     </div>
                     <button onClick={() => setSidebarOpen(false)} className="text-slate-400 hover:text-white">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -464,7 +464,7 @@ export default function AuthenticatedLayout({ children, title }) {
 
                         <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] md:text-xs font-semibold ${
                             auth.user.role === 'admin' 
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' 
+                                ? 'bg-primary-50 text-primary-700 border border-primary-100' 
                                 : 'bg-blue-50 text-blue-700 border border-blue-100'
                         } capitalize`}>
                             {auth.user.role}
@@ -476,10 +476,12 @@ export default function AuthenticatedLayout({ children, title }) {
                 </header>
 
                 {/* Page Content */}
-                <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-50 pb-20 md:pb-6">
-                    <ToastContainer toasts={toasts} removeToast={removeToast} />
+                <main className="flex-1 overflow-y-auto bg-slate-50 pb-20 md:pb-6">
+                    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+                        <ToastContainer toasts={toasts} removeToast={removeToast} />
 
-                    {children}
+                        {children}
+                    </div>
                 </main>
             </div>
 

@@ -61,8 +61,8 @@ export default function Sales({
                     </div>
                     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                         <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Keuntungan Kantin</p>
-                        <h3 className="text-2xl font-extrabold text-emerald-600 mt-1">{formatRupiah(grandTotalProfitKantin)}</h3>
-                        <p className="text-xs text-emerald-500 font-semibold mt-1">Bersih untuk kas kantin</p>
+                        <h3 className="text-2xl font-extrabold text-primary-600 mt-1">{formatRupiah(grandTotalProfitKantin)}</h3>
+                        <p className="text-xs text-primary-500 font-semibold mt-1">Bersih untuk kas kantin</p>
                     </div>
                     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                         <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Uang Penitip (Siswa)</p>
@@ -105,7 +105,7 @@ export default function Sales({
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-extrabold text-slate-900">
                                                 {formatRupiah(data.total_sales)}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-emerald-600">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-primary-600">
                                                 {formatRupiah(data.profit_kantin)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-blue-600">

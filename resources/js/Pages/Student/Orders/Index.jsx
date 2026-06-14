@@ -17,7 +17,7 @@ const STATUS_COLOR = {
     confirmed: 'bg-sky-100 text-sky-700',
     preparing: 'bg-indigo-100 text-indigo-700',
     ready: 'bg-violet-100 text-violet-700',
-    delivered: 'bg-emerald-100 text-emerald-700',
+    delivered: 'bg-primary-100 text-primary-700',
     cancelled: 'bg-rose-100 text-rose-700',
 };
 
@@ -43,7 +43,7 @@ export default function Index({ orders }) {
                         <Link
                             key={order.id}
                             href={route('student.orders.show', order.id)}
-                            className="block bg-white rounded-xl border border-slate-200 shadow-sm p-4 hover:border-emerald-300 transition"
+                            className="block bg-white rounded-xl border border-slate-200 shadow-sm p-4 hover:border-primary-300 transition"
                         >
                             <div className="flex items-center justify-between mb-1">
                                 <p className="font-semibold text-slate-900 text-sm">{order.order_code}</p>
@@ -54,7 +54,7 @@ export default function Index({ orders }) {
                             <p className="text-sm text-slate-500">{order.vendor?.name}</p>
                             <div className="flex items-center justify-between mt-2 text-xs text-slate-400">
                                 <span>{order.delivery_date} · Jam {order.delivery_slot}</span>
-                                <span className="font-bold text-emerald-600 text-sm">{formatRupiah(order.total)}</span>
+                                <span className="font-bold text-primary-600 text-sm">{formatRupiah(order.total)}</span>
                             </div>
                         </Link>
                     ))}

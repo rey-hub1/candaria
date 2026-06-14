@@ -174,7 +174,7 @@ export default function VendorShow({ vendor }) {
                     <h1 className="text-xl font-bold text-slate-900">{vendor.name}</h1>
                     <p className="text-sm text-slate-500 capitalize">{vendor.category}</p>
                     <p className="text-xs mt-1">
-                        <span className={`font-semibold ${vendor.is_open ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        <span className={`font-semibold ${vendor.is_open ? 'text-primary-600' : 'text-rose-600'}`}>
                             {vendor.is_open ? 'Buka' : 'Tutup'}
                         </span>
                     </p>
@@ -201,7 +201,7 @@ export default function VendorShow({ vendor }) {
                                     key={item.id}
                                     onClick={() => vendor.is_open && openItem(item)}
                                     disabled={!vendor.is_open}
-                                    className="bg-white rounded-xl border border-slate-200 shadow-sm p-3 flex gap-3 text-left hover:border-emerald-300 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                                    className="bg-white rounded-xl border border-slate-200 shadow-sm p-3 flex gap-3 text-left hover:border-primary-300 transition disabled:opacity-60 disabled:cursor-not-allowed"
                                 >
                                     <div className="w-14 h-14 rounded-lg bg-slate-100 shrink-0 overflow-hidden flex items-center justify-center">
                                         {item.image_url ? (
@@ -213,7 +213,7 @@ export default function VendorShow({ vendor }) {
                                     <div className="min-w-0 flex-1">
                                         <p className="font-semibold text-slate-900 truncate">{item.name}</p>
                                         {item.description && <p className="text-xs text-slate-500 truncate">{item.description}</p>}
-                                        <p className="text-sm font-bold text-emerald-600 mt-1">{formatRupiah(item.price)}</p>
+                                        <p className="text-sm font-bold text-primary-600 mt-1">{formatRupiah(item.price)}</p>
                                     </div>
                                 </button>
                             ))}
@@ -226,7 +226,7 @@ export default function VendorShow({ vendor }) {
             {cart && cart.items.length > 0 && (
                 <button
                     onClick={() => setCartOpen(true)}
-                    className="fixed bottom-20 sm:bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:w-80 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-lg px-4 py-3 flex items-center justify-between font-semibold text-sm transition z-30"
+                    className="fixed bottom-20 sm:bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:w-80 bg-primary-600 hover:bg-primary-700 text-white rounded-xl shadow-lg px-4 py-3 flex items-center justify-between font-semibold text-sm transition z-30"
                 >
                     <span>{itemCount} item di keranjang</span>
                     <span>{formatRupiah(cartTotal(cart))}</span>
@@ -240,7 +240,7 @@ export default function VendorShow({ vendor }) {
                         <div className="p-4 border-b border-slate-100">
                             <h3 className="font-bold text-slate-900">{activeItem.name}</h3>
                             {activeItem.description && <p className="text-sm text-slate-500 mt-1">{activeItem.description}</p>}
-                            <p className="text-sm font-bold text-emerald-600 mt-1">{formatRupiah(activeItem.price)}</p>
+                            <p className="text-sm font-bold text-primary-600 mt-1">{formatRupiah(activeItem.price)}</p>
                         </div>
 
                         <div className="p-4 space-y-4">
@@ -257,14 +257,14 @@ export default function VendorShow({ vendor }) {
                                         {group.options.map((opt) => {
                                             const checked = (selected[group.id] || []).includes(opt.id);
                                             return (
-                                                <label key={opt.id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-slate-200 cursor-pointer hover:border-emerald-300">
+                                                <label key={opt.id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-slate-200 cursor-pointer hover:border-primary-300">
                                                     <span className="flex items-center gap-2 text-sm text-slate-700">
                                                         <input
                                                             type={group.type === 'single' ? 'radio' : 'checkbox'}
                                                             name={`group-${group.id}`}
                                                             checked={checked}
                                                             onChange={() => toggleOption(group, opt)}
-                                                            className="accent-emerald-600"
+                                                            className="accent-primary-600"
                                                         />
                                                         {opt.name}
                                                     </span>
@@ -286,7 +286,7 @@ export default function VendorShow({ vendor }) {
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
                                     rows={2}
-                                    className="mt-1 w-full rounded-lg border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                                    className="mt-1 w-full rounded-lg border-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500"
                                     placeholder="Mis. tidak pakai cabai"
                                 />
                             </div>
@@ -307,7 +307,7 @@ export default function VendorShow({ vendor }) {
                             <button onClick={() => setActiveItem(null)} className="px-4 py-2.5 rounded-lg border border-slate-200 text-sm font-semibold text-slate-600">
                                 Batal
                             </button>
-                            <button onClick={addToCart} className="flex-1 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold">
+                            <button onClick={addToCart} className="flex-1 px-4 py-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold">
                                 Tambah · {formatRupiah(computeUnitPrice() * qty)}
                             </button>
                         </div>
@@ -335,7 +335,7 @@ export default function VendorShow({ vendor }) {
                                             </p>
                                         )}
                                         {item.notes && <p className="text-xs text-slate-400 italic">"{item.notes}"</p>}
-                                        <p className="text-sm font-bold text-emerald-600 mt-1">{formatRupiah(item.subtotal)}</p>
+                                        <p className="text-sm font-bold text-primary-600 mt-1">{formatRupiah(item.subtotal)}</p>
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0">
                                         <button onClick={() => updateQty(item.key, -1)} className="w-7 h-7 rounded-full border border-slate-200 text-slate-600 font-bold text-sm">-</button>
@@ -350,11 +350,11 @@ export default function VendorShow({ vendor }) {
                         <div className="p-4 border-t border-slate-100">
                             <div className="flex items-center justify-between mb-3">
                                 <span className="font-semibold text-slate-900">Total</span>
-                                <span className="font-bold text-emerald-600">{formatRupiah(cartTotal(cart))}</span>
+                                <span className="font-bold text-primary-600">{formatRupiah(cartTotal(cart))}</span>
                             </div>
                             <button
                                 onClick={() => router.visit(route('student.marketplace.checkout'))}
-                                className="w-full px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold"
+                                className="w-full px-4 py-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold"
                             >
                                 Checkout
                             </button>

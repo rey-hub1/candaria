@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\SalesReportExport;
 use App\Exports\TitipanReportExport;
 use App\Exports\ProductsReportExport;
+use App\Services\ReportService;
 use Maatwebsite\Excel\Facades\Excel;
 
 use Inertia\Inertia;
@@ -19,38 +20,12 @@ use Inertia\Inertia;
 class ReportController extends Controller
 {
     // Laporan Penjualan Harian & Keuntungan Kantin
-    public function sales(Request $request)
+    public function sales(Request $request, ReportService $reportService)
     {
-        $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
-        $endDate = $request->input('end_date', Carbon::now()->toDateString());
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
-        $salesDataQuery = Transaction::active()->select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('COUNT(id) as transaction_count'),
-                DB::raw('SUM(total_amount) as total_sales')
-            )
-            ->whereBetween(DB::raw('DATE(created_at)'), [$startDate, $endDate])
-            ->groupBy(DB::raw('DATE(created_at)'))
-            ->orderBy('date', 'desc')
-            ->get()->keyBy('date');
-
-        $profitsQuery = TransactionItem::select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('SUM(profit_kantin) as profit_kantin'),
-                DB::raw('SUM(profit_seller) as profit_seller')
-            )
-            ->whereBetween(DB::raw('DATE(created_at)'), [$startDate, $endDate])
-            ->groupBy(DB::raw('DATE(created_at)'))
-            ->get()->keyBy('date');
-
-        $result = [];
-        foreach ($salesDataQuery as $date => $data) {
-            $data->profit_kantin = $profitsQuery[$date]->profit_kantin ?? 0;
-            $data->profit_seller = $profitsQuery[$date]->profit_seller ?? 0;
-            $result[] = $data;
-        }
-        
-        $salesData = collect($result);
+        $salesData = $reportService->getSalesData($startDate, $endDate);
 
         // Totals
         $grandTotalSales = $salesData->sum('total_sales');
@@ -91,47 +66,26 @@ class ReportController extends Controller
     }
 
     // Laporan Titipan (Siswa Penitip)
-    public function titipan(Request $request)
+    public function titipan(Request $request, ReportService $reportService)
     {
-        $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
-        $endDate = $request->input('end_date', Carbon::now()->toDateString());
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
-        if ($request->input('export') !== 'pdf') {
-            // Get transaction items for products that are of type 'siswa' (paginated for web)
-            $items = TransactionItem::whereHas('product', function($q) {
-                    $q->where('type', 'siswa');
-                })
-                ->whereBetween(DB::raw('DATE(created_at)'), [$startDate, $endDate])
-                ->with(['product.seller', 'transaction', 'settlement'])
-                ->latest()
-                ->paginate(15);
-        } else {
-            // For PDF, get all matching items
-            $items = TransactionItem::whereHas('product', function($q) {
-                    $q->where('type', 'siswa');
-                })
-                ->whereBetween(DB::raw('DATE(created_at)'), [$startDate, $endDate])
-                ->with(['product.seller', 'transaction', 'settlement'])
-                ->latest()
-                ->get();
-        }
+        $sellerId = $request->input('seller_id');
+        $sellers = \App\Models\Seller::where('is_active', true)->get(['id', 'name', 'class']);
 
-        // Summaries
-        $summary = TransactionItem::whereHas('product', function($q) {
-                $q->where('type', 'siswa');
-            })
-            ->whereBetween(DB::raw('DATE(created_at)'), [$startDate, $endDate])
-            ->selectRaw('COALESCE(SUM(quantity), 0) as total_qty')
-            ->selectRaw('COALESCE(SUM(profit_seller), 0) as total_seller')
-            ->selectRaw('COALESCE(SUM(profit_kantin), 0) as total_kantin')
-            ->first();
+        $isPdf = $request->input('export') === 'pdf';
+        $items = $reportService->getTitipanItems($startDate, $endDate, $sellerId, $isPdf);
+        $summary = $reportService->getTitipanSummary($startDate, $endDate, $sellerId);
 
         if ($request->input('export') === 'pdf') {
             $pdf = Pdf::loadView('reports.titipan_pdf', compact(
                 'items', 
                 'startDate', 
                 'endDate', 
-                'summary'
+                'summary',
+                'sellerId',
+                'sellers'
             ))->setPaper('a4', 'landscape');
             return $pdf->stream('laporan-titipan-siswa-' . $startDate . '-to-' . $endDate . '.pdf');
         }
@@ -141,11 +95,13 @@ class ReportController extends Controller
                 $items,
                 $startDate,
                 $endDate,
-                $summary
+                $summary,
+                $sellerId,
+                $sellers
             ), 'laporan-titipan-siswa-' . $startDate . '-to-' . $endDate . '.xlsx');
         }
 
-        return Inertia::render('Reports/Titipan', compact('items', 'startDate', 'endDate', 'summary'));
+        return Inertia::render('Reports/Titipan', compact('items', 'startDate', 'endDate', 'summary', 'sellerId', 'sellers'));
     }
 
     // Laporan Produk Terlaris & Stok
@@ -204,7 +160,7 @@ class ReportController extends Controller
     // Laporan Produk & Stok Harian
     public function stock(Request $request)
     {
-        $date = $request->input('date', Carbon::now()->toDateString());
+        $date = Carbon::now()->toDateString();
         $products = Product::with(['seller', 'category'])->get();
 
         // Bulk load qtySold for all products on this date

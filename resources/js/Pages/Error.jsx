@@ -18,7 +18,7 @@ export default function Error({ status }) {
 
     const illustration = {
         404: (
-            <svg className="w-48 h-48 mx-auto text-emerald-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-48 h-48 mx-auto text-primary-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M10 10l2 2m0 0l2-2m-2 2l-2 2" />
             </svg>
@@ -68,7 +68,7 @@ export default function Error({ status }) {
                     </button>
                     <Link 
                         href="/"
-                        className="px-6 py-3 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition shadow-lg shadow-emerald-500/30"
+                        className="px-6 py-3 rounded-xl bg-primary-600 text-white font-bold hover:bg-primary-700 transition shadow-lg shadow-primary-500/30"
                     >
                         Ke Halaman Utama
                     </Link>

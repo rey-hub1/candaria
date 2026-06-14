@@ -11,7 +11,7 @@ const TYPE_LABEL = {
 };
 
 const TYPE_COLOR = {
-    credit: 'text-emerald-600',
+    credit: 'text-primary-600',
     debit: 'text-rose-600',
     adjustment: 'text-amber-600',
 };
@@ -28,8 +28,8 @@ export default function Index({ balance, ledgers }) {
                 <p className="text-sm text-slate-500 mt-1">Riwayat pemasukan dari pesanan & pencairan dana.</p>
             </div>
 
-            <div className="bg-emerald-600 rounded-xl shadow-sm p-6 mb-6">
-                <p className="text-emerald-100 text-sm">Saldo Saat Ini</p>
+            <div className="bg-primary-600 rounded-xl shadow-sm p-6 mb-6">
+                <p className="text-primary-100 text-sm">Saldo Saat Ini</p>
                 <p className="text-white text-3xl font-bold mt-1">{formatRupiah(balance)}</p>
             </div>
 

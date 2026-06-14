@@ -185,6 +185,7 @@ export default function Welcome({ canLogin, popularProducts, features = {} }) {
                 .steam { position:absolute; width:6px; height:24px; border-radius:3px; background:rgba(255,255,255,.7); filter:blur(2px); }
 
                 /* responsive */
+                .nav-login-mobile { display:none; }
                 @media (max-width: 920px) {
                     .hero-grid { grid-template-columns: 1fr !important; gap:48px !important; }
                     .hero-right { display:none !important; }
@@ -194,6 +195,7 @@ export default function Welcome({ canLogin, popularProducts, features = {} }) {
                 }
                 @media (max-width: 600px) {
                     .nav-links { display:none !important; }
+                    .nav-login-mobile { display:flex !important; align-items:center; }
                     .ft-grid { grid-template-columns: 1fr !important; }
                     .hero-stats { gap:24px !important; }
                 }
@@ -207,6 +209,12 @@ export default function Welcome({ canLogin, popularProducts, features = {} }) {
                         <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
                             <img src="/img/logo-color.png" alt="Candaria" style={{ width: 66, height: 66, objectFit: 'contain', flexShrink: 0 }} />
                         </Link>
+                        <div className="nav-login-mobile">
+                            {canLogin
+                                ? <Link href={route('dashboard')} className="btn-o" style={{ padding: '8px 16px', fontSize: '.8rem' }}>Dashboard</Link>
+                                : <Link href={route('login')} className="btn-o" style={{ padding: '8px 16px', fontSize: '.8rem' }}>Masuk</Link>
+                            }
+                        </div>
                         <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
                             <a href="#menu" className="nav-link">Menu</a>
                             {marketplaceOpen && <a href="#jajan-online" className="nav-link">Jajan Online</a>}

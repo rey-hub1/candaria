@@ -48,7 +48,7 @@ export default function Index({ vendors, settlements }) {
                         <button
                             onClick={() => openForm(vendor)}
                             disabled={Number(vendor.balance) <= 0}
-                            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold"
+                            className="px-3 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold"
                         >
                             Cairkan
                         </button>
@@ -67,7 +67,7 @@ export default function Index({ vendors, settlements }) {
                                 value={data.amount}
                                 onChange={(e) => setData('amount', e.target.value)}
                                 max={selectedVendor.balance}
-                                className="w-full rounded-lg border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                                className="w-full rounded-lg border-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500"
                             />
                             {errors.amount && <p className="text-xs text-rose-600 mt-1">{errors.amount}</p>}
                         </div>
@@ -77,11 +77,11 @@ export default function Index({ vendors, settlements }) {
                                 type="text"
                                 value={data.notes}
                                 onChange={(e) => setData('notes', e.target.value)}
-                                className="w-full rounded-lg border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                                className="w-full rounded-lg border-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500"
                             />
                         </div>
                         <div className="flex gap-2">
-                            <button type="submit" disabled={processing} className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-semibold">
+                            <button type="submit" disabled={processing} className="px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white text-sm font-semibold">
                                 Proses Pencairan
                             </button>
                             <button type="button" onClick={() => setSelectedVendor(null)} className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50">

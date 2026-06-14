@@ -94,7 +94,7 @@ export default function SearchableSelect({
                             value={query}
                             onChange={e => setQuery(e.target.value)}
                             placeholder="Ketik nama / kelas..."
-                            className="w-full px-3 py-1.5 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full px-3 py-1.5 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                         />
                     </div>
                     <ul className="max-h-56 overflow-y-auto py-1">
@@ -106,9 +106,9 @@ export default function SearchableSelect({
                                     <button
                                         type="button"
                                         onClick={() => pick(o.value)}
-                                        className={`w-full text-left px-3 py-2 text-sm transition hover:bg-emerald-50 ${
+                                        className={`w-full text-left px-3 py-2 text-sm transition hover:bg-primary-50 ${
                                             String(o.value) === String(value)
-                                                ? 'bg-emerald-50 text-emerald-700 font-semibold'
+                                                ? 'bg-primary-50 text-primary-700 font-semibold'
                                                 : 'text-slate-700'
                                         }`}
                                     >

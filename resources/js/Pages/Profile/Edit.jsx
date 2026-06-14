@@ -74,7 +74,7 @@ function UpdateProfileInformation({ mustVerifyEmail, status, className = '' }) {
                             Alamat email Anda belum diverifikasi.
                             <button
                                 type="button"
-                                className="ml-1 underline text-sm text-slate-600 hover:text-slate-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-semibold"
+                                className="ml-1 underline text-sm text-slate-600 hover:text-slate-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 font-semibold"
                                 onClick={() => route('verification.send')}
                             >
                                 Klik di sini untuk mengirim ulang email verifikasi.
@@ -93,7 +93,7 @@ function UpdateProfileInformation({ mustVerifyEmail, status, className = '' }) {
                     <PrimaryButton disabled={processing}>Simpan Perubahan</PrimaryButton>
 
                     {recentlySuccessful && (
-                        <p className="text-sm text-emerald-600 font-medium">Berhasil disimpan.</p>
+                        <p className="text-sm text-primary-600 font-medium">Berhasil disimpan.</p>
                     )}
                 </div>
             </form>
@@ -178,7 +178,7 @@ function UpdatePassword({ className = '' }) {
                     <PrimaryButton disabled={processing}>Simpan Password</PrimaryButton>
 
                     {recentlySuccessful && (
-                        <p className="text-sm text-emerald-600 font-medium">Password berhasil diperbarui.</p>
+                        <p className="text-sm text-primary-600 font-medium">Password berhasil diperbarui.</p>
                     )}
                 </div>
             </form>

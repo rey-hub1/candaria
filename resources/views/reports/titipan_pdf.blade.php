@@ -91,6 +91,17 @@
                 <div class="doc-sub">
                     Periode: {{ \Carbon\Carbon::parse($startDate)->format('d M Y') }} &mdash; {{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}
                 </div>
+                <div class="doc-sub">
+                    Penitip:
+                    @if(isset($sellerId) && $sellerId)
+                        @php
+                            $seller = collect($sellers)->firstWhere('id', $sellerId);
+                        @endphp
+                        {{ $seller ? $seller->name . ' (' . $seller->class . ')' : 'Semua Penitip' }}
+                    @else
+                        Semua Penitip
+                    @endif
+                </div>
             </td>
         </tr>
     </table>

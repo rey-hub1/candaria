@@ -4,13 +4,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatRupiah } from '@/utils/format';
 
 export default function Stock({ reportData = [], date = '' }) {
-    const [localDate, setLocalDate] = useState(date);
-
-    React.useEffect(() => {
-        setLocalDate(date);
-    }, [date]);
-
-
     const formatDateIndonesian = (dateString) => {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -24,17 +17,12 @@ export default function Stock({ reportData = [], date = '' }) {
         return `${day} ${monthName} ${year}`;
     };
 
-    const handleFilterSubmit = (e) => {
-        e.preventDefault();
-        router.get(route('reports.stock'), { date: localDate });
-    };
-
     const handleExportExcel = () => {
-        window.location.href = route('reports.stock', { date, export: 'xlsx' });
+        window.location.href = route('reports.stock', { export: 'xlsx' });
     };
 
     const handleExportPdf = () => {
-        window.open(route('reports.stock', { date, export: 'pdf' }), '_blank');
+        window.open(route('reports.stock', { export: 'pdf' }), '_blank');
     };
 
     // Calculate totals
@@ -69,32 +57,14 @@ export default function Stock({ reportData = [], date = '' }) {
 
             <div className="space-y-6">
                 
-                {/* Filter Card */}
+                {/* Export Actions */}
                 <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm print:hidden">
-                    <form onSubmit={handleFilterSubmit} className="flex flex-wrap items-end gap-4">
-                        <div>
-                            <label htmlFor="date" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Tanggal Laporan</label>
-                            <input
-                                type="date"
-                                name="date"
-                                id="date"
-                                required
-                                value={localDate}
-                                onChange={(e) => setLocalDate(e.target.value)}
-                                className="px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition"
-                        >
-                            Filter Laporan
-                        </button>
+                    <div className="flex flex-wrap items-end gap-4">
                         <div className="flex items-center gap-2 ml-auto">
                             <button
                                 type="button"
                                 onClick={handleExportExcel}
-                                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition flex items-center gap-1.5"
+                                className="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm rounded-lg shadow-sm transition flex items-center gap-1.5"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
@@ -119,7 +89,7 @@ export default function Stock({ reportData = [], date = '' }) {
                                 Cetak Laporan
                             </button>
                         </div>
-                    </form>
+                    </div>
                 </div>
 
                 {/* Summary Row */}
@@ -131,8 +101,8 @@ export default function Stock({ reportData = [], date = '' }) {
                     </div>
                     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                         <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Terjual hari ini</p>
-                        <h3 className="text-2xl font-extrabold text-emerald-600 mt-1">{totalQtySold} pcs</h3>
-                        <p className="text-xs text-emerald-500 font-semibold mt-1">Akumulasi penjualan</p>
+                        <h3 className="text-2xl font-extrabold text-primary-600 mt-1">{totalQtySold} pcs</h3>
+                        <p className="text-xs text-primary-500 font-semibold mt-1">Akumulasi penjualan</p>
                     </div>
                     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                         <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Nilai Penjualan</p>
@@ -206,7 +176,7 @@ export default function Stock({ reportData = [], date = '' }) {
                                         <td className="px-4 py-4 text-center font-mono text-slate-800 text-sm">{totalStok}</td>
                                         <td className="px-4 py-4 text-center font-mono text-slate-800 text-sm">{totalSisaStok}</td>
                                         <td className="px-4 py-4 text-left text-slate-500">-</td>
-                                        <td className="px-4 py-4 text-center font-mono text-emerald-600 text-sm">{totalQtySold} pcs</td>
+                                        <td className="px-4 py-4 text-center font-mono text-primary-600 text-sm">{totalQtySold} pcs</td>
                                         <td colspan="2" className="px-4 py-4 text-center text-slate-500">-</td>
                                         <td className="px-4 py-4 text-right font-mono text-blue-600 text-sm">{formatRupiah(totalHargaSum)}</td>
                                     </tr>

@@ -4,6 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ConfirmModal from '@/Components/ConfirmModal';
 import { useDialog } from '@/hooks/useDialog';
 import { formatRupiah } from '@/utils/format';
+import ImageUploadField from '@/Components/ImageUploadField';
 
 const emptyOption = () => ({ name: '', price_delta: 0, is_default: false });
 const emptyGroup = () => ({ name: '', type: 'single', is_required: false, min_select: 0, max_select: '', options: [emptyOption()] });
@@ -16,6 +17,7 @@ const emptyForm = {
     category: '',
     is_active: true,
     image: null,
+    current_image_url: null,
     option_groups: [],
 };
 
@@ -43,6 +45,7 @@ export default function Index({ menuItems = [] }) {
             category: item.category || '',
             is_active: item.is_active,
             image: null,
+            current_image_url: item.image_url,
             option_groups: (item.option_groups || []).map((g) => ({
                 name: g.name,
                 type: g.type,
@@ -114,7 +117,7 @@ export default function Index({ menuItems = [] }) {
                     <p className="text-sm text-slate-500 mt-1">Kelola menu jualan dan pilihan tambahan (topping, level pedas, dll).</p>
                 </div>
                 <button onClick={openAddModal}
-                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition">
+                    className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm rounded-lg shadow-sm transition">
                     + Tambah Menu
                 </button>
             </div>
@@ -133,18 +136,18 @@ export default function Index({ menuItems = [] }) {
                             <div className="p-4">
                                 <div className="flex items-start justify-between gap-2">
                                     <h3 className="text-sm font-bold text-slate-900">{item.name}</h3>
-                                    <span className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold ${item.is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
+                                    <span className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold ${item.is_active ? 'bg-primary-50 text-primary-700 border border-primary-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
                                         {item.is_active ? 'Aktif' : 'Nonaktif'}
                                     </span>
                                 </div>
                                 {item.category && <p className="text-xs text-slate-400 mt-0.5">{item.category}</p>}
-                                <p className="text-sm font-bold text-emerald-600 mt-2">{formatRupiah(item.price)}</p>
+                                <p className="text-sm font-bold text-primary-600 mt-2">{formatRupiah(item.price)}</p>
                                 {item.option_groups?.length > 0 && (
                                     <p className="text-xs text-slate-400 mt-1">{item.option_groups.length} grup pilihan</p>
                                 )}
                                 <div className="flex gap-2 mt-3">
                                     <button onClick={() => openEditModal(item)}
-                                        className="flex-1 px-2.5 py-1.5 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 font-semibold text-xs rounded transition">
+                                        className="flex-1 px-2.5 py-1.5 bg-slate-100 hover:bg-primary-50 hover:text-primary-700 text-slate-700 font-semibold text-xs rounded transition">
                                         Ubah
                                     </button>
                                     <button onClick={() => handleToggle(item.id)}
@@ -180,14 +183,14 @@ export default function Index({ menuItems = [] }) {
                                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Nama Menu</label>
                                     <input type="text" required value={data.name} onChange={(e) => setData('name', e.target.value)}
                                         placeholder="Contoh: Batagor Isi 5"
-                                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                                     {errors.name && <p className="text-rose-600 text-xs mt-1">{errors.name}</p>}
                                 </div>
 
                                 <div>
                                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Harga</label>
                                     <input type="number" min="0" required value={data.price} onChange={(e) => setData('price', e.target.value)}
-                                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                                     {errors.price && <p className="text-rose-600 text-xs mt-1">{errors.price}</p>}
                                 </div>
 
@@ -195,26 +198,29 @@ export default function Index({ menuItems = [] }) {
                                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Kategori</label>
                                     <input type="text" value={data.category} onChange={(e) => setData('category', e.target.value)}
                                         placeholder="Makanan / Minuman / Snack"
-                                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                                 </div>
 
                                 <div className="col-span-2">
                                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Deskripsi</label>
                                     <textarea rows={2} value={data.description} onChange={(e) => setData('description', e.target.value)}
-                                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                        className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                                 </div>
 
                                 <div className="col-span-2">
-                                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Foto Menu</label>
-                                    <input type="file" accept="image/*" onChange={(e) => setData('image', e.target.files[0])}
-                                        className="w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
-                                    {errors.image && <p className="text-rose-600 text-xs mt-1">{errors.image}</p>}
+                                    <ImageUploadField
+                                        label="Foto Menu"
+                                        value={data.image}
+                                        onChange={f => setData('image', f)}
+                                        currentImageUrl={data.current_image_url}
+                                        error={errors.image}
+                                    />
                                 </div>
 
                                 <div className="col-span-2">
                                     <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
                                         <input type="checkbox" checked={data.is_active} onChange={(e) => setData('is_active', e.target.checked)}
-                                            className="rounded text-emerald-600 focus:ring-emerald-500" />
+                                            className="rounded text-primary-600 focus:ring-primary-500" />
                                         Tampilkan menu ini ke siswa
                                     </label>
                                 </div>
@@ -224,7 +230,7 @@ export default function Index({ menuItems = [] }) {
                                 <div className="flex items-center justify-between mb-3">
                                     <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pilihan Tambahan (Opsional)</p>
                                     <button type="button" onClick={addGroup}
-                                        className="text-xs font-semibold text-emerald-600 hover:text-emerald-700">
+                                        className="text-xs font-semibold text-primary-600 hover:text-primary-700">
                                         + Grup Pilihan
                                     </button>
                                 </div>
@@ -236,9 +242,9 @@ export default function Index({ menuItems = [] }) {
                                                 <input type="text" required value={group.name}
                                                     onChange={(e) => updateGroup(gi, 'name', e.target.value)}
                                                     placeholder="Nama grup, contoh: Pilihan Isi"
-                                                    className="flex-1 px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                                    className="flex-1 px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                                                 <select value={group.type} onChange={(e) => updateGroup(gi, 'type', e.target.value)}
-                                                    className="px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                                                    className="px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                                                     <option value="single">Pilih Satu</option>
                                                     <option value="multiple">Pilih Banyak</option>
                                                 </select>
@@ -252,7 +258,7 @@ export default function Index({ menuItems = [] }) {
                                                 <label className="flex items-center gap-2 text-xs font-semibold text-slate-600">
                                                     <input type="checkbox" checked={group.is_required}
                                                         onChange={(e) => updateGroup(gi, 'is_required', e.target.checked)}
-                                                        className="rounded text-emerald-600 focus:ring-emerald-500" />
+                                                        className="rounded text-primary-600 focus:ring-primary-500" />
                                                     Wajib dipilih
                                                 </label>
                                                 {group.type === 'multiple' && (
@@ -261,14 +267,14 @@ export default function Index({ menuItems = [] }) {
                                                             Min
                                                             <input type="number" min="0" value={group.min_select}
                                                                 onChange={(e) => updateGroup(gi, 'min_select', e.target.value)}
-                                                                className="w-16 px-2 py-1 text-sm border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                                                                className="w-16 px-2 py-1 text-sm border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-primary-500" />
                                                         </label>
                                                         <label className="flex items-center gap-2 text-xs text-slate-600">
                                                             Max
                                                             <input type="number" min="0" value={group.max_select}
                                                                 onChange={(e) => updateGroup(gi, 'max_select', e.target.value)}
                                                                 placeholder="-"
-                                                                className="w-16 px-2 py-1 text-sm border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                                                                className="w-16 px-2 py-1 text-sm border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-primary-500" />
                                                         </label>
                                                     </>
                                                 )}
@@ -280,15 +286,15 @@ export default function Index({ menuItems = [] }) {
                                                         <input type="text" required value={opt.name}
                                                             onChange={(e) => updateOption(gi, oi, 'name', e.target.value)}
                                                             placeholder="Nama pilihan, contoh: Tahu"
-                                                            className="flex-1 px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                                            className="flex-1 px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                                                         <input type="number" value={opt.price_delta}
                                                             onChange={(e) => updateOption(gi, oi, 'price_delta', e.target.value)}
                                                             placeholder="+/- harga"
-                                                            className="w-28 px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                                                            className="w-28 px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                                                         <label className="flex items-center gap-1 text-xs text-slate-600 shrink-0">
                                                             <input type="checkbox" checked={opt.is_default}
                                                                 onChange={(e) => updateOption(gi, oi, 'is_default', e.target.checked)}
-                                                                className="rounded text-emerald-600 focus:ring-emerald-500" />
+                                                                className="rounded text-primary-600 focus:ring-primary-500" />
                                                             Default
                                                         </label>
                                                         <button type="button" onClick={() => removeOption(gi, oi)}
@@ -300,7 +306,7 @@ export default function Index({ menuItems = [] }) {
                                                     </div>
                                                 ))}
                                                 <button type="button" onClick={() => addOption(gi)}
-                                                    className="text-xs font-semibold text-emerald-600 hover:text-emerald-700">
+                                                    className="text-xs font-semibold text-primary-600 hover:text-primary-700">
                                                     + Pilihan
                                                 </button>
                                             </div>
@@ -318,7 +324,7 @@ export default function Index({ menuItems = [] }) {
                                     Batal
                                 </button>
                                 <button type="submit" disabled={processing}
-                                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-lg shadow-sm transition disabled:opacity-50">
+                                    className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-lg shadow-sm transition disabled:opacity-50">
                                     {processing ? 'Menyimpan...' : 'Simpan Menu'}
                                 </button>
                             </div>

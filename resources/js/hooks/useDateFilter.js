@@ -20,14 +20,16 @@ export function formatDateIndonesian(dateString) {
  * @param {(start: string, end: string) => void} onNavigate - called on every filter change
  */
 export function useDateFilter({ initialStart = '', initialEnd = '', initialPreset = null, onNavigate }) {
+    const derivedPreset = initialPreset || ((!initialStart && !initialEnd) ? 'all' : null);
+
     const [localStartDate, setLocalStartDate] = useState(initialStart);
     const [localEndDate, setLocalEndDate] = useState(initialEnd);
-    const [activePreset, setActivePreset] = useState(initialPreset);
+    const [activePreset, setActivePreset] = useState(derivedPreset);
 
     useEffect(() => {
         setLocalStartDate(initialStart);
         setLocalEndDate(initialEnd);
-        setActivePreset(initialPreset);
+        setActivePreset(initialPreset || ((!initialStart && !initialEnd) ? 'all' : null));
     }, [initialStart, initialEnd, initialPreset]);
 
     function applyPreset(preset) {

@@ -21,7 +21,7 @@ export default function Index({ notifications }) {
                     <p className="text-sm text-slate-500 mt-1">Pemberitahuan terbaru untuk akun kamu.</p>
                 </div>
                 {hasUnread && (
-                    <button onClick={markAllRead} className="text-xs font-semibold text-emerald-600 hover:underline">
+                    <button onClick={markAllRead} className="text-xs font-semibold text-primary-600 hover:underline">
                         Tandai semua dibaca
                     </button>
                 )}
@@ -39,9 +39,9 @@ export default function Index({ notifications }) {
                             href={route('notifications.markRead', n.id)}
                             method="post"
                             as="div"
-                            className={`p-4 flex items-start gap-3 cursor-pointer hover:bg-slate-50 ${!n.read_at ? 'bg-emerald-50/50' : ''}`}
+                            className={`p-4 flex items-start gap-3 cursor-pointer hover:bg-slate-50 ${!n.read_at ? 'bg-primary-50/50' : ''}`}
                         >
-                            <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${!n.read_at ? 'bg-emerald-500' : 'bg-transparent'}`}></div>
+                            <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${!n.read_at ? 'bg-primary-500' : 'bg-transparent'}`}></div>
                             <div>
                                 <p className="text-sm font-semibold text-slate-900">{n.data.title}</p>
                                 <p className="text-sm text-slate-600">{n.data.message}</p>

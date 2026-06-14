@@ -17,7 +17,7 @@ const STATUS_COLOR = {
     confirmed: 'bg-sky-100 text-sky-700',
     preparing: 'bg-indigo-100 text-indigo-700',
     ready: 'bg-violet-100 text-violet-700',
-    delivered: 'bg-emerald-100 text-emerald-700',
+    delivered: 'bg-primary-100 text-primary-700',
     cancelled: 'bg-rose-100 text-rose-700',
 };
 
@@ -59,14 +59,14 @@ export default function Index({ orders, filters }) {
                     type="date"
                     value={filters.date}
                     onChange={(e) => updateFilter('date', e.target.value)}
-                    className="rounded-lg border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                    className="rounded-lg border-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500"
                 />
-                <select value={filters.slot} onChange={(e) => updateFilter('slot', e.target.value)} className="rounded-lg border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-500">
+                <select value={filters.slot} onChange={(e) => updateFilter('slot', e.target.value)} className="rounded-lg border-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
                     <option value="">Semua Slot</option>
                     <option value="09:00">Jam 09:00</option>
                     <option value="12:00">Jam 12:00</option>
                 </select>
-                <select value={filters.status} onChange={(e) => updateFilter('status', e.target.value)} className="rounded-lg border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-500">
+                <select value={filters.status} onChange={(e) => updateFilter('status', e.target.value)} className="rounded-lg border-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
                     <option value="">Semua Status</option>
                     {Object.entries(STATUS_LABEL).map(([key, label]) => (
                         <option key={key} value={key}>{label}</option>
@@ -108,10 +108,10 @@ export default function Index({ orders, filters }) {
                             {order.notes && <p className="text-xs text-slate-400 italic mb-2">Catatan: "{order.notes}"</p>}
 
                             <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                                <span className="font-bold text-emerald-600 text-sm">{formatRupiah(order.total)}</span>
+                                <span className="font-bold text-primary-600 text-sm">{formatRupiah(order.total)}</span>
                                 <div className="flex items-center gap-2">
                                     {NEXT_STATUS[order.status] && (
-                                        <button onClick={() => advance(order)} className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold">
+                                        <button onClick={() => advance(order)} className="px-3 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold">
                                             {NEXT_STATUS[order.status].label}
                                         </button>
                                     )}

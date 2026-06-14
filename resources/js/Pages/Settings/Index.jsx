@@ -41,7 +41,7 @@ export default function Index({ settings = {} }) {
                         value={data.admin_whatsapp}
                         onChange={(e) => setData('admin_whatsapp', e.target.value)}
                         placeholder="Contoh: 081234567890"
-                        className="w-full rounded-lg border-slate-300 focus:border-emerald-500 focus:ring-emerald-500 text-sm"
+                        className="w-full rounded-lg border-slate-300 focus:border-primary-500 focus:ring-primary-500 text-sm"
                     />
                     <p className="text-[11px] text-slate-400 mt-1">
                         Awalan 0 otomatis diubah jadi 62. Hasil tersimpan:{' '}
@@ -60,7 +60,7 @@ export default function Index({ settings = {} }) {
                         </p>
 
                         <div className="grid grid-cols-2 gap-3">
-                            <label className={`relative flex flex-col gap-2 p-4 rounded-xl border-2 cursor-pointer transition ${data.keyboard_default_mode === 'prefix' ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+                            <label className={`relative flex flex-col gap-2 p-4 rounded-xl border-2 cursor-pointer transition ${data.keyboard_default_mode === 'prefix' ? 'border-primary-500 bg-primary-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
                                 <input
                                     type="radio"
                                     name="keyboard_default_mode"
@@ -72,7 +72,7 @@ export default function Index({ settings = {} }) {
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm font-bold text-slate-800">Prefix</span>
                                     {data.keyboard_default_mode === 'prefix' && (
-                                        <span className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center">
+                                        <span className="w-4 h-4 rounded-full bg-primary-500 flex items-center justify-center">
                                             <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 12 12">
                                                 <path d="M3.5 6.5L5.5 8.5L8.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                                             </svg>
@@ -90,7 +90,7 @@ export default function Index({ settings = {} }) {
                                 </div>
                             </label>
 
-                            <label className={`relative flex flex-col gap-2 p-4 rounded-xl border-2 cursor-pointer transition ${data.keyboard_default_mode === 'full' ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+                            <label className={`relative flex flex-col gap-2 p-4 rounded-xl border-2 cursor-pointer transition ${data.keyboard_default_mode === 'full' ? 'border-primary-500 bg-primary-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
                                 <input
                                     type="radio"
                                     name="keyboard_default_mode"
@@ -102,7 +102,7 @@ export default function Index({ settings = {} }) {
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm font-bold text-slate-800">Lengkap</span>
                                     {data.keyboard_default_mode === 'full' && (
-                                        <span className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center">
+                                        <span className="w-4 h-4 rounded-full bg-primary-500 flex items-center justify-center">
                                             <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 12 12">
                                                 <path d="M3.5 6.5L5.5 8.5L8.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                                             </svg>
@@ -129,12 +129,12 @@ export default function Index({ settings = {} }) {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-sm font-semibold px-5 py-2 rounded-lg transition"
+                            className="bg-primary-600 hover:bg-primary-500 disabled:opacity-50 text-white text-sm font-semibold px-5 py-2 rounded-lg transition"
                         >
                             Simpan
                         </button>
                         {recentlySuccessful && (
-                            <span className="text-emerald-600 text-sm font-medium">Tersimpan.</span>
+                            <span className="text-primary-600 text-sm font-medium">Tersimpan.</span>
                         )}
                     </div>
                 </form>

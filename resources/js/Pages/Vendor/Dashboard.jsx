@@ -11,7 +11,7 @@ export default function Dashboard({ vendor, stats = {} }) {
             <div className="mb-6">
                 <h1 className="text-xl font-bold text-slate-900">Halo, {vendor?.name || 'Mitra'} 👋</h1>
                 <p className="text-sm text-slate-500 mt-1">
-                    Status toko: <span className={`font-semibold ${vendor?.is_open ? 'text-emerald-600' : 'text-rose-600'}`}>{vendor?.is_open ? 'Buka' : 'Tutup'}</span>
+                    Status toko: <span className={`font-semibold ${vendor?.is_open ? 'text-primary-600' : 'text-rose-600'}`}>{vendor?.is_open ? 'Buka' : 'Tutup'}</span>
                     {' · '}
                     Status afiliasi: <span className="font-semibold capitalize">{vendor?.status}</span>
                 </p>
@@ -37,7 +37,7 @@ export default function Dashboard({ vendor, stats = {} }) {
                 <p className="text-sm text-slate-500 mb-4">
                     Tambahkan menu jualan kamu lengkap dengan pilihan tambahan (topping, level pedas, dll) supaya siswa bisa langsung pesan.
                 </p>
-                <Link href={route('vendor.menu.index')} className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition">
+                <Link href={route('vendor.menu.index')} className="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm rounded-lg shadow-sm transition">
                     Kelola Menu
                 </Link>
             </div>

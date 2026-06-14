@@ -86,7 +86,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                 placeholder="Contoh: 0"
                                 value={addData.min_price}
                                 onChange={(e) => setAddData('min_price', e.target.value)}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                             />
                             {addErrors.min_price && <p className="text-rose-600 text-xs mt-1">{addErrors.min_price}</p>}
                         </div>
@@ -101,7 +101,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                 placeholder="Kosongi jika tak terhingga"
                                 value={addData.max_price}
                                 onChange={(e) => setAddData('max_price', e.target.value)}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                             />
                             <p className="text-[10px] text-slate-400 mt-1">Kosongi jika berlaku sampai harga berapapun ke atas.</p>
                             {addErrors.max_price && <p className="text-rose-600 text-xs mt-1">{addErrors.max_price}</p>}
@@ -118,7 +118,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                 placeholder="Contoh: 500"
                                 value={addData.margin}
                                 onChange={(e) => setAddData('margin', e.target.value)}
-                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                             />
                             {addErrors.margin && <p className="text-rose-600 text-xs mt-1">{addErrors.margin}</p>}
                         </div>
@@ -126,7 +126,7 @@ import SortableHeader from '@/Components/SortableHeader';
                         <button
                             type="submit"
                             disabled={addProcessing}
-                            className="w-full px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm transition disabled:opacity-50"
+                            className="w-full px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm rounded-lg shadow-sm transition disabled:opacity-50"
                         >
                             {addProcessing ? 'Menyimpan...' : 'Simpan Aturan'}
                         </button>
@@ -186,7 +186,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                             <tr key={rule.id} className="hover:bg-slate-50 transition">
                                                 <td className="px-6 py-4 text-sm font-semibold text-slate-950">{formatMargin(rule.min_price)}</td>
                                                 <td className="px-6 py-4 text-sm font-semibold text-slate-950">{formatMargin(rule.max_price)}</td>
-                                                <td className="px-6 py-4 text-sm font-bold text-emerald-600">+{formatMargin(rule.margin)}</td>
+                                                <td className="px-6 py-4 text-sm font-bold text-primary-600">+{formatMargin(rule.margin)}</td>
                                                 <td className="px-6 py-4 text-sm text-center">
                                                     <div className="inline-flex gap-2">
                                                         <button onClick={() => openEditModal(rule)} className="px-2.5 py-1.5 bg-slate-100 font-semibold text-xs rounded">Ubah</button>
@@ -225,7 +225,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                     min="0"
                                     value={editData.min_price}
                                     onChange={(e) => setEditData('min_price', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                                 />
                                 {editErrors.min_price && <p className="text-rose-600 text-xs mt-1">{editErrors.min_price}</p>}
                             </div>
@@ -237,7 +237,7 @@ import SortableHeader from '@/Components/SortableHeader';
                                     min="0"
                                     value={editData.max_price}
                                     onChange={(e) => setEditData('max_price', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                                 />
                                 {editErrors.max_price && <p className="text-rose-600 text-xs mt-1">{editErrors.max_price}</p>}
                             </div>
@@ -250,14 +250,14 @@ import SortableHeader from '@/Components/SortableHeader';
                                     min="0"
                                     value={editData.margin}
                                     onChange={(e) => setEditData('margin', e.target.value)}
-                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                    className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                                 />
                                 {editErrors.margin && <p className="text-rose-600 text-xs mt-1">{editErrors.margin}</p>}
                             </div>
                             
                             <div className="flex justify-end gap-2">
                                 <button type="button" onClick={() => setEditModal(false)} className="px-4 py-2 bg-slate-100 text-slate-700 font-semibold text-sm rounded-lg">Batal</button>
-                                <button type="submit" disabled={editProcessing} className="px-4 py-2 bg-emerald-600 text-white font-semibold text-sm rounded-lg">
+                                <button type="submit" disabled={editProcessing} className="px-4 py-2 bg-primary-600 text-white font-semibold text-sm rounded-lg">
                                     {editProcessing ? 'Menyimpan...' : 'Simpan Perubahan'}
                                 </button>
                             </div>

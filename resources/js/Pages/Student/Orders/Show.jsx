@@ -17,7 +17,7 @@ const STATUS_COLOR = {
     confirmed: 'bg-sky-100 text-sky-700',
     preparing: 'bg-indigo-100 text-indigo-700',
     ready: 'bg-violet-100 text-violet-700',
-    delivered: 'bg-emerald-100 text-emerald-700',
+    delivered: 'bg-primary-100 text-primary-700',
     cancelled: 'bg-rose-100 text-rose-700',
 };
 
@@ -64,7 +64,7 @@ export default function Show({ order }) {
                 </div>
                 <div className="flex items-center justify-between pt-3 mt-2 border-t border-slate-100">
                     <span className="font-bold text-slate-900">Total</span>
-                    <span className="font-bold text-emerald-600">{formatRupiah(order.total)}</span>
+                    <span className="font-bold text-primary-600">{formatRupiah(order.total)}</span>
                 </div>
             </div>
 

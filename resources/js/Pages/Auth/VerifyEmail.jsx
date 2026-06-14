@@ -22,7 +22,7 @@ export default function VerifyEmail({ status }) {
             </div>
 
             {verificationLinkSent && (
-                <div className="mb-6 text-sm font-medium text-emerald-600 bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                <div className="mb-6 text-sm font-medium text-primary-600 bg-primary-50 p-4 rounded-xl border border-primary-200">
                     Tautan verifikasi baru telah dikirim ke alamat email yang Anda berikan saat pendaftaran.
                 </div>
             )}
@@ -37,7 +37,7 @@ export default function VerifyEmail({ status }) {
                         href={route('logout')}
                         method="post"
                         as="button"
-                        className="underline text-sm text-slate-600 hover:text-slate-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium"
+                        className="underline text-sm text-slate-600 hover:text-slate-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 font-medium"
                     >
                         Keluar
                     </Link>
