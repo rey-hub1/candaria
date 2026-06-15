@@ -18,8 +18,8 @@ export function clearCart() {
     window.localStorage.removeItem(STORAGE_KEY);
 }
 
-export function cartItemKey(menuItemId, optionIds, notes) {
-    return [menuItemId, [...optionIds].sort((a, b) => a - b).join('-'), notes || ''].join('|');
+export function cartItemKey(menuItemId, notes) {
+    return [menuItemId, notes || ''].join('|');
 }
 
 export function cartTotal(cart) {

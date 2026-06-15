@@ -52,7 +52,6 @@ export default function Checkout({ slots, now, paymentQrisEnabled }) {
                 menu_item_id: item.menuItemId,
                 qty: item.qty,
                 notes: item.notes || null,
-                option_ids: item.options.map((o) => o.optionId),
             })),
         }, {
             onSuccess: () => clearCart(),
@@ -77,9 +76,6 @@ export default function Checkout({ slots, now, paymentQrisEnabled }) {
                         <div key={item.key} className="py-2 flex items-start justify-between gap-3">
                             <div>
                                 <p className="text-sm font-semibold text-slate-900">{item.qty}x {item.name}</p>
-                                {item.options.length > 0 && (
-                                    <p className="text-xs text-slate-500">{item.options.map((o) => o.optionName).join(', ')}</p>
-                                )}
                                 {item.notes && <p className="text-xs text-slate-400 italic">"{item.notes}"</p>}
                             </div>
                             <p className="text-sm font-semibold text-slate-900 shrink-0">{formatRupiah(item.subtotal)}</p>

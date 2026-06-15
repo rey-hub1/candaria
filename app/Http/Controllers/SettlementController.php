@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Inertia\Inertia;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\SettlementsReportExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SettlementController extends Controller
 {
@@ -23,14 +26,14 @@ class SettlementController extends Controller
         $endDate = $filters['end_date'] ?? null;
 
         // Use a subquery to calculate earnings and payments
-        $sellers = Seller::withCount('products')
+        $query = Seller::withCount('products')
             ->select('sellers.*')
             ->selectSub(function($query) use ($startDate, $endDate) {
                 $query->selectRaw('COALESCE(SUM(transaction_items.profit_seller), 0)')
                     ->from('transaction_items')
                     ->join('products', 'products.id', '=', 'transaction_items.product_id')
                     ->whereColumn('products.seller_id', 'sellers.id');
-                
+
                 if ($startDate) {
                     $query->whereDate('transaction_items.created_at', '>=', $startDate);
                 }
@@ -50,9 +53,32 @@ class SettlementController extends Controller
                     $query->whereDate('seller_settlements.created_at', '<=', $endDate);
                 }
             }, 'total_paid')
-            ->filter($filters, ['name', 'class'])
-            ->paginate(15)
-            ->withQueryString();
+            ->filter($filters, ['name', 'class']);
+
+        if ($request->input('export')) {
+            $allSellers = $query->get();
+            $totalUnpaidAll = 0;
+            foreach ($allSellers as $seller) {
+                $seller->unpaid_amount = $seller->total_earnings - $seller->total_paid;
+                $totalUnpaidAll += $seller->unpaid_amount;
+            }
+
+            if ($request->input('export') === 'pdf') {
+                $pdf = Pdf::loadView('reports.settlements_pdf', [
+                    'sellers' => $allSellers,
+                    'startDate' => $startDate,
+                    'endDate' => $endDate,
+                    'totalUnpaid' => $totalUnpaidAll,
+                ])->setPaper('a4', 'portrait');
+                return $pdf->stream('laporan-pembayaran-penitip-' . now()->format('Y-m-d') . '.pdf');
+            }
+
+            if ($request->input('export') === 'xlsx') {
+                return Excel::download(new SettlementsReportExport($allSellers, $startDate, $endDate, $totalUnpaidAll), 'laporan-pembayaran-penitip-' . now()->format('Y-m-d') . '.xlsx');
+            }
+        }
+
+        $sellers = $query->paginate(15)->withQueryString();
 
         // Calculate total unpaid across all sellers for summary
         $totalUnpaid = 0;

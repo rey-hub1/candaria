@@ -18,5 +18,7 @@ Internal "penitipan" model: students/sellers consign products sold through the c
 
 ## Gotchas
 - Margin rule cache (`margin_rules_all`) must be invalidated/forgotten when `MarginRule` changes — check `MarginRuleController` does this.
-- `DashboardController::exportPenitip()` (route `penitip.export`) downloads xlsx by default (`?format=pdf` for PDF), reusing `TitipanReportExport` / `reports.titipan_pdf` scoped to the logged-in penitip's seller. Both desktop sidebar and mobile nav link here.
+- `DashboardController::exportPenitip()` (route `penitip.export`) downloads xlsx by default (`?format=pdf` for PDF), reusing `TitipanReportExport` / `reports.titipan_pdf` scoped to the logged-in penitip's seller.
+- `ReportController::penitip()` (route `reports.penitip`, page `Reports/Penitip.jsx`) — in-app sales report for the logged-in penitip, reuses `ReportService::getTitipanItems/getTitipanSummary` scoped to their `Seller`, with date filter + export buttons (linking to `penitip.export`). Both desktop sidebar and mobile nav link here ("Laporan Penjualan"/"Laporan").
+- `SettlementController::index` (route `settlements.index`, page `Settlements/Index.jsx`) — Pembayaran Penitip list, also supports `?export=xlsx|pdf` (date-filtered, unpaginated) via `SettlementsReportExport` / `reports.settlements_pdf`, export buttons wired through `DateRangeFilter`'s `extra`/export props.
 - Don't confuse this internal consignment model with the new external "vendor/mitra" marketplace (`plan/marketplace-expansion-plan.md`) — separate domain, separate tables (`vendors`, `menu_items`, not `Seller`/`Product`).

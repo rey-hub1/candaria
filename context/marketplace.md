@@ -1,13 +1,20 @@
 # Marketplace: Vendors & Menus
 
-External "mitra" (vendor) accounts manage their own menu, with optional
-Gojek-style customization. Branch `candaria2`, gated by `marketplace` feature flag.
+External "mitra" (vendor) accounts manage their own menu. Customization is
+free-text only — students write requests (pedas, tanpa sambal, dll) in a per-item
+note at checkout; there are no structured option groups. Branch `candaria2`,
+gated by `marketplace` feature flag.
 
 ## Tables/models
 - `vendors` — `user_id` (nullable, FK to a `vendor`-role User), `name`, `slug` (auto-generated, collision-checked), `description`, `logo`, `category`, `status` (pending/active/suspended), `phone`, `address`, `balance`, `is_open`, `joined_at`. SoftDeletes. `scopeActive()`.
 - `menu_items` — belongs to vendor, cascade-deleted with vendor. `name`, `description`, `price`, `image`, `category`, `is_active`. SoftDeletes. `scopeActive()`.
-- `menu_option_groups` — belongs to menu item, cascade-deleted. `name`, `type` (single/multiple), `is_required`, `min_select`, `max_select`, `sort_order`.
-- `menu_options` — belongs to option group, cascade-deleted. `name`, `price_delta`, `is_default`, `sort_order`.
+- `menu_option_groups` / `menu_options` — **legacy/unused.** Tables + `MenuItem::optionGroups()` relation still exist but are no longer written or read by any flow (options removed in favor of free-text notes). Not dropped to avoid a destructive migration; safe to drop later if desired.
+
+## Admin: manage categories (`/admin/marketplace-categories`)
+- `marketplace_categories` table — `type` (`vendor` = kategori mitra, `menu` = kategori item), `name`, `is_active`, `sort_order`. Unique `(type, name)`. Model `MarketplaceCategory` (scopes: `type()`, `active()`, `ordered()`). Separate from the canteen `Category` model (products).
+- `Admin/MarketplaceCategoryController` — index/store/update/destroy (toggle active = update with flipped `is_active`).
+- Page: `Pages/Admin/MarketplaceCategories/Index.jsx` (two columns: mitra & menu).
+- Vendor `category` and `menu_items.category` still store the category **name as a string** (not FK). Vendor picks from a dropdown sourced from active categories: `DashboardController::profile()` passes `categories` (type=vendor), `MenuItemController::index()` passes `categories` (type=menu). Legacy free-text values still render as a "(lama)" option.
 
 ## Admin: manage vendors (`/admin/vendors`)
 - `Admin/VendorController` — index/store/update/destroy.
@@ -17,11 +24,8 @@ Gojek-style customization. Branch `candaria2`, gated by `marketplace` feature fl
 
 ## Vendor dashboard (`/mitra`, role=vendor)
 - `Vendor/DashboardController` — `index()` (stats: menu_count, active_menu_count, balance), `profile()`/`updateProfile()` (logo upload, is_open toggle).
-- `Vendor/MenuItemController` — full CRUD for own menu items + nested option groups/options.
-  - `validatePayload()` validates menu fields + `option_groups[].options[]`.
-  - `syncOptionGroups()` deletes and recreates all groups/options on every save (simple, no diffing).
-  - Empty `max_select` ('') is normalized to `null` before validation.
-- Pages: `Pages/Vendor/Dashboard.jsx`, `Pages/Vendor/Profile.jsx`, `Pages/Vendor/Menu/Index.jsx` (list + add/edit modal with dynamic option-group/option rows).
+- `Vendor/MenuItemController` — plain CRUD for own menu items (name/description/price/category/image/is_active). No option groups.
+- Pages: `Pages/Vendor/Dashboard.jsx`, `Pages/Vendor/Profile.jsx`, `Pages/Vendor/Menu/Index.jsx` (list + add/edit modal, plain fields only).
 
 ## Routing/redirects
 - `/mitra/*` routes require `role:vendor` + `feature:marketplace`.
@@ -29,4 +33,3 @@ Gojek-style customization. Branch `candaria2`, gated by `marketplace` feature fl
 
 ## Gotchas
 - `Vendor::ledgers()` and `Vendor::orders()` are forward references to models that don't exist yet (Phase 4/5) — don't call them until those phases land.
-- Inertia relation `optionGroups` serializes as `option_groups` in JSON (Laravel snake-cases relation names).

@@ -42,7 +42,8 @@
       "Bash(vendor/bin/pint app/Services app/Http/Controllers/TransactionController.php app/Http/Controllers/PublicController.php app/Http/Controllers/ActivityLogController.php app/Models app/Traits app/Http/Requests app/Exceptions database/migrations)",
       "Bash(git checkout *)",
       "Bash(gh pr create --base main --head feat/void-audit-hardening --title 'feat: soft void, audit log, race-safe codes & service layer' --body ' *)",
-      "Read(//Users/reynonawfal/.claude/skills/lean-coding/assets/**)"
+      "Read(//Users/reynonawfal/.claude/skills/lean-coding/assets/**)",
+      "Bash(npx eslint *)"
     ]
   }
 }

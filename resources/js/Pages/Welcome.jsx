@@ -1,7 +1,8 @@
-import { Link, Head } from '@inertiajs/react';
+import { Link, Head, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 
 export default function Welcome({ canLogin, popularProducts, features = {} }) {
+    const isAuthenticated = !!usePage().props.auth?.user;
     const marketplaceOpen = !!features.marketplace;
     const marketplaceOrders = marketplaceOpen && !!features.marketplace_orders;
     const [activeFaq, setActiveFaq] = useState(null);
@@ -210,7 +211,7 @@ export default function Welcome({ canLogin, popularProducts, features = {} }) {
                             <img src="/img/logo-color.png" alt="Candaria" style={{ width: 66, height: 66, objectFit: 'contain', flexShrink: 0 }} />
                         </Link>
                         <div className="nav-login-mobile">
-                            {canLogin
+                            {isAuthenticated
                                 ? <Link href={route('dashboard')} className="btn-o" style={{ padding: '8px 16px', fontSize: '.8rem' }}>Dashboard</Link>
                                 : <Link href={route('login')} className="btn-o" style={{ padding: '8px 16px', fontSize: '.8rem' }}>Masuk</Link>
                             }
@@ -221,9 +222,9 @@ export default function Welcome({ canLogin, popularProducts, features = {} }) {
                             <a href="#kenapa" className="nav-link">Kenapa Kami</a>
                             <a href="#faq" className="nav-link">FAQ</a>
                             <Link href={route('menu')} className="btn-g" style={{ padding: '9px 20px', fontSize: '.85rem' }}>Semua Menu</Link>
-                            {canLogin
+                            {isAuthenticated
                                 ? <Link href={route('dashboard')} className="nav-link" style={{ opacity: .7 }}>Dashboard</Link>
-                                : <Link href={route('login')} className="nav-link" style={{ opacity: .7 }}>Masuk Staff</Link>
+                                : <Link href={route('login')} className="nav-link" style={{ opacity: .7 }}>Masuk</Link>
                             }
                         </div>
                     </div>
@@ -545,7 +546,7 @@ export default function Welcome({ canLogin, popularProducts, features = {} }) {
                                         ...(marketplaceOpen ? [['Jajan Online', '#jajan-online']] : []),
                                         ['Kenapa Kami', '#kenapa'],
                                         ['FAQ', '#faq'],
-                                        ['Masuk Staff', canLogin ? route('dashboard') : route('login')],
+                                        [isAuthenticated ? 'Dashboard' : 'Masuk', isAuthenticated ? route('dashboard') : route('login')],
                                     ].map(([l, h]) => (
                                         <li key={l}><a href={h} style={{ color: 'var(--ink-soft)', fontSize: '.88rem', textDecoration: 'none', transition: 'color .2s' }}
                                             onMouseOver={e => e.target.style.color = 'var(--tomato)'}

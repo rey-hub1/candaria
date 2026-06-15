@@ -29,7 +29,7 @@ class OrderController extends Controller
 
         $date = $request->input('date', now()->toDateString());
 
-        $orders = Order::with('items.options', 'student:id,name')
+        $orders = Order::with('items', 'student:id,name')
             ->where('vendor_id', $vendor->id)
             ->whereDate('delivery_date', $date)
             ->when($request->input('slot'), fn ($q, $slot) => $q->where('delivery_slot', $slot))

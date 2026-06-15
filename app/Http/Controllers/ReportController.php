@@ -104,6 +104,30 @@ class ReportController extends Controller
         return Inertia::render('Reports/Titipan', compact('items', 'startDate', 'endDate', 'summary', 'sellerId', 'sellers'));
     }
 
+    // Laporan Penjualan untuk Siswa Penitip (read-only, scoped ke seller sendiri)
+    public function penitip(Request $request, ReportService $reportService)
+    {
+        $user = $request->user();
+        if ($user->role !== 'penitip') {
+            abort(403);
+        }
+
+        $seller = \App\Models\Seller::where('phone', $user->phone)->first();
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        if (!$seller) {
+            $items = TransactionItem::whereRaw('0 = 1')->paginate(15);
+            $summary = (object) ['total_qty' => 0, 'total_seller' => 0, 'total_kantin' => 0];
+        } else {
+            $items = $reportService->getTitipanItems($startDate, $endDate, $seller->id);
+            $summary = $reportService->getTitipanSummary($startDate, $endDate, $seller->id);
+        }
+
+        return Inertia::render('Reports/Penitip', compact('items', 'startDate', 'endDate', 'summary'));
+    }
+
     // Laporan Produk Terlaris & Stok
     public function products(Request $request)
     {

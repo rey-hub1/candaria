@@ -5,90 +5,25 @@ import { formatRupiah } from '@/utils/format';
 import Pagination from '@/Components/Pagination';
 import FilterBar from '@/Components/FilterBar';
 import SortableHeader from '@/Components/SortableHeader';
+import DateRangeFilter from '@/Components/DateRangeFilter';
+
+
+
+import { useDateFilter } from '@/hooks/useDateFilter';
 
 export default function Index({ sellers = { data: [], links: [], total: 0 }, filters = {}, totalUnpaid = 0 }) {
     const [payModal, setPayModal] = useState(false);
     const [selectedSeller, setSelectedSeller] = useState(null);
 
-    const [localStartDate, setLocalStartDate] = useState(filters.start_date || '');
-    const [localEndDate, setLocalEndDate] = useState(filters.end_date || '');
+    const filter = useDateFilter({
+        initialStart: filters.start_date || '',
+        initialEnd: filters.end_date || '',
+        initialPreset: filters.preset || null,
+        onNavigate: (start, end, preset) =>
+            router.get(route('settlements.index'), { ...filters, start_date: start, end_date: end, preset: preset || null }),
+    });
 
-    useEffect(() => {
-        setLocalStartDate(filters.start_date || '');
-        setLocalEndDate(filters.end_date || '');
-    }, [filters.start_date, filters.end_date]);
 
-    const applyPreset = (preset) => {
-        if (preset === 'all') {
-            setLocalStartDate('');
-            setLocalEndDate('');
-            
-            router.get(route('settlements.index'), {
-                ...filters,
-                start_date: '',
-                end_date: '',
-                preset: 'all'
-            });
-            return;
-        }
-
-        const today = new Date();
-        let start = new Date();
-        let end = new Date();
-
-        switch (preset) {
-            case 'today':
-                break;
-            case 'yesterday':
-                start.setDate(today.getDate() - 1);
-                end.setDate(today.getDate() - 1);
-                break;
-            case 'last7':
-                start.setDate(today.getDate() - 6);
-                break;
-            case 'thisMonth':
-                start = new Date(today.getFullYear(), today.getMonth(), 1);
-                break;
-            case 'lastMonth':
-                start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-                end = new Date(today.getFullYear(), today.getMonth(), 0);
-                break;
-            default:
-                break;
-        }
-
-        const formatDt = (dt) => {
-            const d = new Date(dt);
-            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-            return d.toISOString().split('T')[0];
-        };
-
-        const startDateStr = formatDt(start);
-        const endDateStr = formatDt(end);
-
-        setLocalStartDate(startDateStr);
-        setLocalEndDate(endDateStr);
-
-        router.get(route('settlements.index'), {
-            ...filters,
-            start_date: startDateStr,
-            end_date: endDateStr,
-            preset: preset
-        });
-    };
-
-    const handleFilterSubmit = (e) => {
-        if (e) e.preventDefault();
-        
-        const newFilters = { ...filters };
-        delete newFilters.preset;
-
-        router.get(route('settlements.index'), {
-            ...newFilters,
-            start_date: localStartDate,
-            end_date: localEndDate
-        });
-    };
 
     const { data: payData, setData: setPayData, post: postPay, processing: payProcessing, reset: payReset, errors: payErrors } = useForm({
         seller_id: '',
@@ -120,6 +55,14 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
         setPayModal(true);
     };
 
+    const handleExportExcel = () => {
+        window.location.href = route('settlements.index', { ...filters, start_date: filter.localStartDate, end_date: filter.localEndDate, export: 'xlsx' });
+    };
+
+    const handleExportPdf = () => {
+        window.open(route('settlements.index', { ...filters, start_date: filter.localStartDate, end_date: filter.localEndDate, export: 'pdf' }), '_blank');
+    };
+
     const handlePaySubmit = (e) => {
         e.preventDefault();
         postPay(route('settlements.store'), {
@@ -130,6 +73,7 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
             }
         });
     };
+
 
 
         return (
@@ -147,40 +91,7 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                     </span>
                 </div>
 
-                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-4">
-                    <div className="mb-4 pb-4 border-b border-slate-100 flex flex-wrap gap-2 items-center">
-                        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mr-2">Pilih Cepat:</span>
-                        <button type="button" onClick={() => applyPreset('all')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'all' || (!filters.start_date && !filters.end_date && !filters.preset) ? 'bg-primary-50 text-primary-700 hover:bg-primary-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Semuanya</button>
-                        <button type="button" onClick={() => applyPreset('today')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'today' ? 'bg-primary-50 text-primary-700 hover:bg-primary-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Hari Ini</button>
-                        <button type="button" onClick={() => applyPreset('yesterday')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'yesterday' ? 'bg-primary-50 text-primary-700 hover:bg-primary-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Kemarin</button>
-                        <button type="button" onClick={() => applyPreset('last7')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'last7' ? 'bg-primary-50 text-primary-700 hover:bg-primary-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>7 Hari Terakhir</button>
-                        <button type="button" onClick={() => applyPreset('thisMonth')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'thisMonth' ? 'bg-primary-50 text-primary-700 hover:bg-primary-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Bulan Ini</button>
-                        <button type="button" onClick={() => applyPreset('lastMonth')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${filters.preset === 'lastMonth' ? 'bg-primary-50 text-primary-700 hover:bg-primary-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>Bulan Lalu</button>
-                    </div>
-                    <form onSubmit={handleFilterSubmit} className="flex flex-wrap items-end gap-4">
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Tanggal Mulai</label>
-                            <input
-                                type="date"
-                                value={localStartDate}
-                                onChange={(e) => setLocalStartDate(e.target.value)}
-                                className="px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Tanggal Selesai</label>
-                            <input
-                                type="date"
-                                value={localEndDate}
-                                onChange={(e) => setLocalEndDate(e.target.value)}
-                                className="px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            />
-                        </div>
-                        <button type="submit" className="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm rounded-lg shadow-sm transition">
-                            Filter
-                        </button>
-                    </form>
-                </div>
+                <DateRangeFilter {...filter} onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
 
                 <FilterBar filters={filters} searchPlaceholder="Cari nama penitip..." />
 

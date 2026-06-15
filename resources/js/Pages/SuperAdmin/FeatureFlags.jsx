@@ -27,11 +27,37 @@ function Toggle({ checked, onChange }) {
     );
 }
 
+const TEMPLATES = [
+    {
+        id: 'v1',
+        name: 'Template V1',
+        tag: 'Semua mati',
+        description: 'Matikan semua fitur. Mode dasar / produksi minimal.',
+    },
+    {
+        id: 'v2',
+        name: 'Template V2',
+        tag: 'Semua nyala',
+        description: 'Nyalakan semua fitur. Mode lengkap / demo penuh.',
+    },
+];
+
 export default function FeatureFlags({ flags = {} }) {
+    const allFlags = Object.values(flags).flat();
+    const total = allFlags.length;
+    const onCount = allFlags.filter((f) => f.is_enabled).length;
+
+    // Active template derived from current flag state — manual toggle jatuh ke "custom".
+    const activeTemplate = total === 0 ? null : onCount === 0 ? 'v1' : onCount === total ? 'v2' : 'custom';
+
     const toggle = (flag) => {
         router.put(route('super-admin.feature-flags.update', flag.id), {
             is_enabled: !flag.is_enabled,
         }, { preserveScroll: true });
+    };
+
+    const applyTemplate = (id) => {
+        router.post(route('super-admin.feature-flags.template'), { template: id }, { preserveScroll: true });
     };
 
     return (
@@ -44,6 +70,48 @@ export default function FeatureFlags({ flags = {} }) {
                     <p className="text-sm text-slate-500 mt-1">
                         Nyalakan atau matikan fitur aplikasi secara global, tanpa perlu deploy ulang.
                     </p>
+                </div>
+
+                {/* Template presets */}
+                <div className="mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                        <h2 className="text-sm font-semibold text-slate-700">Template</h2>
+                        {activeTemplate === 'custom' && (
+                            <span className="text-[11px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-0.5">
+                                Custom · {onCount}/{total} nyala
+                            </span>
+                        )}
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {TEMPLATES.map((t) => {
+                            const active = activeTemplate === t.id;
+                            return (
+                                <button
+                                    key={t.id}
+                                    type="button"
+                                    onClick={() => applyTemplate(t.id)}
+                                    className={`text-left rounded-xl border p-4 transition-colors ${
+                                        active
+                                            ? 'border-primary-500 bg-primary-50 ring-1 ring-primary-500'
+                                            : 'border-slate-200 bg-white hover:border-slate-300'
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-between gap-2">
+                                        <p className="text-sm font-bold text-slate-900">{t.name}</p>
+                                        <span className={`text-[11px] font-semibold rounded-full px-2 py-0.5 ${
+                                            t.id === 'v2' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'
+                                        }`}>
+                                            {t.tag}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-slate-500 mt-1">{t.description}</p>
+                                    {active && (
+                                        <p className="text-[11px] font-semibold text-primary-600 mt-2">✓ Aktif</p>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
 
                 {Object.entries(flags).map(([group, items]) => (

@@ -45,44 +45,11 @@ class OrderService
             $itemsToCreate = [];
 
             foreach ($validated['items'] as $item) {
-                $menuItem = MenuItem::with('optionGroups.options')
-                    ->where('vendor_id', $vendor->id)
+                $menuItem = MenuItem::where('vendor_id', $vendor->id)
                     ->where('is_active', true)
                     ->findOrFail($item['menu_item_id']);
 
-                $optionIds = collect($item['option_ids'] ?? []);
-                $selectedOptions = collect();
-
-                foreach ($menuItem->optionGroups as $group) {
-                    $selectedInGroup = $group->options->whereIn('id', $optionIds);
-                    $count = $selectedInGroup->count();
-
-                    if ($group->type === 'single') {
-                        if ($count > 1) {
-                            throw ValidationException::withMessages(['items' => "Pilihan \"{$group->name}\" hanya boleh 1."]);
-                        }
-                        if ($group->is_required && $count !== 1) {
-                            throw ValidationException::withMessages(['items' => "Pilihan \"{$group->name}\" wajib dipilih."]);
-                        }
-                    } else {
-                        if ($count < $group->min_select) {
-                            throw ValidationException::withMessages(['items' => "Pilihan \"{$group->name}\" minimal {$group->min_select}."]);
-                        }
-                        if ($group->max_select !== null && $count > $group->max_select) {
-                            throw ValidationException::withMessages(['items' => "Pilihan \"{$group->name}\" maksimal {$group->max_select}."]);
-                        }
-                    }
-
-                    foreach ($selectedInGroup as $option) {
-                        $selectedOptions->push([
-                            'group_name' => $group->name,
-                            'option_name' => $option->name,
-                            'price_delta' => $option->price_delta,
-                        ]);
-                    }
-                }
-
-                $unitPrice = $menuItem->price + $selectedOptions->sum('price_delta');
+                $unitPrice = $menuItem->price;
                 $itemSubtotal = $unitPrice * $item['qty'];
                 $subtotal += $itemSubtotal;
 
@@ -93,7 +60,6 @@ class OrderService
                     'qty' => $item['qty'],
                     'notes' => $item['notes'] ?? null,
                     'subtotal' => $itemSubtotal,
-                    'options' => $selectedOptions,
                 ];
             }
 
@@ -111,7 +77,7 @@ class OrderService
             ]);
 
             foreach ($itemsToCreate as $item) {
-                $orderItem = $order->items()->create([
+                $order->items()->create([
                     'menu_item_id' => $item['menu_item_id'],
                     'name_snapshot' => $item['name_snapshot'],
                     'price_snapshot' => $item['price_snapshot'],
@@ -119,14 +85,6 @@ class OrderService
                     'notes' => $item['notes'],
                     'subtotal' => $item['subtotal'],
                 ]);
-
-                foreach ($item['options'] as $option) {
-                    $orderItem->options()->create([
-                        'option_group_name_snapshot' => $option['group_name'],
-                        'option_name_snapshot' => $option['option_name'],
-                        'price_delta_snapshot' => $option['price_delta'],
-                    ]);
-                }
             }
 
             return $order;

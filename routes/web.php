@@ -16,7 +16,9 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SuperAdmin\FeatureFlagController;
+use App\Http\Controllers\SuperAdmin\DemoDataController;
 use App\Http\Controllers\Admin\VendorController as AdminVendorController;
+use App\Http\Controllers\Admin\MarketplaceCategoryController;
 use App\Http\Controllers\Admin\Marketplace\OrderController as AdminMarketplaceOrderController;
 use App\Http\Controllers\Admin\MarketplaceReportController;
 use App\Http\Controllers\Vendor\DashboardController as VendorDashboardController;
@@ -38,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
     // Dashboard (accessible by both admin & cashier)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/export', [DashboardController::class, 'exportPenitip'])->name('penitip.export');
+    Route::get('/laporan', [ReportController::class, 'penitip'])->name('reports.penitip');
 
     // Profile (standard Laravel Breeze)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -78,7 +81,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/settlements', [SettlementController::class, 'store'])->name('settlements.store');
         
         // Mutasi Saldo / Buku Kas
-        Route::resource('cashbooks', CashbookController::class)->only(['index', 'store', 'destroy']);
+        Route::middleware(['feature:cashbook'])->group(function () {
+            Route::resource('cashbooks', CashbookController::class)->only(['index', 'store', 'destroy']);
+        });
         
         Route::get('/settlements/{settlement}', [SettlementController::class, 'show'])->name('settlements.show');
 
@@ -106,6 +111,10 @@ Route::middleware(['auth'])->group(function () {
     // Marketplace: admin manages vendors/mitra
     Route::middleware(['role:admin', 'feature:marketplace'])->prefix('admin')->name('admin.')->group(function () {
         Route::resource('vendors', AdminVendorController::class)->only(['index', 'store', 'update', 'destroy']);
+
+        Route::resource('marketplace-categories', MarketplaceCategoryController::class)
+            ->only(['index', 'store', 'update', 'destroy'])
+            ->parameters(['marketplace-categories' => 'marketplaceCategory']);
 
         Route::get('/marketplace/pesanan', [AdminMarketplaceOrderController::class, 'index'])->name('marketplace.orders');
         Route::get('/reports/marketplace-sales', [MarketplaceReportController::class, 'sales'])->name('reports.marketplace-sales');
@@ -149,8 +158,6 @@ Route::middleware(['auth'])->group(function () {
     // Marketplace: student browse & order
     Route::middleware(['role:student', 'feature:marketplace', 'student.password_changed'])->name('student.')->group(function () {
         Route::get('/jajan', [MarketplaceController::class, 'index'])->name('marketplace.index');
-        Route::get('/jajan/{vendor:slug}', [MarketplaceController::class, 'show'])->name('marketplace.show');
-
         Route::middleware(['feature:marketplace_orders'])->group(function () {
             Route::get('/jajan/checkout', [MarketplaceController::class, 'checkout'])->name('marketplace.checkout');
             Route::post('/jajan/checkout', [StudentOrderController::class, 'store'])->name('orders.store');
@@ -158,12 +165,20 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/siswa/pesanan/{order}', [StudentOrderController::class, 'show'])->name('orders.show');
             Route::post('/siswa/pesanan/{order}/batal', [StudentOrderController::class, 'cancel'])->name('orders.cancel');
         });
+
+        Route::get('/jajan/{vendor:slug}', [MarketplaceController::class, 'show'])->name('marketplace.show');
     });
 
     // Super Admin only
     Route::middleware(['role:super_admin'])->prefix('super-admin')->name('super-admin.')->group(function () {
         Route::get('/feature-flags', [FeatureFlagController::class, 'index'])->name('feature-flags.index');
+        Route::post('/feature-flags/template', [FeatureFlagController::class, 'applyTemplate'])->name('feature-flags.template');
         Route::put('/feature-flags/{featureFlag}', [FeatureFlagController::class, 'update'])->name('feature-flags.update');
+        Route::get('/demo-data', [DemoDataController::class, 'index'])->name('demo-data.index');
+        Route::post('/demo-data', [DemoDataController::class, 'apply'])->name('demo-data.apply');
+        
+        Route::get('/test-runner', [\App\Http\Controllers\SuperAdmin\TestRunnerController::class, 'index'])->name('test-runner.index');
+        Route::post('/test-runner/run', [\App\Http\Controllers\SuperAdmin\TestRunnerController::class, 'run'])->name('test-runner.run');
     });
 });
 

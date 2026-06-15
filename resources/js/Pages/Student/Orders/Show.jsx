@@ -55,9 +55,6 @@ export default function Show({ order }) {
                                 <p className="text-sm font-semibold text-slate-900">{item.qty}x {item.name_snapshot}</p>
                                 <p className="text-sm font-semibold text-slate-900 shrink-0">{formatRupiah(item.subtotal)}</p>
                             </div>
-                            {item.options.length > 0 && (
-                                <p className="text-xs text-slate-500">{item.options.map((o) => o.option_name_snapshot).join(', ')}</p>
-                            )}
                             {item.notes && <p className="text-xs text-slate-400 italic">"{item.notes}"</p>}
                         </div>
                     ))}

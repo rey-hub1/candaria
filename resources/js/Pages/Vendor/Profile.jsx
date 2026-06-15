@@ -3,7 +3,7 @@ import { Head, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ImageUploadField from '@/Components/ImageUploadField';
 
-export default function Profile({ vendor }) {
+export default function Profile({ vendor, categories = [] }) {
     const { data, setData, post, processing, errors, recentlySuccessful } = useForm({
         _method: 'put',
         name: vendor?.name || '',
@@ -52,9 +52,15 @@ export default function Profile({ vendor }) {
 
                     <div>
                         <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Kategori</label>
-                        <input type="text" value={data.category} onChange={(e) => setData('category', e.target.value)}
-                            placeholder="Contoh: Makanan Berat, Minuman, Snack"
-                            className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+                        <select value={data.category} onChange={(e) => setData('category', e.target.value)}
+                            className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            <option value="">— Pilih kategori —</option>
+                            {data.category && !categories.includes(data.category) && (
+                                <option value={data.category}>{data.category} (lama)</option>
+                            )}
+                            {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                        {categories.length === 0 && <p className="text-xs text-slate-400 mt-1">Belum ada kategori. Hubungi admin.</p>}
                     </div>
 
                     <div>

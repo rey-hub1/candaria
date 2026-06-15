@@ -35,7 +35,7 @@ class OrderController extends Controller
     {
         abort_unless($order->student_id === $request->user()->id, 404);
 
-        $order->load(['vendor:id,name,logo,phone', 'items.options', 'statusHistories' => fn ($q) => $q->orderBy('created_at')]);
+        $order->load(['vendor:id,name,logo,phone', 'items', 'statusHistories' => fn ($q) => $q->orderBy('created_at')]);
 
         return Inertia::render('Student/Orders/Show', [
             'order' => $order,
@@ -53,8 +53,6 @@ class OrderController extends Controller
             'items.*.menu_item_id' => ['required', 'exists:menu_items,id'],
             'items.*.qty' => ['required', 'integer', 'min:1', 'max:50'],
             'items.*.notes' => ['nullable', 'string', 'max:255'],
-            'items.*.option_ids' => ['nullable', 'array'],
-            'items.*.option_ids.*' => ['integer', 'exists:menu_options,id'],
         ]);
 
         $order = $orderService->createOrder($validated, $request->user());

@@ -26,4 +26,27 @@ class FeatureFlagController extends Controller
 
         return back()->with('success', "Fitur \"{$featureFlag->label}\" berhasil diperbarui.");
     }
+
+    /**
+     * Apply a preset template across all feature flags.
+     * v1 = semua mati, v2 = semua nyala.
+     */
+    public function applyTemplate(Request $request)
+    {
+        $validated = $request->validate([
+            'template' => 'required|in:v1,v2',
+        ]);
+
+        $enabled = $validated['template'] === 'v2';
+
+        FeatureFlag::query()->each(function (FeatureFlag $flag) use ($enabled) {
+            // Use save() (not mass update) so booted() cache invalidation fires per key.
+            $flag->is_enabled = $enabled;
+            $flag->save();
+        });
+
+        $label = $enabled ? 'Template V2 (semua nyala)' : 'Template V1 (semua mati)';
+
+        return back()->with('success', "{$label} berhasil diterapkan.");
+    }
 }

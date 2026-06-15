@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
+use App\Models\MarketplaceCategory;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -25,6 +26,7 @@ class DashboardController extends Controller
     {
         return Inertia::render('Vendor/Profile', [
             'vendor' => $request->user()->vendor,
+            'categories' => MarketplaceCategory::type('vendor')->active()->ordered()->pluck('name'),
         ]);
     }
 

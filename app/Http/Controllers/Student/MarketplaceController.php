@@ -28,9 +28,7 @@ class MarketplaceController extends Controller
         abort_unless($vendor->status === 'active', 404);
 
         $vendor->load(['menuItems' => function ($query) {
-            $query->active()->with(['optionGroups.options' => function ($q) {
-                $q->orderBy('sort_order');
-            }])->orderBy('category')->orderBy('name');
+            $query->active()->orderBy('category')->orderBy('name');
         }]);
 
         return Inertia::render('Student/Marketplace/VendorShow', [

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 use Inertia\Inertia;
 
@@ -19,17 +20,19 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge(['prefix' => $this->resolvePrefix($request)]);
+
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
-            'prefix' => 'nullable|string|max:5',
+            'prefix' => ['required', 'string', 'max:5', Rule::unique('categories', 'prefix')],
+        ], [
+            'prefix.unique' => 'Prefix ini sudah dipakai kategori lain. Pakai prefix berbeda.',
         ]);
-
-        $prefix = $request->prefix ?: strtoupper(substr($request->name, 0, 1));
 
         Category::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
-            'prefix' => $prefix,
+            'prefix' => $request->prefix,
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil ditambahkan.');
@@ -37,20 +40,33 @@ class CategoryController extends Controller
 
     public function update(Request $request, Category $category)
     {
+        $request->merge(['prefix' => $this->resolvePrefix($request)]);
+
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
-            'prefix' => 'nullable|string|max:5',
+            'prefix' => ['required', 'string', 'max:5', Rule::unique('categories', 'prefix')->ignore($category->id)],
+        ], [
+            'prefix.unique' => 'Prefix ini sudah dipakai kategori lain. Pakai prefix berbeda.',
         ]);
-
-        $prefix = $request->prefix ?: strtoupper(substr($request->name, 0, 1));
 
         $category->update([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
-            'prefix' => $prefix,
+            'prefix' => $request->prefix,
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil diubah.');
+    }
+
+    /**
+     * Prefix dari input (kalau diisi) atau huruf pertama nama, selalu UPPERCASE
+     * agar pengecekan unik konsisten (mis. "mk" == "MK").
+     */
+    private function resolvePrefix(Request $request): string
+    {
+        $prefix = $request->prefix ?: substr((string) $request->name, 0, 1);
+
+        return strtoupper(trim($prefix));
     }
 
     public function destroy(Category $category)

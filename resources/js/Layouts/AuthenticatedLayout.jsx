@@ -5,7 +5,16 @@ import { ToastContainer } from '@/Components/Toast';
 export default function AuthenticatedLayout({ children, title }) {
     const { auth, flash, features = {}, unreadNotificationsCount = 0 } = usePage().props;
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem('sidebar_collapsed') === '1');
     const [toasts, setToasts] = useState([]);
+
+    const toggleSidebarCollapsed = () => {
+        setSidebarCollapsed((prev) => {
+            const next = !prev;
+            localStorage.setItem('sidebar_collapsed', next ? '1' : '0');
+            return next;
+        });
+    };
     // Tracks the last flash signature already shown, so the same flash echoed
     // by both the mount effect and the success listener is only toasted once.
     const shownFlashRef = useRef(null);
@@ -77,13 +86,22 @@ export default function AuthenticatedLayout({ children, title }) {
 
     const renderSidebarLinks = () => (
         <>
-            {/* Dashboard */}
-            <Link href={route('dashboard')} className={linkClass(isRouteActive('dashboard'))}>
-                <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"></path>
-                </svg>
-                Dashboard
-            </Link>
+            {/* Dashboard / Beranda */}
+            {auth.user.role === 'student' ? (
+                <Link href={route('student.dashboard')} className={linkClass(isRouteActive('student.dashboard'))}>
+                    <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"></path>
+                    </svg>
+                    Beranda
+                </Link>
+            ) : (
+                <Link href={route('dashboard')} className={linkClass(isRouteActive('dashboard'))}>
+                    <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"></path>
+                    </svg>
+                    Dashboard
+                </Link>
+            )}
 
             {(auth.user.role === 'admin' || auth.user.role === 'cashier' || auth.user.role === 'super_admin') && (
                 <>
@@ -150,12 +168,14 @@ export default function AuthenticatedLayout({ children, title }) {
                     </Link>
 
                     {/* Buku Kas */}
-                    <Link href={route('cashbooks.index')} className={linkClass(isRouteActive('cashbooks.index'))}>
-                        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
-                        </svg>
-                        Mutasi & Buku Kas
-                    </Link>
+                    {features?.cashbook && (
+                        <Link href={route('cashbooks.index')} className={linkClass(isRouteActive('cashbooks.index'))}>
+                            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+                            </svg>
+                            Mutasi & Buku Kas
+                        </Link>
+                    )}
 
                     {/* Laporan Penjualan */}
                     <Link href={route('reports.sales')} className={linkClass(isRouteActive('reports.sales'))}>
@@ -239,13 +259,13 @@ export default function AuthenticatedLayout({ children, title }) {
                         Profile
                     </Link>
 
-                    {/* Ekspor Laporan */}
-                    <a href={route('penitip.export')} className={linkClass(false)}>
+                    {/* Laporan Penjualan */}
+                    <Link href={route('reports.penitip')} className={linkClass(isRouteActive('reports.penitip'))}>
                         <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5" />
                         </svg>
-                        Ekspor Laporan
-                    </a>
+                        Laporan Penjualan
+                    </Link>
                 </>
             )}
 
@@ -321,6 +341,15 @@ export default function AuthenticatedLayout({ children, title }) {
                         Mitra / Pedagang
                     </Link>
 
+                    {/* Kategori Marketplace */}
+                    <Link href={route('admin.marketplace-categories.index')} className={linkClass(isRouteActive('admin.marketplace-categories.index'))}>
+                        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6Z" />
+                        </svg>
+                        Kategori Marketplace
+                    </Link>
+
                     {/* Monitoring Pesanan Marketplace */}
                     <Link href={route('admin.marketplace.orders')} className={linkClass(isRouteActive('admin.marketplace.orders'))}>
                         <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -361,6 +390,22 @@ export default function AuthenticatedLayout({ children, title }) {
                         </svg>
                         Feature Flags
                     </Link>
+
+                    {/* Data Demo */}
+                    <Link href={route('super-admin.demo-data.index')} className={linkClass(isRouteActive('super-admin.demo-data.index'))}>
+                        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75" />
+                        </svg>
+                        Data Demo
+                    </Link>
+
+                    {/* Test Runner */}
+                    <Link href={route('super-admin.test-runner.index')} className={linkClass(isRouteActive('super-admin.test-runner.index'))}>
+                        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                        Test Runner
+                    </Link>
                 </>
             )}
         </>
@@ -369,20 +414,26 @@ export default function AuthenticatedLayout({ children, title }) {
     return (
         <div className="flex h-screen overflow-hidden bg-slate-50 font-sans">
             {/* Sidebar for Desktop */}
-            <aside className="hidden md:flex md:flex-col md:w-64 bg-slate-900 text-white shrink-0 border-r border-slate-800">
+            <aside className={`hidden md:flex md:flex-col bg-slate-900 text-white shrink-0 border-r border-slate-800 transition-all duration-200 overflow-hidden ${sidebarCollapsed ? 'md:w-0 md:border-r-0' : 'md:w-64'}`}>
                 {/* Brand / Logo */}
-                <div className="flex items-center gap-3 h-16 px-6 bg-slate-950 border-b border-slate-800">
-                    <img src="/img/logo-white.png" alt="Logo" className="w-9 h-9 object-contain" />
-                    <span className="text-base font-bold tracking-wider uppercase text-primary-400">Kantin Smekda</span>
+                <div className="flex items-center justify-between gap-3 h-16 px-6 bg-slate-950 border-b border-slate-800 w-64">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <img src="/img/logo-white.png" alt="Logo" className="w-9 h-9 object-contain shrink-0" />
+                    </div>
+                    <button onClick={toggleSidebarCollapsed} className="shrink-0 p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition" title="Tutup sidebar">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        </svg>
+                    </button>
                 </div>
                 
                 {/* Nav Items */}
-                <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+                <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto w-64">
                     {renderSidebarLinks()}
                 </nav>
 
                 {/* User Footer Info */}
-                <div className="p-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between">
+                <div className="p-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between w-64">
                     <div className="truncate pr-2">
                         <p className="text-sm font-semibold text-white truncate">{auth.user.name}</p>
                         <p className="text-xs text-slate-400 capitalize">{auth.user.role}</p>
@@ -411,7 +462,6 @@ export default function AuthenticatedLayout({ children, title }) {
                 <div className="flex items-center justify-between h-16 px-6 bg-slate-950 border-b border-slate-800">
                     <div className="flex items-center gap-2">
                         <img src="/img/logo-white.png" alt="Logo" className="w-8 h-8 object-contain" />
-                        <span className="text-base font-bold tracking-wider uppercase text-primary-400">Kantin Smekda</span>
                     </div>
                     <button onClick={() => setSidebarOpen(false)} className="text-slate-400 hover:text-white">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -444,6 +494,13 @@ export default function AuthenticatedLayout({ children, title }) {
                 {/* Top Header */}
                 <header className="flex items-center justify-between h-14 md:h-16 px-4 md:px-6 bg-white border-b border-slate-200 shrink-0">
                     <div className="flex items-center gap-3">
+                        {sidebarCollapsed && (
+                            <button onClick={toggleSidebarCollapsed} className="hidden md:flex p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600" title="Buka sidebar">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5 15.75 12l-7.5 7.5" />
+                                </svg>
+                            </button>
+                        )}
                         <span className="text-base md:text-lg font-bold text-slate-900">
                             {title || 'Kantin Smekda'}
                         </span>
@@ -487,13 +544,15 @@ export default function AuthenticatedLayout({ children, title }) {
 
             {/* Bottom Navigation Bar for Mobile */}
             <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 flex justify-around items-center z-30 shadow-lg px-2">
-                {/* Dashboard */}
-                <Link href={route('dashboard')} className={mobileLinkClass(isRouteActive('dashboard'))}>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                    </svg>
-                    <span className="text-[10px] font-semibold mt-1">Dashboard</span>
-                </Link>
+                {/* Dashboard (non-student; student pakai Beranda di bawah) */}
+                {auth.user.role !== 'student' && (
+                    <Link href={route('dashboard')} className={mobileLinkClass(isRouteActive('dashboard'))}>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                        </svg>
+                        <span className="text-[10px] font-semibold mt-1">Dashboard</span>
+                    </Link>
+                )}
 
                 {auth.user.role === 'penitip' ? (
                     <>
@@ -505,13 +564,13 @@ export default function AuthenticatedLayout({ children, title }) {
                             <span className="text-[10px] font-semibold mt-1">Profil</span>
                         </Link>
 
-                        {/* Penitip: Export / Laporan */}
-                        <a href={route('penitip.export')} className={mobileLinkClass(false)}>
+                        {/* Penitip: Laporan */}
+                        <Link href={route('reports.penitip')} className={mobileLinkClass(isRouteActive('reports.penitip'))}>
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5" />
                             </svg>
-                            <span className="text-[10px] font-semibold mt-1">Ekspor</span>
-                        </a>
+                            <span className="text-[10px] font-semibold mt-1">Laporan</span>
+                        </Link>
 
                         {/* Penitip: Logout */}
                         <form onSubmit={handleLogout} className="flex-1">
