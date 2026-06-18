@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\FeatureFlag;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -52,6 +53,24 @@ class LoginRequest extends FormRequest
         ];
 
         if (! Auth::attempt($credentials, $this->boolean('remember'))) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'login' => trans('auth.failed'),
+            ]);
+        }
+
+        // Tolak login untuk role yang fiturnya dimatikan — perlakukan seperti
+        // login gagal biasa (tidak membocorkan bahwa akun-nya ada).
+        $disabledForRole = [
+            'vendor' => 'marketplace',
+            'student' => 'student_login',
+        ];
+
+        $role = Auth::user()->role;
+
+        if (isset($disabledForRole[$role]) && ! FeatureFlag::enabled($disabledForRole[$role])) {
+            Auth::logout();
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

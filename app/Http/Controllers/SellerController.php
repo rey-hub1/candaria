@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Seller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 use Inertia\Inertia;
 
@@ -21,7 +22,9 @@ class SellerController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'class' => 'nullable|string|max:100',
-            'phone' => 'nullable|string|max:20',
+            'phone' => ['nullable', 'string', 'max:20', 'unique:sellers,phone'],
+        ], [
+            'phone.unique' => 'Nomor telepon ini sudah dipakai penitip lain.',
         ]);
 
         $seller = Seller::create([
@@ -38,6 +41,7 @@ class SellerController extends Controller
                     'name' => $request->name,
                     'password' => \Illuminate\Support\Facades\Hash::make('candaria123'),
                     'role' => 'penitip',
+                    'must_change_password' => true,
                 ]
             );
         }
@@ -50,8 +54,10 @@ class SellerController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'class' => 'nullable|string|max:100',
-            'phone' => 'nullable|string|max:20',
+            'phone' => ['nullable', 'string', 'max:20', Rule::unique('sellers', 'phone')->ignore($seller->id)],
             'is_active' => 'required|boolean',
+        ], [
+            'phone.unique' => 'Nomor telepon ini sudah dipakai penitip lain.',
         ]);
 
         $oldPhone = $seller->phone;
@@ -71,6 +77,7 @@ class SellerController extends Controller
                     'phone' => $request->phone,
                     'password' => \Illuminate\Support\Facades\Hash::make('candaria123'),
                     'role' => 'penitip',
+                    'must_change_password' => true,
                 ]);
             }
         }

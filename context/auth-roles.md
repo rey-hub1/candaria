@@ -22,3 +22,9 @@ User roles and route access control.
 - `RoleMiddleware` short-circuits: if `role === 'super_admin'`, request always passes regardless of the `role:...` list — super admin has access to everything admin has, plus `/super-admin/*` routes (`role:super_admin` only).
 - `DashboardController::index()` redirects `vendor` → `vendor.dashboard` and `student` → `student.dashboard` (or `student.password.change` if `must_change_password`) before running any admin/cashier-specific queries.
 - Student accounts: see `context/student-accounts.md`.
+
+## Session / login durasi (PWA)
+- Auth = Laravel session-based (cookie `http_only`, driver `database`, tabel `sessions`). Login pakai email/phone (`LoginRequest::authenticate`), support remember-me.
+- `SESSION_LIFETIME=129600` (90 hari/3 bulan sliding) + `SESSION_EXPIRE_ON_CLOSE=false` → PWA student/penitip/vendor tetap login lama walau app ditutup.
+- `app/Http/Middleware/IdleTimeout.php` (di web group, sebelum `HandleInertiaRequests`) memaksa idle-timeout lebih pendek untuk role staff (`super_admin`/`admin`/`cashier` = 30 hari/1 bulan) via session key `last_activity_at`; lewat batas → `Auth::logout()` + redirect login. Role lain (penitip/vendor/student) ikut `SESSION_LIFETIME` global = 90 hari. Ubah durasi staff di const `IDLE_MINUTES`.
+- Production: set `SESSION_SECURE_COOKIE=true` (butuh HTTPS). Local HTTP biarkan false/null.

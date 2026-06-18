@@ -16,8 +16,11 @@ students for testing.
 - `Auth/StudentAuthenticatedSessionController::store()` — after auth, redirects to `student.password.change` if `must_change_password`, else `student.dashboard`.
 
 ## Forced password change
-- `Student\PasswordController` — `edit()` (renders `Student/ChangePassword`), `update()` (sets new password, flips `must_change_password` to false).
-- Middleware `student.password_changed` (`EnsureStudentPasswordChanged`) — wraps `student.dashboard` (and future student routes), redirects to `student.password.change` unless already there.
+- **Gated by `force_password_change` feature flag (group `general`, off by default).** When the flag is off, nobody is forced even if `must_change_password` is true. Toggled by super_admin at `/super-admin/feature-flags`.
+- Applies to **both siswa & penitip**:
+  - Siswa: `Student\PasswordController` (`edit()` renders `Student/ChangePassword`, `update()` flips `students.must_change_password`), middleware `student.password_changed` (`EnsureStudentPasswordChanged`).
+  - Penitip: `users.must_change_password` column (set true on penitip user creation in `SellerController`), middleware `password.changed` (`EnsurePasswordChanged`, only acts on role=penitip) on the main `auth` route group → redirects to `password.force`. `Auth\ForcePasswordController` + page `Pages/Auth/ForcePasswordChange.jsx`.
+- Both middlewares + both login controllers short-circuit when the flag is off.
 - Routes under `/siswa` (`student.*`), `role:student` + `feature:student_login`.
 
 ## Frontend

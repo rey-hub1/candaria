@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
-            'name'     => 'Super Admin',
+            'name'     => 'Pembina',
             'email'    => 'superadmin@candaria.com',
             'password' => Hash::make('password'),
             'role'     => 'super_admin',

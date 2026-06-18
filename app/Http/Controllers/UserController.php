@@ -20,11 +20,14 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        $isSuperAdmin = auth()->user()->role === 'super_admin';
+        $allowedRoles = $isSuperAdmin ? 'in:admin,cashier' : 'in:cashier';
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => 'required|in:admin,cashier',
+            'role' => ['required', $allowedRoles],
         ]);
 
         User::create([
@@ -39,11 +42,19 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
+        $isSuperAdmin = auth()->user()->role === 'super_admin';
+
+        if (!$isSuperAdmin && $user->role === 'admin') {
+            abort(403, 'Hanya Super Admin yang dapat mengubah akun Admin.');
+        }
+
+        $allowedRoles = $isSuperAdmin ? 'in:admin,cashier' : 'in:cashier';
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-            'role' => 'required|in:admin,cashier',
+            'role' => ['required', $allowedRoles],
         ]);
 
         $data = [
@@ -63,6 +74,10 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        if ($user->role === 'admin' && auth()->user()->role !== 'super_admin') {
+            return redirect()->route('users.index')->with('error', 'Hanya Super Admin yang dapat menghapus akun Admin.');
+        }
+
         if (User::count() <= 1) {
             return redirect()->route('users.index')->with('error', 'Tidak dapat menghapus user terakhir.');
         }

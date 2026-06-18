@@ -1,5 +1,6 @@
 import { Link, Head } from '@inertiajs/react';
 import { useState, useMemo } from 'react';
+import SiteNav from '@/Components/SiteNav';
 
 export default function Menu({ products = [], categories = [], canLogin }) {
     const [q, setQ] = useState('');
@@ -116,49 +117,54 @@ export default function Menu({ products = [], categories = [], canLogin }) {
                 .toggle.on .box::after { transform:translateX(15px); }
                 .toggle.on { color:var(--tomato); }
 
-                .pc { background:var(--paper); border:1.5px solid var(--ink); border-radius:18px; overflow:hidden; transition:all .3s cubic-bezier(.4,0,.2,1); position:relative; box-shadow:4px 4px 0 0 rgba(27,26,56,.14); }
-                .pc:hover { transform:translate(-3px,-3px); box-shadow:8px 8px 0 0 var(--yellow); border-color:var(--tomato); }
+                .pc { background:var(--paper); border:1.5px solid var(--ink); border-radius:13px; overflow:hidden; transition:all .25s cubic-bezier(.4,0,.2,1); position:relative; box-shadow:3px 3px 0 0 rgba(27,26,56,.14); }
+                .pc:hover { transform:translate(-2px,-2px); box-shadow:6px 6px 0 0 var(--yellow); border-color:var(--tomato); }
                 .pc.out { opacity:.6; }
 
-                @media (max-width:600px) { .nav-actions { display:none !important; } }
+                /* responsive page padding */
+                .pad { padding-left:32px; padding-right:32px; }
+
+                /* product grid — 2 per row on phones, denser on bigger screens */
+                .menu-grid { display:grid; gap:18px; grid-template-columns:repeat(2,1fr); }
+                @media (min-width:640px) { .menu-grid { grid-template-columns:repeat(3,1fr); } }
+                @media (min-width:900px) { .menu-grid { grid-template-columns:repeat(4,1fr); } }
+                @media (min-width:1120px) { .menu-grid { grid-template-columns:repeat(5,1fr); } }
+
+                /* kantin callout */
+                .kantin-note {
+                    display:flex; align-items:center; gap:11px; background:var(--paper-2);
+                    border:1.5px solid var(--border); border-radius:14px; padding:13px 17px;
+                    color:var(--ink); font-size:.9rem; font-weight:500; line-height:1.45;
+                }
+                .kantin-note .kn-ico { flex-shrink:0; width:34px; height:34px; border-radius:10px; background:var(--tomato); color:#fff; display:grid; place-items:center; }
+                .kantin-note strong { color:var(--tomato); font-weight:700; }
+
+                @media (max-width:600px) {
+                    .nav-actions { display:none !important; }
+                    .pad { padding-left:16px; padding-right:16px; }
+                    .menu-grid { gap:12px; }
+                }
             `}</style>
 
             <div style={{ minHeight: '100vh', background: 'var(--paper)' }}>
                 {/* NAV */}
-                <nav className="nav">
-                    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '14px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <img src="/img/logo-color.png" alt="Candaria" style={{ width: 32, height: 32, objectFit: 'contain' }} />
-                            <span className="d" style={{ fontSize: '1.28rem', fontWeight: 600, color: 'var(--ink)' }}>Candaria</span>
-                        </Link>
-                        <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-                            <Link href="/" className="nav-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5m0 0l7 7m-7-7l7-7" /></svg>
-                                Beranda
-                            </Link>
-                            <a href="/#faq" className="nav-link">Jam Buka</a>
-                            {canLogin
-                                ? <Link href={route('dashboard')} className="nav-link" style={{ opacity: .7 }}>Dashboard</Link>
-                                : <Link href={route('login')} className="nav-link" style={{ opacity: .7 }}>Masuk Staff</Link>}
-                        </div>
-                    </div>
-                </nav>
+                <SiteNav variant="page" />
 
                 {/* HEADER */}
-                <header style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 32px 28px' }}>
-                    <div className="fu" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: '.72rem', fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--tomato)', marginBottom: 16 }}>
-                        <span style={{ fontSize: '.6rem' }}>●</span> Daftar Lengkap
-                    </div>
-                    <h1 className="d fu" style={{ fontSize: 'clamp(2.4rem,5vw,4rem)', fontWeight: 600, lineHeight: 1.02, letterSpacing: '-.025em', marginBottom: 14 }}>
+                <header className="pad" style={{ maxWidth: 1200, margin: '0 auto', paddingTop: 40, paddingBottom: 20 }}>
+                    <h1 className="d fu" style={{ fontSize: 'clamp(2rem,5vw,3.2rem)', fontWeight: 600, lineHeight: 1.04, letterSpacing: '-.025em', marginBottom: 16 }}>
                         Semua <span className="ink-em">Menu</span> Kami
                     </h1>
-                    <p className="fu" style={{ fontSize: '1.02rem', color: 'var(--ink-soft)', lineHeight: 1.6, maxWidth: 520 }}>
-                        Cari, saring, dan temukan jajanan favoritmu. Datang langsung ke kantin buat pesan — pilih di etalase, bayar di kasir.
-                    </p>
+                    <div className="kantin-note fu" style={{ maxWidth: 560 }}>
+                        <span className="kn-ico">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><path d="M9 22V12h6v10" /></svg>
+                        </span>
+                        <span>Mau pesan? <strong>Datang langsung ke kantin</strong> — pilih di etalase, bayar di kasir. Daftar ini cuma buat lihat-lihat dulu.</span>
+                    </div>
                 </header>
 
                 {/* CONTROLS */}
-                <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px' }}>
+                <div className="pad" style={{ maxWidth: 1200, margin: '0 auto' }}>
                     <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center', marginBottom: 18 }}>
                         <div className="search-wrap">
                             <svg className="search-ico" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -215,9 +221,9 @@ export default function Menu({ products = [], categories = [], canLogin }) {
                 </div>
 
                 {/* GRID */}
-                <section style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px 100px' }}>
+                <section className="pad" style={{ maxWidth: 1200, margin: '0 auto', paddingBottom: 100 }}>
                     {filtered.length > 0 ? (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 20 }}>
+                        <div className="menu-grid">
                             {filtered.map((p) => {
                                 const out = !(p.stock > 0);
                                 return (
@@ -241,15 +247,13 @@ export default function Menu({ products = [], categories = [], canLogin }) {
                                                 </div>
                                             )}
                                         </div>
-                                        <div style={{ padding: '15px 17px 17px' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
-                                                <h3 className="d" style={{ fontSize: '1.14rem', fontWeight: 600, color: 'var(--ink)', lineHeight: 1.2, letterSpacing: '-.01em' }}>{p.name}</h3>
-                                                <span className="d" style={{ fontSize: '1.06rem', fontWeight: 600, color: 'var(--tomato)', whiteSpace: 'nowrap', fontStyle: 'italic' }}>{formatPrice(p.selling_price)}</span>
-                                            </div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <span style={{ fontSize: '.7rem', color: 'var(--ink-soft)', padding: '3px 10px', border: '1px solid var(--border)', borderRadius: 100 }}>{p.category?.name || 'Jajanan'}</span>
+                                        <div style={{ padding: '10px 12px 12px' }}>
+                                            <h3 className="d" style={{ fontSize: '.95rem', fontWeight: 600, color: 'var(--ink)', lineHeight: 1.22, letterSpacing: '-.01em', marginBottom: 6 }}>{p.name}</h3>
+                                            <span className="d" style={{ display: 'block', fontSize: '.98rem', fontWeight: 600, color: 'var(--tomato)', fontStyle: 'italic', marginBottom: 9 }}>{formatPrice(p.selling_price)}</span>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
+                                                <span style={{ fontSize: '.64rem', color: 'var(--ink-soft)', padding: '2px 8px', border: '1px solid var(--border)', borderRadius: 100, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.category?.name || 'Jajanan'}</span>
                                                 {!out && (
-                                                    <span style={{ fontSize: '.7rem', color: 'var(--leaf)', fontWeight: 600 }}>
+                                                    <span style={{ fontSize: '.64rem', color: 'var(--leaf)', fontWeight: 600, whiteSpace: 'nowrap' }}>
                                                         Stok {p.stock}
                                                     </span>
                                                 )}

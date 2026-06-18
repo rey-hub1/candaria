@@ -72,6 +72,16 @@ export default function Error({ status }) {
                     >
                         Ke Halaman Utama
                     </Link>
+                    {status === 404 && (
+                        <Link 
+                            href={route('logout')}
+                            method="post"
+                            as="button"
+                            className="px-6 py-3 rounded-xl bg-rose-100 text-rose-700 font-bold hover:bg-rose-200 transition"
+                        >
+                            Keluar
+                        </Link>
+                    )}
                 </div>
             </div>
         </div>

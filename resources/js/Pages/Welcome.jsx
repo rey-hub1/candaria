@@ -1,21 +1,23 @@
 import { Link, Head, usePage } from '@inertiajs/react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import SiteNav from '@/Components/SiteNav';
 
-export default function Welcome({ canLogin, popularProducts, features = {} }) {
+export default function Welcome({ canLogin, popularProducts, menuCount = 0, minPrice = 0, features = {} }) {
     const isAuthenticated = !!usePage().props.auth?.user;
     const marketplaceOpen = !!features.marketplace;
     const marketplaceOrders = marketplaceOpen && !!features.marketplace_orders;
     const [activeFaq, setActiveFaq] = useState(null);
-    const [scrolled, setScrolled] = useState(false);
-
-    useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 40);
-        window.addEventListener('scroll', onScroll, { passive: true });
-        return () => window.removeEventListener('scroll', onScroll);
-    }, []);
 
     const formatPrice = (price) =>
         new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
+
+    // Format ringkas untuk stat hero: < 1000 tampil utuh (Rp500),
+    // >= 1000 disingkat "rb" (Rp2rb, Rp2,5rb).
+    const formatShort = (price) => {
+        if (price < 1000) return `Rp${price}`;
+        const rb = price / 1000;
+        return `Rp${rb.toLocaleString('id-ID', { maximumFractionDigits: 1 })}rb`;
+    };
 
     const faqs = [
         { question: 'Jam berapa kantin buka?', answer: 'Candaria buka setiap hari sekolah mulai pukul 07.30 sampai 12.30. Jam istirahat adalah waktu paling ramai — datang lebih awal biar nggak kehabisan favorit kamu.' },
@@ -153,6 +155,12 @@ export default function Welcome({ canLogin, popularProducts, features = {} }) {
                 .pc { background:var(--paper); border:1.5px solid var(--ink); border-radius:18px; overflow:hidden; transition:all .35s cubic-bezier(.4,0,.2,1); position:relative; box-shadow:5px 5px 0 0 rgba(27,26,56,.16); }
                 .pc:hover { transform:translate(-3px,-3px); box-shadow:9px 9px 0 0 var(--yellow); border-color:var(--tomato); }
 
+                /* popular menu grid — 2 per row di HP, makin rapat di layar besar */
+                .pop-grid { display:grid; gap:18px; grid-template-columns:repeat(2,1fr); }
+                @media (min-width:640px) { .pop-grid { grid-template-columns:repeat(3,1fr); gap:22px; } }
+                @media (min-width:900px) { .pop-grid { grid-template-columns:repeat(4,1fr); } }
+                @media (max-width:600px) { .pop-grid { gap:12px; } }
+
                 /* value row */
                 .feat { border-top:1.5px solid var(--border); padding:40px 0; transition:all .3s; cursor:default; }
                 .feat:hover { border-color:var(--tomato); padding-left:14px; }
@@ -205,30 +213,7 @@ export default function Welcome({ canLogin, popularProducts, features = {} }) {
             <div className="grain" style={{ minHeight: '100vh', background: 'var(--paper)', position: 'relative' }}>
 
                 {/* ── NAV ── */}
-                <nav className={`nav ${scrolled ? 'sc' : ''}`}>
-                    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <img src="/img/logo-color.png" alt="Candaria" style={{ width: 66, height: 66, objectFit: 'contain', flexShrink: 0 }} />
-                        </Link>
-                        <div className="nav-login-mobile">
-                            {isAuthenticated
-                                ? <Link href={route('dashboard')} className="btn-o" style={{ padding: '8px 16px', fontSize: '.8rem' }}>Dashboard</Link>
-                                : <Link href={route('login')} className="btn-o" style={{ padding: '8px 16px', fontSize: '.8rem' }}>Masuk</Link>
-                            }
-                        </div>
-                        <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-                            <a href="#menu" className="nav-link">Menu</a>
-                            {marketplaceOpen && <a href="#jajan-online" className="nav-link">Jajan Online</a>}
-                            <a href="#kenapa" className="nav-link">Kenapa Kami</a>
-                            <a href="#faq" className="nav-link">FAQ</a>
-                            <Link href={route('menu')} className="btn-g" style={{ padding: '9px 20px', fontSize: '.85rem' }}>Semua Menu</Link>
-                            {isAuthenticated
-                                ? <Link href={route('dashboard')} className="nav-link" style={{ opacity: .7 }}>Dashboard</Link>
-                                : <Link href={route('login')} className="nav-link" style={{ opacity: .7 }}>Masuk</Link>
-                            }
-                        </div>
-                    </div>
-                </nav>
+                <SiteNav variant="landing" marketplaceOpen={marketplaceOpen} />
 
                 {/* ── HERO ── */}
                 <header style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden', paddingTop: 80 }}>
@@ -264,7 +249,7 @@ export default function Welcome({ canLogin, popularProducts, features = {} }) {
                                     : 'Belum melayani pesan online — datang langsung ya.'}
                             </p>
                             <div className="hero-stats fu d4" style={{ display: 'flex', gap: 44, marginTop: 52, paddingTop: 36, borderTop: '1.5px solid var(--border)' }}>
-                                {[['Rp3rb', 'Mulai dari'], ['100%', 'Fresh harian'], ['< 2mnt', 'Antri kasir']].map(([v, l]) => (
+                                {[[formatShort(minPrice), 'Mulai dari'], [`${menuCount}+`, 'Pilihan menu'], ['< 2mnt', 'Antri kasir']].map(([v, l]) => (
                                     <div key={l}>
                                         <div className="d" style={{ fontSize: '1.9rem', fontWeight: 600, color: 'var(--tomato)', marginBottom: 4, fontStyle: 'italic' }}>{v}</div>
                                         <div style={{ fontSize: '.72rem', color: 'var(--ink-soft)', letterSpacing: '.05em', textTransform: 'uppercase' }}>{l}</div>
@@ -381,7 +366,7 @@ export default function Welcome({ canLogin, popularProducts, features = {} }) {
                         </p>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 22 }}>
+                    <div className="pop-grid">
                         {popularProducts && popularProducts.length > 0 ? (
                             popularProducts.map((product, index) => (
                                 <div key={product.id} className="pc">
@@ -400,15 +385,13 @@ export default function Welcome({ canLogin, popularProducts, features = {} }) {
                                             </div>
                                         )}
                                     </div>
-                                    <div style={{ padding: '16px 18px 18px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 11 }}>
-                                            <h3 className="d" style={{ fontSize: '1.18rem', fontWeight: 600, color: 'var(--ink)', lineHeight: 1.2, letterSpacing: '-.01em' }}>{product.name}</h3>
-                                            <span className="d" style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--tomato)', whiteSpace: 'nowrap', fontStyle: 'italic' }}>{formatPrice(product.selling_price)}</span>
-                                        </div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <span style={{ fontSize: '.7rem', color: 'var(--ink-soft)', padding: '3px 10px', border: '1px solid var(--border)', borderRadius: 100 }}>{product.category?.name || 'Jajanan'}</span>
-                                            <span style={{ fontSize: '.7rem', color: 'var(--leaf)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
-                                                <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></svg>
+                                    <div style={{ padding: '10px 12px 12px' }}>
+                                        <h3 className="d" style={{ fontSize: '.95rem', fontWeight: 600, color: 'var(--ink)', lineHeight: 1.22, letterSpacing: '-.01em', marginBottom: 6 }}>{product.name}</h3>
+                                        <span className="d" style={{ display: 'block', fontSize: '.98rem', fontWeight: 600, color: 'var(--tomato)', fontStyle: 'italic', marginBottom: 9 }}>{formatPrice(product.selling_price)}</span>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
+                                            <span style={{ fontSize: '.64rem', color: 'var(--ink-soft)', padding: '2px 8px', border: '1px solid var(--border)', borderRadius: 100, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.category?.name || 'Jajanan'}</span>
+                                            <span style={{ fontSize: '.64rem', color: 'var(--leaf)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
+                                                <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></svg>
                                                 {product.transaction_items_sum_quantity || 0} terjual
                                             </span>
                                         </div>

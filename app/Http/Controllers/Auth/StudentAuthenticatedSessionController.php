@@ -40,7 +40,7 @@ class StudentAuthenticatedSessionController extends Controller
 
         $student = Auth::user()->student;
 
-        if ($student && $student->must_change_password) {
+        if ($student && $student->must_change_password && \App\Models\FeatureFlag::enabled('force_password_change')) {
             return redirect()->route('student.password.change');
         }
 

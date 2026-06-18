@@ -17,7 +17,7 @@ class EnsureStudentPasswordChanged
     {
         $student = $request->user()?->student;
 
-        if ($student && $student->must_change_password && ! $request->routeIs('student.password.*')) {
+        if ($student && $student->must_change_password && \App\Models\FeatureFlag::enabled('force_password_change') && ! $request->routeIs('student.password.*')) {
             return redirect()->route('student.password.change');
         }
 

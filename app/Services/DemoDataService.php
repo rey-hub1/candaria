@@ -103,7 +103,7 @@ class DemoDataService
 
         $this->staffUser('Admin Kantin', 'admin@canteen.com', 'admin');
         $this->staffUser('Kasir Kantin', 'cashier@canteen.com', 'cashier');
-        $this->staffUser('Super Admin', 'superadmin@candaria.com', 'super_admin');
+        $this->staffUser('Pembina', 'superadmin@candaria.com', 'super_admin');
 
         if (MarginRule::count() === 0) {
             foreach ([

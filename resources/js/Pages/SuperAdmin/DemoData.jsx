@@ -118,7 +118,7 @@ export default function DemoData({ currentLevel, counts }) {
                 </div>
 
                 <p className="text-xs text-slate-400 mt-6">
-                    ⚠️ Setiap penerapan menghapus data demo lama lebih dulu. Akun login (admin, kasir, super admin),
+                    ⚠️ Setiap penerapan menghapus data demo lama lebih dulu. Akun login (admin, kasir, pembina),
                     feature flag, aturan margin, dan kategori selalu dipertahankan.
                 </p>
             </div>

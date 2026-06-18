@@ -116,7 +116,9 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                 className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                             >
                                 <option value="cashier">Kasir (Petugas Canteen)</option>
-                                <option value="admin">Admin (Pengelola)</option>
+                                {auth.user.role === 'super_admin' && (
+                                    <option value="admin">Admin (Pengelola)</option>
+                                )}
                             </select>
                             {addErrors.role && <p className="text-rose-600 text-xs mt-1">{addErrors.role}</p>}
                         </div>
@@ -329,7 +331,9 @@ export default function Index({ users = { data: [], links: [], total: 0 }, filte
                                     className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                                 >
                                     <option value="cashier">Kasir (Petugas Canteen)</option>
-                                    <option value="admin">Admin (Pengelola)</option>
+                                    {auth.user.role === 'super_admin' && (
+                                        <option value="admin">Admin (Pengelola)</option>
+                                    )}
                                 </select>
                                 {editErrors.role && <p className="text-rose-600 text-xs mt-1">{editErrors.role}</p>}
                             </div>

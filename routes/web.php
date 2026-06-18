@@ -36,7 +36,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [PublicController::class, 'welcome']);
 Route::get('/menu', [PublicController::class, 'menu'])->name('menu');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'password.changed'])->group(function () {
+    // Wajib ganti password saat pertama login (penitip) — gated by flag
+    Route::get('/ganti-password', [\App\Http\Controllers\Auth\ForcePasswordController::class, 'edit'])->name('password.force');
+    Route::put('/ganti-password', [\App\Http\Controllers\Auth\ForcePasswordController::class, 'update'])->name('password.force.update');
+
     // Dashboard (accessible by both admin & cashier)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/export', [DashboardController::class, 'exportPenitip'])->name('penitip.export');
@@ -93,10 +97,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/reports/products', [ReportController::class, 'products'])->name('reports.products');
         Route::get('/reports/stock', [ReportController::class, 'stock'])->name('reports.stock');
 
-        // User Management
-        Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
-
-
         // Margin Rules
         Route::resource('margin-rules', MarginRuleController::class)->except(['show']);
 
@@ -106,6 +106,11 @@ Route::middleware(['auth'])->group(function () {
 
         // Log Aktivitas (audit trail)
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+    });
+
+    // User Management — accessible by admin & super_admin
+    Route::middleware(['role:admin,super_admin'])->group(function () {
+        Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
     });
 
     // Marketplace: admin manages vendors/mitra

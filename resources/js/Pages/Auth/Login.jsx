@@ -4,7 +4,7 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 
 const STUDENT_PERKS = [
     { title: 'Jajan tanpa antre', desc: 'Pesan dari kantin & mitra sekolah' },
@@ -13,11 +13,11 @@ const STUDENT_PERKS = [
 ];
 
 const STAFF_ACCOUNTS = [
+    { label: 'Super Admin', login: 'superadmin@candaria.com', password: 'password' },
     { label: 'Admin', login: 'admin@canteen.com', password: 'password' },
     { label: 'Kasir', login: 'cashier@canteen.com', password: 'password' },
     { label: 'Penitip', login: '081234567890', password: 'candaria123' },
-    { label: 'Mitra', login: 'mitra@candaria.com', password: 'password' },
-    { label: 'Super Admin', login: 'superadmin@candaria.com', password: 'password' },
+    { label: 'Mitra', login: 'mitra@candaria.com', password: 'password', feature: 'marketplace' },
 ];
 
 function EyeToggle({ show, onClick }) {
@@ -45,6 +45,9 @@ function EyeToggle({ show, onClick }) {
 export default function Login({ status, studentLoginEnabled = true }) {
     const [mode, setMode] = useState(studentLoginEnabled ? 'student' : 'staff');
     const [showPassword, setShowPassword] = useState(false);
+
+    const features = usePage().props.features ?? {};
+    const staffAccounts = STAFF_ACCOUNTS.filter((acc) => !acc.feature || features[acc.feature]);
 
     const studentForm = useForm({ nisn: '', password: '' });
     const staffForm = useForm({ login: '', password: '', remember: false });
@@ -127,7 +130,17 @@ export default function Login({ status, studentLoginEnabled = true }) {
             </div>
 
             {/* Right: forms */}
-            <div className="w-full lg:w-[56%] flex flex-col justify-center items-center px-6 py-12 sm:px-12 lg:px-16 xl:px-24">
+            <div className="w-full lg:w-[56%] flex flex-col justify-center items-center px-6 py-12 sm:px-12 lg:px-16 xl:px-24 relative">
+                <Link
+                    href="/"
+                    className="absolute top-6 right-6 lg:top-8 lg:right-8 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition"
+                    aria-label="Kembali ke Beranda"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </Link>
+
                 <div className="w-full max-w-sm opacity-0 animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
                     <div className="lg:hidden flex justify-center mb-8">
                         <img src="/img/logo-color.png" alt="Candaria" className="h-20 w-auto" />
@@ -301,7 +314,7 @@ export default function Login({ status, studentLoginEnabled = true }) {
                                     Siswa Uji Coba
                                 </button>
                             ) : (
-                                STAFF_ACCOUNTS.map((acc) => (
+                                staffAccounts.map((acc) => (
                                     <button
                                         key={acc.label}
                                         type="button"

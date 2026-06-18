@@ -22,6 +22,8 @@ class PublicController extends Controller
 
         return Inertia::render('Welcome', [
             'popularProducts' => $popularProducts,
+            'menuCount' => Product::where('stock', '>', 0)->count(),
+            'minPrice' => (int) Product::where('stock', '>', 0)->min('selling_price'),
             'canLogin' => Route::has('login'),
         ]);
     }

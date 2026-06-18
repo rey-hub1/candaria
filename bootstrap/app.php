@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
+            \App\Http\Middleware\IdleTimeout::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
 
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'feature' => \App\Http\Middleware\EnsureFeatureEnabled::class,
             'student.password_changed' => \App\Http\Middleware\EnsureStudentPasswordChanged::class,
+            'password.changed' => \App\Http\Middleware\EnsurePasswordChanged::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

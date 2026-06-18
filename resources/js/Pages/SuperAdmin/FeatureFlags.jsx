@@ -31,8 +31,8 @@ const TEMPLATES = [
     {
         id: 'v1',
         name: 'Template V1',
-        tag: 'Semua mati',
-        description: 'Matikan semua fitur. Mode dasar / produksi minimal.',
+        tag: 'Hanya umum nyala',
+        description: 'Nyalakan fitur umum, matikan sisanya. Mode dasar / produksi minimal.',
     },
     {
         id: 'v2',
@@ -48,7 +48,10 @@ export default function FeatureFlags({ flags = {} }) {
     const onCount = allFlags.filter((f) => f.is_enabled).length;
 
     // Active template derived from current flag state — manual toggle jatuh ke "custom".
-    const activeTemplate = total === 0 ? null : onCount === 0 ? 'v1' : onCount === total ? 'v2' : 'custom';
+    // V1 = grup umum nyala semua & non-umum mati semua. V2 = semua nyala.
+    const generalOn = allFlags.filter((f) => f.group === 'general').every((f) => f.is_enabled);
+    const nonGeneralOff = allFlags.filter((f) => f.group !== 'general').every((f) => !f.is_enabled);
+    const activeTemplate = total === 0 ? null : onCount === total ? 'v2' : generalOn && nonGeneralOff ? 'v1' : 'custom';
 
     const toggle = (flag) => {
         router.put(route('super-admin.feature-flags.update', flag.id), {

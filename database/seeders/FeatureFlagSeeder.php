@@ -11,8 +11,10 @@ class FeatureFlagSeeder extends Seeder
     {
         $flags = [
             ['key' => 'cashbook', 'label' => 'Mutasi & Buku Kas', 'description' => 'Modul mutasi saldo & buku kas admin.', 'group' => 'general', 'is_enabled' => true],
+            ['key' => 'force_password_change', 'label' => 'Wajib Ganti Password Pertama Login', 'description' => 'Siswa & penitip wajib mengganti password saat pertama kali masuk.', 'group' => 'general', 'is_enabled' => false],
 
-            // Default (fresh build/clone) = Template V1: semua fitur mati.
+            // Default fresh build/clone: hanya `cashbook` (umum) nyala, sisanya mati.
+            // (Template V1 = semua fitur grup `general` nyala; V2 = semua nyala.)
             ['key' => 'marketplace', 'label' => 'Marketplace Mitra', 'description' => 'Modul pedagang afiliasi & jajan online untuk siswa.', 'group' => 'marketplace', 'is_enabled' => false],
             ['key' => 'marketplace_orders', 'label' => 'Pemesanan Marketplace', 'description' => 'Siswa bisa membuat pesanan baru di marketplace.', 'group' => 'marketplace', 'is_enabled' => false],
             ['key' => 'vendor_self_register', 'label' => 'Pendaftaran Mandiri Mitra', 'description' => 'Mitra bisa mendaftar sendiri tanpa dibuatkan admin.', 'group' => 'marketplace', 'is_enabled' => false],
