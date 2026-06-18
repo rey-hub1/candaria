@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class DemoDataService
 {
-    public const LEVELS = ['none', 'minimal', 'full'];
+    public const LEVELS = ['none', 'minimal', 'full', 'v1'];
 
     public const SETTING_KEY = 'demo_data_level';
 
@@ -73,7 +73,10 @@ class DemoDataService
             $this->wipe();
             $this->ensureEssentials();
 
-            if ($level !== 'none') {
+            if ($level === 'v1') {
+                // Data konsinyasi nyata 3 hari (Senin–Rabu), tanpa marketplace.
+                $this->seedV1Canteen();
+            } elseif ($level !== 'none') {
                 $preset = $this->preset($level);
                 $this->seedCanteen($preset);
                 $this->seedMarketplace($preset);
@@ -135,6 +138,7 @@ class DemoDataService
             ['name' => 'Minuman', 'slug' => 'minuman', 'code' => 'i', 'prefix' => 'I'],
             ['name' => 'Snack / Jajanan', 'slug' => 'snack-jajanan', 'code' => 's', 'prefix' => 'S'],
             ['name' => 'Roti & Kue', 'slug' => 'roti-kue', 'code' => 'r', 'prefix' => 'R'],
+            ['name' => 'Lainnya', 'slug' => 'lainnya', 'code' => 'l', 'prefix' => 'L'],
         ];
 
         foreach ($categories as $data) {
@@ -176,6 +180,162 @@ class DemoDataService
 
         // Pastikan stok tersedia di kasir setelah simulasi penjualan.
         Product::query()->update(['stock' => 100]);
+    }
+
+    // ------------------------------------------------------------ V1 (data asli)
+
+    /**
+     * Seed data konsinyasi nyata dari rekap 3 hari (Senin/Selasa/Rabu) yang
+     * tersimpan di database/data/v1_sales.json. Tanggalnya digeser otomatis:
+     * SENIN→Senin terakhir yang sudah lewat, SELASA→Selasa, RABU→Rabu — relatif
+     * terhadap hari seed dijalankan. Harga jual diambil apa adanya dari rekap
+     * (mem-bypass margin rule), profit ikut konvensi: penitip = harga reseller,
+     * kantin = selisih (laba).
+     */
+    private function seedV1Canteen(): void
+    {
+        $admin = User::where('email', 'admin@canteen.com')->first();
+        $cashiers = User::whereIn('role', ['admin', 'cashier'])->get();
+        $categories = Category::pluck('id', 'slug');
+
+        $data = json_decode(file_get_contents(database_path('data/v1_sales.json')), true);
+
+        // Senin/Selasa/Rabu terakhir yang ketiganya sudah ≤ hari ini.
+        $monday = Carbon::today()->startOfWeek(Carbon::MONDAY);
+        if ($monday->copy()->addDays(2)->isFuture()) {
+            $monday->subWeek();
+        }
+        $days = [$monday->copy(), $monday->copy()->addDay(), $monday->copy()->addDays(2)];
+
+        // Kumpulan line item per hari, dipecah jadi keranjang kecil agar realistis.
+        $lines = [[], [], []];
+
+        foreach ($data as $sd) {
+            $seller = Seller::create([
+                'name' => $sd['name'],
+                'class' => $sd['class'] ?: null,
+                'phone' => $sd['phone'] ?: null,
+                'is_active' => true,
+            ]);
+
+            if (! empty($sd['phone'])) {
+                User::firstOrCreate(
+                    ['phone' => $sd['phone']],
+                    ['name' => $sd['name'], 'password' => Hash::make('candaria123'), 'role' => 'penitip']
+                );
+            }
+
+            foreach ($sd['products'] as $pd) {
+                $catId = $categories[$pd['cat']] ?? $categories['snack-jajanan'];
+                $totalIn = array_sum($pd['stock']);
+                $totalSold = array_sum($pd['sold']);
+
+                $product = Product::create([
+                    'category_id' => $catId,
+                    'seller_id' => $seller->id,
+                    'name' => $pd['name'],
+                    'type' => 'siswa',
+                    'cost_price' => $pd['cost'],
+                    'stock' => max(0, $totalIn - $totalSold),
+                    'image' => $this->demoImage($pd['cat']),
+                ]);
+
+                // Product::saving() menimpa selling_price via margin rule — paksa
+                // ke harga jual asli rekap tanpa memicu event model.
+                DB::table('products')->where('id', $product->id)->update(['selling_price' => $pd['sell']]);
+                $product->selling_price = $pd['sell'];
+
+                foreach ($days as $di => $date) {
+                    if (($pd['stock'][$di] ?? 0) > 0) {
+                        Consignment::create([
+                            'seller_id' => $seller->id,
+                            'product_id' => $product->id,
+                            'type' => 'in',
+                            'quantity' => $pd['stock'][$di],
+                            'date' => $date->toDateString(),
+                            'notes' => 'Titipan awal',
+                        ]);
+                    }
+
+                    // Pecah qty terjual harian jadi potongan 1–3 (ukuran keranjang).
+                    $remaining = $pd['sold'][$di] ?? 0;
+                    while ($remaining > 0) {
+                        $take = min($remaining, rand(1, 3));
+                        $lines[$di][] = ['product' => $product, 'qty' => $take];
+                        $remaining -= $take;
+                    }
+                }
+            }
+        }
+
+        foreach ($days as $di => $date) {
+            $this->seedV1Transactions($lines[$di], $date, $cashiers, $admin);
+        }
+    }
+
+    /** Rangkai line item satu hari menjadi transaksi acak 1–4 item + cashbook. */
+    private function seedV1Transactions(array $lines, Carbon $date, $cashiers, ?User $admin): void
+    {
+        if (empty($lines) || $cashiers->isEmpty()) {
+            return;
+        }
+
+        shuffle($lines);
+        $code = 1;
+        $i = 0;
+
+        while ($i < count($lines)) {
+            $batch = array_slice($lines, $i, rand(1, 4));
+            $i += count($batch);
+
+            $total = 0;
+            foreach ($batch as $line) {
+                $total += $line['product']->selling_price * $line['qty'];
+            }
+            $paid = (int) (ceil($total / 1000) * 1000);
+            $time = $date->copy()->setTime(rand(7, 14), rand(0, 59));
+            $txnCode = str_pad((string) $code++, 5, '0', STR_PAD_LEFT);
+
+            $transaction = Transaction::create([
+                'transaction_code' => $txnCode,
+                'transaction_date' => $date->toDateString(),
+                'user_id' => $cashiers->random()->id,
+                'total_amount' => $total,
+                'paid_amount' => $paid,
+                'change_amount' => $paid - $total,
+                'status' => Transaction::STATUS_COMPLETED,
+                'created_at' => $time,
+                'updated_at' => $time,
+            ]);
+
+            foreach ($batch as $line) {
+                $product = $line['product'];
+                $qty = $line['qty'];
+                TransactionItem::create([
+                    'transaction_id' => $transaction->id,
+                    'product_id' => $product->id,
+                    'quantity' => $qty,
+                    'cost_price' => $product->cost_price,
+                    'selling_price' => $product->selling_price,
+                    'profit_kantin' => ($product->selling_price - $product->cost_price) * $qty,
+                    'profit_seller' => $product->cost_price * $qty,
+                    'created_at' => $time,
+                    'updated_at' => $time,
+                ]);
+            }
+
+            Cashbook::create([
+                'date' => $date->toDateString(),
+                'description' => 'Penjualan #'.$txnCode,
+                'type' => 'debit',
+                'amount' => $total,
+                'source' => 'transaction',
+                'reference_id' => $transaction->id,
+                'user_id' => $admin?->id,
+                'created_at' => $time,
+                'updated_at' => $time,
+            ]);
+        }
     }
 
     private function seedSellers(int $count): array
@@ -511,6 +671,7 @@ class DemoDataService
         'minuman' => ['🥤', '#0284c7'],
         'snack-jajanan' => ['🍟', '#d97706'],
         'roti-kue' => ['🍰', '#db2777'],
+        'lainnya' => ['🛍️', '#64748b'],
         'Makanan Berat' => ['🍱', '#ea580c'],
         'Minuman' => ['🥤', '#0284c7'],
         'Snack' => ['🍢', '#d97706'],

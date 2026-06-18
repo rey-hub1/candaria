@@ -6,6 +6,13 @@ import { useDialog } from '@/hooks/useDialog';
 
 const MODES = [
     {
+        level: 'v1',
+        label: 'Data Asli V1',
+        emoji: '📋',
+        desc: 'Data konsinyasi nyata 3 hari (Senin–Rabu) dari rekap penjualan. Tanggal otomatis menyesuaikan minggu lalu. Tanpa data marketplace.',
+        accent: 'border-emerald-300 bg-emerald-50',
+    },
+    {
         level: 'full',
         label: 'Banyak',
         emoji: '📦',
@@ -28,7 +35,7 @@ const MODES = [
     },
 ];
 
-const LABELS = { full: 'Banyak', minimal: 'Sedikit', none: 'Kosong' };
+const LABELS = { v1: 'Data Asli V1', full: 'Banyak', minimal: 'Sedikit', none: 'Kosong' };
 
 export default function DemoData({ currentLevel, counts }) {
     const { dialog, confirm: openConfirm, dialogConfirm, dialogClose } = useDialog();
