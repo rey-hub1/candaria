@@ -38,6 +38,7 @@ class DemoDataService
         'order_item_options', 'order_status_histories', 'order_items', 'orders',
         'vendor_ledgers', 'vendor_settlements', 'menu_options', 'menu_option_groups',
         'menu_items', 'vendors', 'students',
+        'change_debts',
         'transaction_items', 'transactions', 'seller_settlements', 'consignments',
         'cashbooks', 'products', 'sellers', 'notifications', 'activity_logs',
     ];
@@ -51,9 +52,9 @@ class DemoDataService
                 'vendors' => 1, 'students' => 2, 'ordersPerStudent' => 1,
             ],
             'full' => [
-                'sellers' => 8, 'kantin' => 7, 'siswa' => 7,
-                'txnDays' => 14, 'maxTxnPerDay' => 10,
-                'vendors' => 3, 'students' => 4, 'ordersPerStudent' => 2,
+                'sellers' => 10, 'kantin' => 10, 'siswa' => 10,
+                'txnDays' => 90, 'maxTxnPerDay' => 60,
+                'vendors' => 3, 'students' => 4, 'ordersPerStudent' => 5,
             ],
         ][$level];
     }
@@ -296,7 +297,7 @@ class DemoDataService
             $time = $date->copy()->setTime(rand(7, 14), rand(0, 59));
             $txnCode = str_pad((string) $code++, 5, '0', STR_PAD_LEFT);
 
-            $transaction = Transaction::create([
+            $transactionId = DB::table('transactions')->insertGetId([
                 'transaction_code' => $txnCode,
                 'transaction_date' => $date->toDateString(),
                 'user_id' => $cashiers->random()->id,
@@ -311,8 +312,8 @@ class DemoDataService
             foreach ($batch as $line) {
                 $product = $line['product'];
                 $qty = $line['qty'];
-                TransactionItem::create([
-                    'transaction_id' => $transaction->id,
+                DB::table('transaction_items')->insert([
+                    'transaction_id' => $transactionId,
                     'product_id' => $product->id,
                     'quantity' => $qty,
                     'cost_price' => $product->cost_price,
@@ -324,13 +325,13 @@ class DemoDataService
                 ]);
             }
 
-            Cashbook::create([
+            DB::table('cashbooks')->insert([
                 'date' => $date->toDateString(),
                 'description' => 'Penjualan #'.$txnCode,
                 'type' => 'debit',
                 'amount' => $total,
                 'source' => 'transaction',
-                'reference_id' => $transaction->id,
+                'reference_id' => $transactionId,
                 'user_id' => $admin?->id,
                 'created_at' => $time,
                 'updated_at' => $time,
@@ -422,9 +423,18 @@ class DemoDataService
                 'seller_id' => $product->seller_id,
                 'product_id' => $product->id,
                 'type' => 'in',
-                'quantity' => rand(40, 60),
-                'date' => Carbon::now()->subDays(20)->toDateString(),
+                'quantity' => rand(100, 200),
+                'date' => Carbon::now()->subDays(90)->toDateString(),
                 'notes' => 'Penerimaan awal titipan',
+            ]);
+
+            Consignment::create([
+                'seller_id' => $product->seller_id,
+                'product_id' => $product->id,
+                'type' => 'in',
+                'quantity' => rand(50, 100),
+                'date' => Carbon::now()->subDays(45)->toDateString(),
+                'notes' => 'Penambahan stok periode 2',
             ]);
         }
     }
@@ -464,19 +474,21 @@ class DemoDataService
                 $time = $date->copy()->setTime(rand(7, 15), rand(0, 59));
                 $code = str_pad((string) $index++, 6, '0', STR_PAD_LEFT);
 
-                $transaction = Transaction::create([
+                $transactionId = DB::table('transactions')->insertGetId([
                     'transaction_code' => $code,
+                    'transaction_date' => $time->toDateString(),
                     'user_id' => $users->random()->id,
                     'total_amount' => $total,
                     'paid_amount' => $paid,
                     'change_amount' => $paid - $total,
+                    'status' => Transaction::STATUS_COMPLETED,
                     'created_at' => $time,
                     'updated_at' => $time,
                 ]);
 
                 foreach ($itemsData as $item) {
-                    TransactionItem::create([
-                        'transaction_id' => $transaction->id,
+                    DB::table('transaction_items')->insert([
+                        'transaction_id' => $transactionId,
                         'product_id' => $item['product']->id,
                         'quantity' => $item['qty'],
                         'cost_price' => $item['product']->cost_price,
@@ -488,13 +500,13 @@ class DemoDataService
                     ]);
                 }
 
-                Cashbook::create([
+                DB::table('cashbooks')->insert([
                     'date' => $time->toDateString(),
                     'description' => 'Penjualan #'.$code,
                     'type' => 'debit',
                     'amount' => $total,
                     'source' => 'transaction',
-                    'reference_id' => $transaction->id,
+                    'reference_id' => $transactionId,
                     'user_id' => $admin?->id,
                     'created_at' => $time,
                     'updated_at' => $time,

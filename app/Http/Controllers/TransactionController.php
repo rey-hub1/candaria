@@ -38,16 +38,21 @@ class TransactionController extends Controller
     {
         $search = $request->input('search');
 
-        $query = Product::where('stock', '>', 0)
-            ->with(['category', 'seller']);
+        $query = Product::with(['category', 'seller']);
 
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('code', 'like', "{$search}%")
                     ->orWhere('name', 'like', "%{$search}%");
             });
+        }
+
+        // Out-of-stock products stay visible but sink to the bottom of the list
+        $query->orderByRaw('CASE WHEN stock > 0 THEN 0 ELSE 1 END');
+        if ($search) {
             $query->orderByRaw('CASE WHEN code LIKE ? THEN 1 ELSE 2 END', ["{$search}%"]);
         }
+        $query->orderBy('name');
 
         // Limit to 50 for performance
         $products = $query->take(50)->get();
@@ -70,6 +75,8 @@ class TransactionController extends Controller
                 $request->validated('items'),
                 (float) $request->validated('paid_amount'),
                 $request->user(),
+                (float) ($request->validated('change_debt') ?? 0),
+                $request->validated('customer_note'),
             );
         } catch (TransactionException $e) {
             return redirect()->back()->with('error', $e->getMessage());

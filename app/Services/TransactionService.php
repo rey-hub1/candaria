@@ -24,7 +24,7 @@ class TransactionService
      *
      * @throws TransactionException
      */
-    public function checkout(array $items, float $paidAmount, User $cashier): Transaction
+    public function checkout(array $items, float $paidAmount, User $cashier, float $changeDebt = 0, ?string $customerNote = null): Transaction
     {
         $itemIds = array_column($items, 'id');
         $products = Product::whereIn('id', $itemIds)->get()->keyBy('id');
@@ -53,7 +53,10 @@ class TransactionService
 
         $changeAmount = $paidAmount - $totalAmount;
 
-        return DB::transaction(function () use ($cart, $totalAmount, $paidAmount, $changeAmount, $cashier) {
+        // Kembalian yang dititipkan tak boleh melebihi kembalian sebenarnya.
+        $changeDebt = max(0, min($changeDebt, $changeAmount));
+
+        return DB::transaction(function () use ($cart, $totalAmount, $paidAmount, $changeAmount, $changeDebt, $customerNote, $cashier) {
             $transaction = $this->createTransactionWithCode($cashier, $totalAmount, $paidAmount, $changeAmount);
 
             foreach ($cart as $line) {
@@ -93,6 +96,29 @@ class TransactionService
                 'reference_id' => $transaction->id,
                 'user_id' => $cashier->id,
             ]);
+
+            // Kembalian dititip (kasir tak bisa kasih kembalian penuh) → hutang ke
+            // customer. Uang receh-nya tetap di laci, jadi catat sebagai kas masuk.
+            if ($changeDebt > 0) {
+                $debt = \App\Models\ChangeDebt::create([
+                    'transaction_id' => $transaction->id,
+                    'customer_note' => $customerNote,
+                    'amount' => $changeDebt,
+                    'status' => \App\Models\ChangeDebt::STATUS_UNPAID,
+                    'date' => now()->toDateString(),
+                    'created_by' => $cashier->id,
+                ]);
+
+                Cashbook::create([
+                    'date' => now()->toDateString(),
+                    'description' => 'Hutang kembalian '.$transaction->transaction_code.($customerNote ? ' ('.$customerNote.')' : ''),
+                    'type' => 'debit',
+                    'amount' => $changeDebt,
+                    'source' => 'change_debt',
+                    'reference_id' => $debt->id,
+                    'user_id' => $cashier->id,
+                ]);
+            }
 
             ActivityLog::record('checkout', "Transaksi {$transaction->transaction_code} sebesar Rp".number_format($totalAmount, 0, ',', '.'), $transaction, [
                 'total_amount' => $totalAmount,
@@ -158,6 +184,39 @@ class TransactionService
             ]);
 
             return $transaction;
+        });
+    }
+
+    /**
+     * Lunasi hutang kembalian: tandai paid + catat kas keluar (uang receh
+     * akhirnya diberikan ke customer). Idempotent — abaikan jika sudah lunas.
+     *
+     * @throws TransactionException
+     */
+    public function settleChangeDebt(\App\Models\ChangeDebt $debt, User $user): \App\Models\ChangeDebt
+    {
+        if ($debt->isPaid()) {
+            throw new TransactionException('Hutang kembalian ini sudah dilunasi.');
+        }
+
+        return DB::transaction(function () use ($debt, $user) {
+            $debt->update([
+                'status' => \App\Models\ChangeDebt::STATUS_PAID,
+                'paid_at' => now(),
+                'paid_by' => $user->id,
+            ]);
+
+            Cashbook::create([
+                'date' => now()->toDateString(),
+                'description' => 'Pembayaran hutang kembalian'.($debt->transaction ? ' '.$debt->transaction->transaction_code : '').($debt->customer_note ? ' ('.$debt->customer_note.')' : ''),
+                'type' => 'credit',
+                'amount' => $debt->amount,
+                'source' => 'change_debt',
+                'reference_id' => $debt->id,
+                'user_id' => $user->id,
+            ]);
+
+            return $debt;
         });
     }
 

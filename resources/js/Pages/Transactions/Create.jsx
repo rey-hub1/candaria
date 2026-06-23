@@ -15,8 +15,9 @@ const isTouchDevice =
 
 const ProductCard = React.memo(function ProductCard({ product, cartQty = 0, onAdd }) {
     const remainingStock = product.stock - cartQty;
+    const isOut = remainingStock <= 0;
     return (
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 md:p-4 flex flex-col justify-between hover:shadow-md hover:border-primary-300 transition duration-200">
+        <div className={`border rounded-xl p-3 md:p-4 flex flex-col justify-between hover:shadow-md transition duration-200 ${isOut ? 'bg-amber-50/60 border-amber-200 hover:border-amber-300' : 'bg-slate-50 border-slate-200 hover:border-primary-300'}`}>
             <div>
                 <div className="flex justify-between items-start gap-1 flex-wrap">
                     <span className={`px-1.5 py-0.5 rounded text-[8px] md:text-[9px] font-bold uppercase ${product.type === "kantin" ? "bg-indigo-50 text-indigo-700 border border-indigo-100" : "bg-orange-50 text-orange-700 border border-orange-100"}`}>
@@ -44,22 +45,71 @@ const ProductCard = React.memo(function ProductCard({ product, cartQty = 0, onAd
 
             <div className="mt-3 md:mt-4">
                 <div className="flex justify-between items-baseline mb-2">
-                    <span className={`text-[10px] md:text-xs font-semibold ${remainingStock <= 0 ? 'text-rose-500' : 'text-slate-400'}`}>Stok: {remainingStock}</span>
+                    <span className={`text-[10px] md:text-xs font-semibold ${isOut ? 'text-amber-600' : 'text-slate-400'}`}>{isOut ? 'Stok Habis' : `Stok: ${remainingStock}`}</span>
                     <span className="font-extrabold text-slate-900 text-xs md:text-sm">{formatRupiah(product.selling_price)}</span>
                 </div>
                 <button
                     onClick={() => onAdd(product.id)}
-                    className="w-full py-1.5 md:py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-[10px] md:text-xs rounded-lg shadow-sm transition flex items-center justify-center gap-1"
+                    className={`w-full py-1.5 md:py-2 text-white font-semibold text-[10px] md:text-xs rounded-lg shadow-sm transition flex items-center justify-center gap-1 ${isOut ? 'bg-amber-500 hover:bg-amber-600' : 'bg-primary-600 hover:bg-primary-700'}`}
                 >
-                    <svg className="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
-                    </svg>
-                    Tambah
+                    {isOut ? (
+                        <>
+                            <svg className="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            Paksa Tambah
+                        </>
+                    ) : (
+                        <>
+                            <svg className="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+                            </svg>
+                            Tambah
+                        </>
+                    )}
                 </button>
             </div>
         </div>
     );
 });
+
+// Blok titip kembalian: muncul saat ada kembalian. Kasir isi nominal yang
+// dititipkan (customer ambil nanti) + catatan nama/kelas. Sisanya diberikan.
+function TitipKembalian({ change, titip, setTitip, note, setNote }) {
+    if (change <= 0) return null;
+    const safeTitip = Math.min(change, Math.max(0, Number(titip) || 0));
+    return (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm space-y-2">
+            <label className="block font-semibold text-amber-800">
+                Titip kembalian (customer ambil nanti)
+            </label>
+            <input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={change}
+                value={titip || ""}
+                onChange={(e) => setTitip(Math.min(change, Math.max(0, Number(e.target.value) || 0)))}
+                placeholder="Nominal dititipkan (Rp)"
+                className="w-full rounded-md border border-amber-300 px-2 py-1.5 text-sm focus:ring-2 focus:ring-amber-500"
+            />
+            {safeTitip > 0 && (
+                <input
+                    type="text"
+                    maxLength={100}
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    placeholder="Catatan: nama / kelas customer"
+                    className="w-full rounded-md border border-amber-300 px-2 py-1.5 text-sm focus:ring-2 focus:ring-amber-500"
+                />
+            )}
+            <div className="flex justify-between text-xs text-amber-700">
+                <span>Diberikan sekarang</span>
+                <span className="font-bold">{formatRupiah(change - safeTitip)}</span>
+            </div>
+        </div>
+    );
+}
 
 export default function Create({
     products = [],
@@ -80,6 +130,9 @@ export default function Create({
     });
     const [showCartDrawer, setShowCartDrawer] = useState(false);
     const [paidAmount, setPaidAmount] = useState(0);
+    // Titip kembalian: kasir tak bisa kasih kembalian penuh → jadi hutang ke customer.
+    const [titipKembalian, setTitipKembalian] = useState(0);
+    const [customerNote, setCustomerNote] = useState("");
 
     // Custom Keyboard State
     const [activeInput, setActiveInput] = useState(null); // 'search', 'paidAmount', or null
@@ -128,8 +181,6 @@ export default function Create({
     );
 
 
-    const outOfStockClicks = useRef({});
-
     // Add to Cart — stable ref so ProductCard memo works
     const handleAddToCart = useCallback((productId) => {
         const currentCart = cartRef.current;
@@ -138,31 +189,40 @@ export default function Create({
 
         const currentQty = currentCart[productId]?.quantity ?? 0;
         if (currentQty + 1 > product.stock) {
-            if (!outOfStockClicks.current[productId]) {
-                outOfStockClicks.current[productId] = 0;
-            }
-            outOfStockClicks.current[productId] += 1;
-
-            if (outOfStockClicks.current[productId] >= 3) {
-                outOfStockClicks.current[productId] = 0;
-                router.post(route('products.force-increment', product.id), {}, {
-                    preserveScroll: true,
-                    preserveState: true,
-                });
-                setCart(prev => ({ ...prev, [productId]: { ...product, quantity: currentQty + 1 } }));
-            } else {
-                const clicksLeft = 3 - outOfStockClicks.current[productId];
-                openAlert({ title: 'Stok Tidak Cukup', message: `Stok ${product.name} tidak cukup. Klik ${clicksLeft} kali lagi untuk memaksa tambah stok.`, danger: false });
-            }
+            // Single press = force add. Server bumps real stock by 1.
+            router.post(route('products.force-increment', product.id), {}, {
+                preserveScroll: true,
+                preserveState: true,
+            });
+            setCart(prev => ({ ...prev, [productId]: { ...(prev[productId] || product), quantity: currentQty + 1 } }));
             return;
         }
 
         setCart(prev => ({ ...prev, [productId]: { ...(prev[productId] || product), quantity: currentQty + 1 } }));
-    }, [products, openAlert]);
+    }, [products]);
+
+    // Live search — debounced server fetch as the user types
+    const searchDebounce = useRef(null);
+    const skipFirstSearch = useRef(true);
+    useEffect(() => {
+        // Don't refetch on mount; products already match `search`
+        if (skipFirstSearch.current) {
+            skipFirstSearch.current = false;
+            return;
+        }
+        if (searchDebounce.current) clearTimeout(searchDebounce.current);
+        searchDebounce.current = setTimeout(() => {
+            router.get(
+                route('transactions.create'),
+                localSearch ? { search: localSearch } : {},
+                { preserveState: true, preserveScroll: true, replace: true }
+            );
+        }, 300);
+        return () => searchDebounce.current && clearTimeout(searchDebounce.current);
+    }, [localSearch]);
 
     const handleSearchReset = () => {
         setLocalSearch("");
-        router.get(route('transactions.create'), {}, { preserveState: true, preserveScroll: true });
     };
 
     // Handle Search Submit
@@ -183,31 +243,11 @@ export default function Create({
                         const product = prev[exactMatch.id] || exactMatch;
                         const currentQty = prev[exactMatch.id] ? prev[exactMatch.id].quantity : 0;
                         if (currentQty + 1 > product.stock) {
-                            if (!outOfStockClicks.current[exactMatch.id]) {
-                                outOfStockClicks.current[exactMatch.id] = 0;
-                            }
-                            outOfStockClicks.current[exactMatch.id] += 1;
-
-                            if (outOfStockClicks.current[exactMatch.id] >= 3) {
-                                outOfStockClicks.current[exactMatch.id] = 0;
-
-                                router.post(route('products.force-increment', exactMatch.id), {}, {
-                                    preserveScroll: true,
-                                    preserveState: true,
-                                });
-
-                                return {
-                                    ...prev,
-                                    [exactMatch.id]: {
-                                        ...product,
-                                        quantity: currentQty + 1
-                                    }
-                                };
-                            } else {
-                                const clicksLeft = 3 - outOfStockClicks.current[exactMatch.id];
-                                openAlert({ title: 'Stok Tidak Cukup', message: `Stok ${product.name} tidak cukup. Scan/Enter ${clicksLeft} kali lagi untuk memaksa tambah stok.`, danger: false });
-                                return prev;
-                            }
+                            // Single scan/Enter = force add. Server bumps real stock by 1.
+                            router.post(route('products.force-increment', exactMatch.id), {}, {
+                                preserveScroll: true,
+                                preserveState: true,
+                            });
                         }
                         return {
                             ...prev,
@@ -280,11 +320,15 @@ export default function Create({
 
         router.post(route("checkout"), {
             paid_amount: paidAmount,
+            change_debt: titipKembalian || 0,
+            customer_note: customerNote || null,
             items: items
         }, {
             onSuccess: () => {
                 setCart({});
                 setPaidAmount(0);
+                setTitipKembalian(0);
+                setCustomerNote("");
             }
         });
     };
@@ -375,7 +419,7 @@ export default function Create({
                             <div className="text-center py-16 text-slate-400 text-sm">
                                 {localSearch
                                     ? `Produk dengan nama/kode "${localSearch}" tidak ditemukan.`
-                                    : "Tidak ada produk yang tersedia (semua stok habis)."}
+                                    : "Belum ada produk."}
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 overflow-y-auto pr-2 custom-scrollbar">
@@ -714,6 +758,14 @@ export default function Create({
                                             : "Rp0"}
                                     </span>
                                 </div>
+
+                                <TitipKembalian
+                                    change={paidAmount >= totalAmount ? paidAmount - totalAmount : 0}
+                                    titip={titipKembalian}
+                                    setTitip={setTitipKembalian}
+                                    note={customerNote}
+                                    setNote={setCustomerNote}
+                                />
 
                                 {/* Submit Button */}
                                 <button
@@ -1089,6 +1141,14 @@ export default function Create({
                                             : "Rp0"}
                                     </span>
                                 </div>
+
+                                <TitipKembalian
+                                    change={paidAmount >= totalAmount ? paidAmount - totalAmount : 0}
+                                    titip={titipKembalian}
+                                    setTitip={setTitipKembalian}
+                                    note={customerNote}
+                                    setNote={setCustomerNote}
+                                />
 
                                 <button
                                     id="mobile-checkout-btn"

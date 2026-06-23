@@ -12,7 +12,7 @@ Cashier checkout flow with stock deduction, payment, and soft-void/audit support
 
 ## How it works
 1. Cashier picks products on `/cashier`, posts cart to `/checkout`.
-2. `TransactionService::checkout()` runs in a DB transaction: locks product rows, checks stock, computes total, generates `transaction_code`, inserts `Transaction` + `TransactionItem`s, decrements stock, writes a `Cashbook` income entry.
+2. `TransactionService::checkout()` runs in a DB transaction: locks product rows, checks stock, computes total, generates `transaction_code`, inserts `Transaction` + `TransactionItem`s, decrements stock, writes a `Cashbook` income entry. Optional `$changeDebt`/`$customerNote` records a "titip kembalian" → `ChangeDebt` + extra Cashbook debit (see `context/change-debt.md`).
 3. Void (`destroy`) is **soft**: sets `status = 'voided'`, soft-deletes items, writes a contra `Cashbook` entry — never hard-deletes financial history.
 4. Activity (checkout, void) recorded via `ActivityLog` for audit.
 
@@ -23,3 +23,5 @@ Cashier checkout flow with stock deduction, payment, and soft-void/audit support
 - `void()` restocks per product (`groupBy('product_id')` + single `increment`) and soft-deletes all items in one `whereIn(...)->update()` — avoid reverting to a per-item loop (N+1).
 - Void confirmation in `Transactions/Index.jsx` uses a custom `Modal` with a reason textarea (not `window.prompt`), with a per-row loading state (`voidingId`) disabling the button during `router.delete`.
 - `Transactions/Create.jsx` `ProductCard` shows `product.stock - cartQty` (remaining stock) so the displayed count reflects items already in cart, without re-fetching.
+- Out-of-stock products are NOT filtered out — `TransactionController::create` keeps them but sorts them to the bottom (`CASE WHEN stock > 0 THEN 0 ELSE 1`), so they're still searchable.
+- Force-add: when remaining stock ≤ 0, the `ProductCard` button switches to amber "Paksa Tambah". A SINGLE press (or scan/Enter) forces it — posts `products.force-increment` (bumps real stock +1) and adds to cart. No multi-click counter.

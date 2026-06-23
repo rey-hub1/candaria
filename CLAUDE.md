@@ -37,6 +37,9 @@ School canteen POS + consignment management system, expanding into an external-v
 - `context/marketplace-wallet.md` — vendor wallet/ledger + admin settlements (Phase 5 implementation)
 - `context/marketplace-extras.md` — order status history, slot quota, notifications, admin monitoring/reports (Phase 6 implementation)
 - `context/demo-data.md` — super-admin tool to reset/repopulate the DB at 3 volume levels (none/minimal/full)
+- `context/weekly-report.md` — manual weekly Excel export (KONSYIANSI + HARIAN), keyed off `transaction_date`
+- `context/change-debt.md` — hutang kembalian ke customer (titip kembalian saat checkout, pelunasan, masuk buku kas & laporan)
+- `context/purge-transactions.md` — tool super-admin hapus permanen transaksi lama (1w/1m/3m/6m/1y), keyed off `transaction_date`, item ikut (FK cascade), cashbook dibiarkan
 
 ## Conventions
 - Models needing audit trail use `use LogsActivity` (writes to `activity_logs`).

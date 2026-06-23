@@ -138,8 +138,9 @@
         <tr>
             <th class="c" style="width:3%;">No</th>
             <th style="width:11%;">Tgl & Waktu</th>
-            <th style="width:19%;">Siswa Penitip</th>
-            <th style="width:18%;">Nama Produk</th>
+            <th style="width:16%;">Siswa Penitip</th>
+            <th style="width:15%;">Nama Produk</th>
+            <th class="c" style="width:6%;">Stok Awal</th>
             <th class="c" style="width:6%;">Jml</th>
             <th class="r" style="width:10%;">Harga Siswa</th>
             <th class="r" style="width:11%;">Hasil Siswa</th>
@@ -151,7 +152,8 @@
         @forelse($items as $index => $item)
             <tr>
                 <td class="c mn">{{ $index + 1 }}</td>
-                <td class="mn" style="font-size:8px;">{{ $item->created_at->format('d/m/Y') }}<br><span style="color:#8fa3b1;">{{ $item->created_at->format('H:i') }}</span></td>
+                @php($txnDate = \Illuminate\Support\Carbon::parse($item->transaction->transaction_date ?? $item->created_at))
+                <td class="mn" style="font-size:8px;">{{ $txnDate->format('d/m/Y') }}<br><span style="color:#8fa3b1;">{{ $txnDate->format('H:i') }}</span></td>
                 <td>
                     {{ $item->product->seller->name ?? '-' }}
                     @if($item->product->seller->class ?? null)
@@ -159,6 +161,7 @@
                     @endif
                 </td>
                 <td style="font-weight:bold;">{{ $item->product->name }}</td>
+                <td class="c mn">{{ $item->stok_awal ?? '-' }} pcs</td>
                 <td class="c mn">{{ $item->quantity }} pcs</td>
                 <td class="r mn">Rp{{ number_format($item->cost_price, 0, ',', '.') }}</td>
                 <td class="r mn">Rp{{ number_format($item->profit_seller, 0, ',', '.') }}</td>
@@ -173,7 +176,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="9" class="c" style="color:#b0bec5; padding:20px; font-style:italic;">
+                <td colspan="10" class="c" style="color:#b0bec5; padding:20px; font-style:italic;">
                     Tidak ada data penjualan barang titipan pada rentang tanggal tersebut.
                 </td>
             </tr>
@@ -181,6 +184,7 @@
         @if(!$items->isEmpty())
             <tr class="total-row">
                 <td colspan="4" class="c">TOTAL KESELURUHAN</td>
+                <td class="c mn">&mdash;</td>
                 <td class="c mn">{{ $summary->total_qty }} pcs</td>
                 <td class="r mn">&mdash;</td>
                 <td class="r mn">Rp{{ number_format($summary->total_seller, 0, ',', '.') }}</td>

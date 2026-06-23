@@ -162,34 +162,34 @@ class DatabaseSeeder extends Seeder
 
         // 6. Consignments (mutasi titipan: penerimaan & retur barang)
         foreach ($siswaProductModels as $product) {
-            // Penerimaan awal (30 hari lalu)
+            // Penerimaan awal (90 hari lalu)
             Consignment::create([
                 'seller_id'  => $product->seller_id,
                 'product_id' => $product->id,
                 'type'       => 'in',
-                'quantity'   => rand(40, 60),
-                'date'       => Carbon::now()->subDays(30)->toDateString(),
+                'quantity'   => rand(100, 200),
+                'date'       => Carbon::now()->subDays(90)->toDateString(),
                 'notes'      => 'Penerimaan awal titipan',
             ]);
 
-            // Tambah stok (15 hari lalu)
+            // Tambah stok (45 hari lalu)
             Consignment::create([
                 'seller_id'  => $product->seller_id,
                 'product_id' => $product->id,
                 'type'       => 'in',
-                'quantity'   => rand(20, 40),
-                'date'       => Carbon::now()->subDays(15)->toDateString(),
+                'quantity'   => rand(50, 100),
+                'date'       => Carbon::now()->subDays(45)->toDateString(),
                 'notes'      => 'Penambahan stok periode 2',
             ]);
 
-            // Retur sebagian (7 hari lalu) — hanya beberapa produk
+            // Retur sebagian (15 hari lalu) — hanya beberapa produk
             if (rand(0, 1)) {
                 Consignment::create([
                     'seller_id'  => $product->seller_id,
                     'product_id' => $product->id,
                     'type'       => 'out',
-                    'quantity'   => rand(2, 8),
-                    'date'       => Carbon::now()->subDays(7)->toDateString(),
+                    'quantity'   => rand(5, 15),
+                    'date'       => Carbon::now()->subDays(15)->toDateString(),
                     'notes'      => 'Retur barang tidak terjual',
                 ]);
             }
@@ -197,17 +197,17 @@ class DatabaseSeeder extends Seeder
 
         // 7. Manual Cashbook entries (modal & pengeluaran operasional awal)
         $manualCashEntries = [
-            ['date' => Carbon::now()->subDays(30), 'description' => 'Modal awal kas kantin',           'type' => 'debit',  'amount' => 1000000],
-            ['date' => Carbon::now()->subDays(29), 'description' => 'Pembelian bahan makanan minggu 1', 'type' => 'credit', 'amount' => 250000],
-            ['date' => Carbon::now()->subDays(28), 'description' => 'Pembelian minuman & es batu',      'type' => 'credit', 'amount' => 150000],
-            ['date' => Carbon::now()->subDays(22), 'description' => 'Pembelian bahan makanan minggu 2', 'type' => 'credit', 'amount' => 230000],
-            ['date' => Carbon::now()->subDays(21), 'description' => 'Bayar gas LPG',                   'type' => 'credit', 'amount' => 30000],
-            ['date' => Carbon::now()->subDays(15), 'description' => 'Pembelian bahan makanan minggu 3', 'type' => 'credit', 'amount' => 270000],
-            ['date' => Carbon::now()->subDays(14), 'description' => 'Pembelian minyak goreng & bumbu',  'type' => 'credit', 'amount' => 85000],
-            ['date' => Carbon::now()->subDays(8),  'description' => 'Pembelian bahan makanan minggu 4', 'type' => 'credit', 'amount' => 200000],
-            ['date' => Carbon::now()->subDays(7),  'description' => 'Setoran kas ke rekening sekolah',  'type' => 'credit', 'amount' => 500000],
-            ['date' => Carbon::now()->subDays(3),  'description' => 'Pembelian peralatan makan (piring)', 'type' => 'credit', 'amount' => 120000],
-            ['date' => Carbon::now()->subDays(1),  'description' => 'Pembelian bahan makanan minggu ini', 'type' => 'credit', 'amount' => 210000],
+            ['date' => Carbon::now()->subDays(90), 'description' => 'Modal awal kas kantin',           'type' => 'debit',  'amount' => 5000000],
+            ['date' => Carbon::now()->subDays(89), 'description' => 'Pembelian bahan makanan minggu 1', 'type' => 'credit', 'amount' => 450000],
+            ['date' => Carbon::now()->subDays(88), 'description' => 'Pembelian minuman & es batu',      'type' => 'credit', 'amount' => 250000],
+            ['date' => Carbon::now()->subDays(60), 'description' => 'Pembelian bahan makanan bulan 2',  'type' => 'credit', 'amount' => 530000],
+            ['date' => Carbon::now()->subDays(55), 'description' => 'Bayar gas LPG',                   'type' => 'credit', 'amount' => 60000],
+            ['date' => Carbon::now()->subDays(30), 'description' => 'Pembelian bahan makanan bulan 3',  'type' => 'credit', 'amount' => 670000],
+            ['date' => Carbon::now()->subDays(28), 'description' => 'Pembelian minyak goreng & bumbu',  'type' => 'credit', 'amount' => 185000],
+            ['date' => Carbon::now()->subDays(15), 'description' => 'Pembelian bahan makanan minggu ini','type' => 'credit', 'amount' => 300000],
+            ['date' => Carbon::now()->subDays(7),  'description' => 'Setoran kas ke rekening sekolah',  'type' => 'credit', 'amount' => 1500000],
+            ['date' => Carbon::now()->subDays(3),  'description' => 'Pembelian peralatan makan',        'type' => 'credit', 'amount' => 220000],
+            ['date' => Carbon::now()->subDays(1),  'description' => 'Pembelian bahan makanan harian',   'type' => 'credit', 'amount' => 310000],
         ];
 
         foreach ($manualCashEntries as $entry) {
@@ -224,17 +224,17 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 8. Transactions (30 hari terakhir)
+        // 8. Transactions (90 hari terakhir)
         $users = User::all();
         $allProducts = Product::all();
         $globalTransactionIndex = 1;
         $createdTransactions = [];
 
-        for ($i = 30; $i >= 0; $i--) {
+        for ($i = 90; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i);
             $isWeekend = $date->isWeekend();
 
-            $numTransactions = $isWeekend ? rand(1, 3) : rand(6, 12);
+            $numTransactions = $isWeekend ? rand(10, 25) : rand(40, 80);
 
             for ($t = 0; $t < $numTransactions; $t++) {
                 $user = $users->random();

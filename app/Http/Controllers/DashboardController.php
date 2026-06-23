@@ -73,6 +73,18 @@ class DashboardController extends Controller
                 ->take(10)
                 ->get();
 
+            // Barang titipan terjual (qty) — minggu ini / bulan ini / total, keyed transaction_date
+            $soldSiswa = fn() => TransactionItem::whereHas('product', fn($q) => $q->where('type', 'siswa'));
+            $titipanSoldWeek = $soldSiswa()
+                ->whereHas('transaction', fn($q) => $q->whereBetween(DB::raw('DATE(transaction_date)'),
+                    [Carbon::now()->startOfWeek()->toDateString(), Carbon::now()->endOfWeek()->toDateString()]))
+                ->sum('quantity');
+            $titipanSoldMonth = $soldSiswa()
+                ->whereHas('transaction', fn($q) => $q->whereBetween(DB::raw('DATE(transaction_date)'),
+                    [Carbon::now()->startOfMonth()->toDateString(), Carbon::now()->endOfMonth()->toDateString()]))
+                ->sum('quantity');
+            $titipanSoldAll = $soldSiswa()->sum('quantity');
+
             return Inertia::render('Dashboard', [
                 'todaySalesCount' => $todaySalesCount,
                 'todaySalesTotal' => (float) $todaySalesTotal,
@@ -84,6 +96,9 @@ class DashboardController extends Controller
                 'thisMonthSales' => (float) $thisMonthSales,
                 'thisMonthProfit' => (float) $thisMonthProfit,
                 'lowStockProducts' => $lowStockProducts,
+                'titipanSoldWeek' => (int) $titipanSoldWeek,
+                'titipanSoldMonth' => (int) $titipanSoldMonth,
+                'titipanSoldAll' => (int) $titipanSoldAll,
             ]);
         }
 
