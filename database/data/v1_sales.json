@@ -1,0 +1,2599 @@
+[
+    {
+        "name": "Miseu",
+        "class": null,
+        "phone": "08882058726",
+        "products": [
+            {
+                "name": "seblak kecil",
+                "cat": "snack-jajanan",
+                "cost": 1500,
+                "sell": 2000,
+                "stock": [
+                    12,
+                    15,
+                    12
+                ],
+                "sold": [
+                    12,
+                    14,
+                    12
+                ]
+            },
+            {
+                "name": "Seblak besar",
+                "cat": "snack-jajanan",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    14,
+                    16,
+                    14
+                ],
+                "sold": [
+                    14,
+                    15,
+                    14
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Saira",
+        "class": null,
+        "phone": "087804123579",
+        "products": [
+            {
+                "name": "all Nasi",
+                "cat": "makanan-utama",
+                "cost": 9500,
+                "sell": 10000,
+                "stock": [
+                    17,
+                    18,
+                    14
+                ],
+                "sold": [
+                    13,
+                    15,
+                    14
+                ]
+            },
+            {
+                "name": "Mie jebew",
+                "cat": "makanan-utama",
+                "cost": 9500,
+                "sell": 10000,
+                "stock": [
+                    4,
+                    4,
+                    3
+                ],
+                "sold": [
+                    3,
+                    4,
+                    3
+                ]
+            },
+            {
+                "name": "Spagetti katsu",
+                "cat": "makanan-utama",
+                "cost": 9500,
+                "sell": 10000,
+                "stock": [
+                    3,
+                    3,
+                    3
+                ],
+                "sold": [
+                    3,
+                    3,
+                    3
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Bu Lucky",
+        "class": null,
+        "phone": "085280554485",
+        "products": [
+            {
+                "name": "Dimsum B",
+                "cat": "snack-jajanan",
+                "cost": 9500,
+                "sell": 10000,
+                "stock": [
+                    8,
+                    8,
+                    8
+                ],
+                "sold": [
+                    4,
+                    8,
+                    8
+                ]
+            },
+            {
+                "name": "Dimsum K",
+                "cat": "snack-jajanan",
+                "cost": 6500,
+                "sell": 7000,
+                "stock": [
+                    8,
+                    8,
+                    8
+                ],
+                "sold": [
+                    3,
+                    7,
+                    4
+                ]
+            },
+            {
+                "name": "Sosis",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    7,
+                    5,
+                    4
+                ],
+                "sold": [
+                    2,
+                    2,
+                    4
+                ]
+            },
+            {
+                "name": "mie jebew",
+                "cat": "makanan-utama",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    15,
+                    10,
+                    10
+                ],
+                "sold": [
+                    6,
+                    10,
+                    10
+                ]
+            },
+            {
+                "name": "Dimsum Lumer",
+                "cat": "snack-jajanan",
+                "cost": 6500,
+                "sell": 7000,
+                "stock": [
+                    15,
+                    12,
+                    12
+                ],
+                "sold": [
+                    11,
+                    12,
+                    12
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Bunda sudiar",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "bropang",
+                "cat": "roti-kue",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    10,
+                    10,
+                    10
+                ],
+                "sold": [
+                    7,
+                    10,
+                    3
+                ]
+            },
+            {
+                "name": "Bolu kukus",
+                "cat": "roti-kue",
+                "cost": 2000,
+                "sell": 2500,
+                "stock": [
+                    10,
+                    10,
+                    10
+                ],
+                "sold": [
+                    7,
+                    10,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Teh Nisa",
+        "class": null,
+        "phone": "0895405112204",
+        "products": [
+            {
+                "name": "Baso",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    8,
+                    8,
+                    6
+                ],
+                "sold": [
+                    3,
+                    5,
+                    4
+                ]
+            },
+            {
+                "name": "Baso krispy",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    8,
+                    8,
+                    8
+                ],
+                "sold": [
+                    8,
+                    8,
+                    8
+                ]
+            },
+            {
+                "name": "seblak kuah",
+                "cat": "snack-jajanan",
+                "cost": 5500,
+                "sell": 6000,
+                "stock": [
+                    7,
+                    7,
+                    8
+                ],
+                "sold": [
+                    3,
+                    7,
+                    7
+                ]
+            },
+            {
+                "name": "cilok",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    10,
+                    10,
+                    6
+                ],
+                "sold": [
+                    6,
+                    7,
+                    6
+                ]
+            },
+            {
+                "name": "Pentol",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    9,
+                    0,
+                    6
+                ],
+                "sold": [
+                    5,
+                    0,
+                    5
+                ]
+            },
+            {
+                "name": "pisang krispi",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    10,
+                    12,
+                    11
+                ],
+                "sold": [
+                    10,
+                    12,
+                    11
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Putri",
+        "class": "X MPLB 1",
+        "phone": null,
+        "products": [
+            {
+                "name": "soles mayo",
+                "cat": "minuman",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    11,
+                    0,
+                    13
+                ],
+                "sold": [
+                    6,
+                    0,
+                    13
+                ]
+            },
+            {
+                "name": "Pastel",
+                "cat": "snack-jajanan",
+                "cost": 2000,
+                "sell": 2500,
+                "stock": [
+                    15,
+                    17,
+                    16
+                ],
+                "sold": [
+                    12,
+                    15,
+                    16
+                ]
+            },
+            {
+                "name": "karoket",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    14,
+                    13,
+                    0
+                ],
+                "sold": [
+                    7,
+                    12,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Bu sarah",
+        "class": null,
+        "phone": "0882000814864",
+        "products": [
+            {
+                "name": "pangsit b",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    7,
+                    5,
+                    3
+                ],
+                "sold": [
+                    2,
+                    4,
+                    2
+                ]
+            },
+            {
+                "name": "Kebab",
+                "cat": "makanan-utama",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    8,
+                    8,
+                    6
+                ],
+                "sold": [
+                    7,
+                    6,
+                    4
+                ]
+            },
+            {
+                "name": "Bopang",
+                "cat": "roti-kue",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    10,
+                    10,
+                    15
+                ],
+                "sold": [
+                    8,
+                    10,
+                    15
+                ]
+            },
+            {
+                "name": "Tulang crispy",
+                "cat": "snack-jajanan",
+                "cost": 2500,
+                "sell": 3000,
+                "stock": [
+                    0,
+                    0,
+                    3
+                ],
+                "sold": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Aini",
+        "class": "X AKL 1",
+        "phone": null,
+        "products": [
+            {
+                "name": "Maroni rujak",
+                "cat": "snack-jajanan",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    1,
+                    1,
+                    1
+                ],
+                "sold": [
+                    1,
+                    1,
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "name": "bu santi",
+        "class": null,
+        "phone": "085282381413",
+        "products": [
+            {
+                "name": "puding",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    8,
+                    8,
+                    8
+                ],
+                "sold": [
+                    8,
+                    6,
+                    5
+                ]
+            }
+        ]
+    },
+    {
+        "name": "pa agus",
+        "class": null,
+        "phone": "087778766919",
+        "products": [
+            {
+                "name": "Onde",
+                "cat": "snack-jajanan",
+                "cost": 1500,
+                "sell": 2000,
+                "stock": [
+                    0,
+                    0,
+                    25
+                ],
+                "sold": [
+                    0,
+                    0,
+                    25
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Teh tasya",
+        "class": null,
+        "phone": "0881022060068",
+        "products": [
+            {
+                "name": "Lemper",
+                "cat": "snack-jajanan",
+                "cost": 2000,
+                "sell": 2500,
+                "stock": [
+                    18,
+                    18,
+                    15
+                ],
+                "sold": [
+                    18,
+                    18,
+                    15
+                ]
+            },
+            {
+                "name": "Pizza",
+                "cat": "makanan-utama",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    0,
+                    7,
+                    6
+                ],
+                "sold": [
+                    0,
+                    7,
+                    3
+                ]
+            },
+            {
+                "name": "Martabak",
+                "cat": "snack-jajanan",
+                "cost": 2000,
+                "sell": 2500,
+                "stock": [
+                    14,
+                    14,
+                    13
+                ],
+                "sold": [
+                    14,
+                    14,
+                    13
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Briliant",
+        "class": null,
+        "phone": "085793360014",
+        "products": [
+            {
+                "name": "Dimsum",
+                "cat": "snack-jajanan",
+                "cost": 9500,
+                "sell": 10000,
+                "stock": [
+                    10,
+                    8,
+                    0
+                ],
+                "sold": [
+                    7,
+                    7,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Denesfi",
+        "class": "AKL 2",
+        "phone": "085793358414",
+        "products": [
+            {
+                "name": "Batagor telor",
+                "cat": "snack-jajanan",
+                "cost": 5000,
+                "sell": 5500,
+                "stock": [
+                    6,
+                    8,
+                    5
+                ],
+                "sold": [
+                    3,
+                    8,
+                    3
+                ]
+            },
+            {
+                "name": "Baso",
+                "cat": "snack-jajanan",
+                "cost": 5000,
+                "sell": 5500,
+                "stock": [
+                    9,
+                    8,
+                    4
+                ],
+                "sold": [
+                    1,
+                    3,
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Ibu Fini",
+        "class": null,
+        "phone": "081281892992",
+        "products": [
+            {
+                "name": "Risol",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    15,
+                    11,
+                    0
+                ],
+                "sold": [
+                    14,
+                    10,
+                    0
+                ]
+            },
+            {
+                "name": "Dimsum goreng",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    12,
+                    13,
+                    0
+                ],
+                "sold": [
+                    9,
+                    12,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Bu lina",
+        "class": null,
+        "phone": "087839905485",
+        "products": [
+            {
+                "name": "boltan lumer isi 2",
+                "cat": "roti-kue",
+                "cost": 6000,
+                "sell": 6500,
+                "stock": [
+                    5,
+                    5,
+                    0
+                ],
+                "sold": [
+                    5,
+                    5,
+                    0
+                ]
+            },
+            {
+                "name": "donat toping isi 2",
+                "cat": "makanan-utama",
+                "cost": 6000,
+                "sell": 6500,
+                "stock": [
+                    5,
+                    5,
+                    0
+                ],
+                "sold": [
+                    2,
+                    2,
+                    0
+                ]
+            },
+            {
+                "name": "Bolu Pandan isi 2",
+                "cat": "roti-kue",
+                "cost": 6000,
+                "sell": 6500,
+                "stock": [
+                    5,
+                    10,
+                    0
+                ],
+                "sold": [
+                    4,
+                    2,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Erviita",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Nasi ayam serundeng",
+                "cat": "makanan-utama",
+                "cost": 9500,
+                "sell": 10000,
+                "stock": [
+                    2,
+                    2,
+                    0
+                ],
+                "sold": [
+                    0,
+                    1,
+                    0
+                ]
+            },
+            {
+                "name": "Cilok ayam suwir",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    5,
+                    4,
+                    0
+                ],
+                "sold": [
+                    4,
+                    4,
+                    0
+                ]
+            },
+            {
+                "name": "Gehu",
+                "cat": "snack-jajanan",
+                "cost": 2500,
+                "sell": 3000,
+                "stock": [
+                    20,
+                    20,
+                    0
+                ],
+                "sold": [
+                    20,
+                    20,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Raisya",
+        "class": "X TJKT 2",
+        "phone": null,
+        "products": [
+            {
+                "name": "Martabak besar",
+                "cat": "snack-jajanan",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    10,
+                    12,
+                    11
+                ],
+                "sold": [
+                    10,
+                    12,
+                    11
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Nurfitri",
+        "class": "0",
+        "phone": "087744490819",
+        "products": [
+            {
+                "name": "Kimbab",
+                "cat": "makanan-utama",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    10,
+                    10,
+                    10
+                ],
+                "sold": [
+                    7,
+                    9,
+                    10
+                ]
+            }
+        ]
+    },
+    {
+        "name": "bu neneng",
+        "class": null,
+        "phone": "087779693267",
+        "products": [
+            {
+                "name": "risol mayo",
+                "cat": "snack-jajanan",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    50,
+                    50,
+                    48
+                ],
+                "sold": [
+                    50,
+                    50,
+                    48
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Bu Nur",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Gorengan",
+                "cat": "snack-jajanan",
+                "cost": 800,
+                "sell": 1000,
+                "stock": [
+                    45,
+                    45,
+                    35
+                ],
+                "sold": [
+                    45,
+                    44,
+                    35
+                ]
+            },
+            {
+                "name": "pang pang",
+                "cat": "snack-jajanan",
+                "cost": 1500,
+                "sell": 2000,
+                "stock": [
+                    11,
+                    11,
+                    11
+                ],
+                "sold": [
+                    1,
+                    3,
+                    4
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Bu putri",
+        "class": null,
+        "phone": "081320761808",
+        "products": [
+            {
+                "name": "Cireng",
+                "cat": "snack-jajanan",
+                "cost": 1000,
+                "sell": 1500,
+                "stock": [
+                    0,
+                    40,
+                    0
+                ],
+                "sold": [
+                    0,
+                    40,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Sani",
+        "class": null,
+        "phone": "083824160027",
+        "products": [
+            {
+                "name": "Sushi",
+                "cat": "roti-kue",
+                "cost": 5500,
+                "sell": 6000,
+                "stock": [
+                    7,
+                    7,
+                    8
+                ],
+                "sold": [
+                    3,
+                    7,
+                    8
+                ]
+            },
+            {
+                "name": "dimsam isi 2",
+                "cat": "snack-jajanan",
+                "cost": 5500,
+                "sell": 6000,
+                "stock": [
+                    15,
+                    15,
+                    25
+                ],
+                "sold": [
+                    5,
+                    5,
+                    5
+                ]
+            },
+            {
+                "name": "dumsum mentai\/dimsam bolonais",
+                "cat": "snack-jajanan",
+                "cost": 8500,
+                "sell": 9000,
+                "stock": [
+                    2,
+                    2,
+                    0
+                ],
+                "sold": [
+                    1,
+                    2,
+                    0
+                ]
+            },
+            {
+                "name": "Kimbab",
+                "cat": "makanan-utama",
+                "cost": 6500,
+                "sell": 7000,
+                "stock": [
+                    5,
+                    5,
+                    5
+                ],
+                "sold": [
+                    1,
+                    4,
+                    4
+                ]
+            },
+            {
+                "name": "Tulang mercon",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    6,
+                    6,
+                    4
+                ],
+                "sold": [
+                    6,
+                    6,
+                    4
+                ]
+            },
+            {
+                "name": "kebab Jumbo",
+                "cat": "makanan-utama",
+                "cost": 5500,
+                "sell": 6000,
+                "stock": [
+                    6,
+                    6,
+                    2
+                ],
+                "sold": [
+                    4,
+                    5,
+                    2
+                ]
+            },
+            {
+                "name": "Nasi ayam suir",
+                "cat": "makanan-utama",
+                "cost": 6500,
+                "sell": 7000,
+                "stock": [
+                    7,
+                    7,
+                    7
+                ],
+                "sold": [
+                    7,
+                    7,
+                    4
+                ]
+            },
+            {
+                "name": "Nasi katsu",
+                "cat": "makanan-utama",
+                "cost": 7500,
+                "sell": 8000,
+                "stock": [
+                    5,
+                    5,
+                    4
+                ],
+                "sold": [
+                    5,
+                    4,
+                    4
+                ]
+            },
+            {
+                "name": "Dimsum",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    38,
+                    38,
+                    30
+                ],
+                "sold": [
+                    25,
+                    34,
+                    30
+                ]
+            },
+            {
+                "name": "Mie goreng jadul",
+                "cat": "makanan-utama",
+                "cost": 2500,
+                "sell": 3000,
+                "stock": [
+                    5,
+                    5,
+                    9
+                ],
+                "sold": [
+                    0,
+                    4,
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Kayla",
+        "class": null,
+        "phone": "0895618337575",
+        "products": [
+            {
+                "name": "Cirsi",
+                "cat": "snack-jajanan",
+                "cost": 2000,
+                "sell": 2500,
+                "stock": [
+                    36,
+                    28,
+                    0
+                ],
+                "sold": [
+                    14,
+                    19,
+                    0
+                ]
+            },
+            {
+                "name": "Cilok",
+                "cat": "snack-jajanan",
+                "cost": 2500,
+                "sell": 3000,
+                "stock": [
+                    15,
+                    10,
+                    0
+                ],
+                "sold": [
+                    1,
+                    10,
+                    0
+                ]
+            },
+            {
+                "name": "Gantungan",
+                "cat": "makanan-utama",
+                "cost": 6000,
+                "sell": 6500,
+                "stock": [
+                    12,
+                    12,
+                    12
+                ],
+                "sold": [
+                    8,
+                    8,
+                    8
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Dea",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "mkaroni kecil",
+                "cat": "snack-jajanan",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    41,
+                    40,
+                    29
+                ],
+                "sold": [
+                    1,
+                    11,
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "name": "bunda putri",
+        "class": null,
+        "phone": "081289709500",
+        "products": [
+            {
+                "name": "Mie pedas",
+                "cat": "makanan-utama",
+                "cost": 6500,
+                "sell": 7000,
+                "stock": [
+                    10,
+                    0,
+                    0
+                ],
+                "sold": [
+                    2,
+                    0,
+                    0
+                ]
+            },
+            {
+                "name": "dimsam goreng",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    10,
+                    10,
+                    0
+                ],
+                "sold": [
+                    10,
+                    10,
+                    0
+                ]
+            },
+            {
+                "name": "Buah potong",
+                "cat": "snack-jajanan",
+                "cost": 5500,
+                "sell": 6000,
+                "stock": [
+                    10,
+                    10,
+                    0
+                ],
+                "sold": [
+                    10,
+                    10,
+                    0
+                ]
+            },
+            {
+                "name": "Basreng",
+                "cat": "snack-jajanan",
+                "cost": 5500,
+                "sell": 6000,
+                "stock": [
+                    18,
+                    16,
+                    9
+                ],
+                "sold": [
+                    2,
+                    7,
+                    3
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Teh Nia",
+        "class": null,
+        "phone": "085524652916",
+        "products": [
+            {
+                "name": "Basreng",
+                "cat": "snack-jajanan",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    20,
+                    19,
+                    17
+                ],
+                "sold": [
+                    1,
+                    2,
+                    2
+                ]
+            },
+            {
+                "name": "Mie lidi",
+                "cat": "makanan-utama",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    11,
+                    10,
+                    10
+                ],
+                "sold": [
+                    1,
+                    0,
+                    0
+                ]
+            },
+            {
+                "name": "Kerupuk seblak mix",
+                "cat": "snack-jajanan",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    11,
+                    10,
+                    5
+                ],
+                "sold": [
+                    1,
+                    5,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Zahra",
+        "class": "XI AK 1",
+        "phone": "87832154251",
+        "products": [
+            {
+                "name": "Tote bag renda kancing",
+                "cat": "makanan-utama",
+                "cost": 19500,
+                "sell": 20000,
+                "stock": [
+                    1,
+                    0,
+                    0
+                ],
+                "sold": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Indi",
+        "class": "XI AK 1",
+        "phone": null,
+        "products": [
+            {
+                "name": "Tote bag jeans",
+                "cat": "makanan-utama",
+                "cost": 10000,
+                "sell": 10500,
+                "stock": [
+                    3,
+                    0,
+                    0
+                ],
+                "sold": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Sastri",
+        "class": "XI AK 2",
+        "phone": null,
+        "products": [
+            {
+                "name": "Tote bag bunga",
+                "cat": "makanan-utama",
+                "cost": 7500,
+                "sell": 8000,
+                "stock": [
+                    1,
+                    0,
+                    0
+                ],
+                "sold": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Nayla nur",
+        "class": "XI AK 1",
+        "phone": "85283737565",
+        "products": [
+            {
+                "name": "Tote bag karakter",
+                "cat": "makanan-utama",
+                "cost": 10500,
+                "sell": 11000,
+                "stock": [
+                    3,
+                    0,
+                    0
+                ],
+                "sold": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Diah",
+        "class": "XI AK 1",
+        "phone": "83196507607",
+        "products": [
+            {
+                "name": "Tote bag kucing pink",
+                "cat": "makanan-utama",
+                "cost": 14500,
+                "sell": 15000,
+                "stock": [
+                    2,
+                    0,
+                    0
+                ],
+                "sold": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Edwar",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Cimol Bojot",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    15,
+                    15,
+                    15
+                ],
+                "sold": [
+                    5,
+                    5,
+                    5
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Aldo",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Basreng",
+                "cat": "snack-jajanan",
+                "cost": 4000,
+                "sell": 5000,
+                "stock": [
+                    15,
+                    15,
+                    15
+                ],
+                "sold": [
+                    15,
+                    15,
+                    15
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Alifa",
+        "class": "ALUMNI",
+        "phone": null,
+        "products": [
+            {
+                "name": "Nasi burger",
+                "cat": "makanan-utama",
+                "cost": 5000,
+                "sell": 5500,
+                "stock": [
+                    11,
+                    11,
+                    11
+                ],
+                "sold": [
+                    3,
+                    3,
+                    3
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Prihartini",
+        "class": "XII MP 1",
+        "phone": null,
+        "products": [
+            {
+                "name": "Kripik singkong balado",
+                "cat": "snack-jajanan",
+                "cost": 2500,
+                "sell": 3000,
+                "stock": [
+                    5,
+                    5,
+                    5
+                ],
+                "sold": [
+                    5,
+                    5,
+                    5
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Opi",
+        "class": "XI BR 1",
+        "phone": null,
+        "products": [
+            {
+                "name": "Makka",
+                "cat": "snack-jajanan",
+                "cost": 2000,
+                "sell": 2500,
+                "stock": [
+                    5,
+                    5,
+                    5
+                ],
+                "sold": [
+                    5,
+                    5,
+                    5
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Niki",
+        "class": "XII BR 1",
+        "phone": null,
+        "products": [
+            {
+                "name": "Rumput laut",
+                "cat": "snack-jajanan",
+                "cost": 2500,
+                "sell": 3000,
+                "stock": [
+                    4,
+                    4,
+                    4
+                ],
+                "sold": [
+                    4,
+                    4,
+                    4
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Nabila",
+        "class": "X AKL 2",
+        "phone": null,
+        "products": [
+            {
+                "name": "Kripik singkong",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    2,
+                    2,
+                    2
+                ],
+                "sold": [
+                    2,
+                    2,
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Faliza",
+        "class": "XII BR 1",
+        "phone": null,
+        "products": [
+            {
+                "name": "Kue sus kering",
+                "cat": "roti-kue",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    6,
+                    6,
+                    6
+                ],
+                "sold": [
+                    5,
+                    5,
+                    5
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Marwat",
+        "class": "ALUMNI",
+        "phone": null,
+        "products": [
+            {
+                "name": "Basreng",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    12,
+                    12,
+                    12
+                ],
+                "sold": [
+                    12,
+                    12,
+                    12
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Olga",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Siomay kering",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    3,
+                    3,
+                    3
+                ],
+                "sold": [
+                    3,
+                    3,
+                    3
+                ]
+            },
+            {
+                "name": "Basreng",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    2,
+                    2,
+                    2
+                ],
+                "sold": [
+                    2,
+                    2,
+                    2
+                ]
+            },
+            {
+                "name": "Krpk seblak",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    4,
+                    4,
+                    4
+                ],
+                "sold": [
+                    4,
+                    4,
+                    4
+                ]
+            },
+            {
+                "name": "Cikur pedas",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    1,
+                    1,
+                    1
+                ],
+                "sold": [
+                    1,
+                    1,
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Bapak roti",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Sandwich",
+                "cat": "snack-jajanan",
+                "cost": 6000,
+                "sell": 6500,
+                "stock": [
+                    1,
+                    1,
+                    1
+                ],
+                "sold": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            {
+                "name": "Cc",
+                "cat": "snack-jajanan",
+                "cost": 4000,
+                "sell": 4500,
+                "stock": [
+                    1,
+                    1,
+                    1
+                ],
+                "sold": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            {
+                "name": "Cb",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    1,
+                    1,
+                    1
+                ],
+                "sold": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            {
+                "name": "Zuper Cream cklt",
+                "cat": "roti-kue",
+                "cost": 5000,
+                "sell": 5500,
+                "stock": [
+                    4,
+                    4,
+                    4
+                ],
+                "sold": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            {
+                "name": "Zuper Cream keju",
+                "cat": "roti-kue",
+                "cost": 5000,
+                "sell": 5500,
+                "stock": [
+                    2,
+                    2,
+                    2
+                ],
+                "sold": [
+                    2,
+                    2,
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Rani",
+        "class": "XI DPB 3",
+        "phone": null,
+        "products": [
+            {
+                "name": "Pudot",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    4,
+                    4,
+                    4
+                ],
+                "sold": [
+                    0,
+                    0,
+                    0
+                ]
+            },
+            {
+                "name": "Seblak campur",
+                "cat": "snack-jajanan",
+                "cost": 2500,
+                "sell": 3000,
+                "stock": [
+                    2,
+                    2,
+                    2
+                ],
+                "sold": [
+                    2,
+                    2,
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Salma",
+        "class": "XII rpl 2",
+        "phone": null,
+        "products": [
+            {
+                "name": "Es mambo",
+                "cat": "minuman",
+                "cost": 1500,
+                "sell": 2000,
+                "stock": [
+                    77,
+                    77,
+                    77
+                ],
+                "sold": [
+                    69,
+                    69,
+                    69
+                ]
+            },
+            {
+                "name": "Keripik kaca",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    1,
+                    1,
+                    1
+                ],
+                "sold": [
+                    1,
+                    1,
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Nazwa",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Popcorn",
+                "cat": "snack-jajanan",
+                "cost": 500,
+                "sell": 1000,
+                "stock": [
+                    25,
+                    25,
+                    25
+                ],
+                "sold": [
+                    20,
+                    20,
+                    20
+                ]
+            },
+            {
+                "name": "Pangsit",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    5,
+                    5,
+                    5
+                ],
+                "sold": [
+                    4,
+                    4,
+                    4
+                ]
+            },
+            {
+                "name": "Nyam nyam",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    8,
+                    8,
+                    8
+                ],
+                "sold": [
+                    8,
+                    8,
+                    8
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Gendis",
+        "class": "XI AK 1",
+        "phone": null,
+        "products": [
+            {
+                "name": "Sistiik",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    5,
+                    5,
+                    5
+                ],
+                "sold": [
+                    5,
+                    5,
+                    5
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Anida",
+        "class": "X BS 2",
+        "phone": null,
+        "products": [
+            {
+                "name": "Makaroni sosis",
+                "cat": "snack-jajanan",
+                "cost": 2500,
+                "sell": 3000,
+                "stock": [
+                    19,
+                    19,
+                    19
+                ],
+                "sold": [
+                    19,
+                    19,
+                    19
+                ]
+            },
+            {
+                "name": "Krpk ikan",
+                "cat": "snack-jajanan",
+                "cost": 2500,
+                "sell": 3000,
+                "stock": [
+                    7,
+                    7,
+                    7
+                ],
+                "sold": [
+                    7,
+                    7,
+                    7
+                ]
+            },
+            {
+                "name": "Beton Hitam",
+                "cat": "snack-jajanan",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    1,
+                    1,
+                    1
+                ],
+                "sold": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            {
+                "name": "Seblak pedas",
+                "cat": "snack-jajanan",
+                "cost": 3500,
+                "sell": 4000,
+                "stock": [
+                    5,
+                    5,
+                    5
+                ],
+                "sold": [
+                    1,
+                    1,
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Teh Adis",
+        "class": "XII TKJ 1",
+        "phone": null,
+        "products": [
+            {
+                "name": "Basreng",
+                "cat": "snack-jajanan",
+                "cost": 6000,
+                "sell": 6500,
+                "stock": [
+                    12,
+                    12,
+                    12
+                ],
+                "sold": [
+                    12,
+                    12,
+                    12
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Pak andi",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Seblak kering",
+                "cat": "snack-jajanan",
+                "cost": 1800,
+                "sell": 2000,
+                "stock": [
+                    30,
+                    30,
+                    30
+                ],
+                "sold": [
+                    30,
+                    30,
+                    30
+                ]
+            },
+            {
+                "name": "Snack  campur",
+                "cat": "snack-jajanan",
+                "cost": 1800,
+                "sell": 2000,
+                "stock": [
+                    50,
+                    50,
+                    50
+                ],
+                "sold": [
+                    48,
+                    48,
+                    48
+                ]
+            },
+            {
+                "name": "Keripik campur",
+                "cat": "snack-jajanan",
+                "cost": 2000,
+                "sell": 2500,
+                "stock": [
+                    90,
+                    100,
+                    0
+                ],
+                "sold": [
+                    87,
+                    97,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Azzahra",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Makban",
+                "cat": "snack-jajanan",
+                "cost": 2500,
+                "sell": 3000,
+                "stock": [
+                    30,
+                    30,
+                    30
+                ],
+                "sold": [
+                    30,
+                    30,
+                    30
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Jane  salsa",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Kerupuk pedas",
+                "cat": "snack-jajanan",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    14,
+                    14,
+                    14
+                ],
+                "sold": [
+                    14,
+                    14,
+                    14
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Muhara",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Keripik kaca",
+                "cat": "snack-jajanan",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    11,
+                    11,
+                    11
+                ],
+                "sold": [
+                    11,
+                    11,
+                    11
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Bu raisa",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Keripik kaca\/beton",
+                "cat": "snack-jajanan",
+                "cost": 1500,
+                "sell": 2000,
+                "stock": [
+                    70,
+                    70,
+                    70
+                ],
+                "sold": [
+                    70,
+                    70,
+                    70
+                ]
+            },
+            {
+                "name": "stick",
+                "cat": "snack-jajanan",
+                "cost": 1500,
+                "sell": 2000,
+                "stock": [
+                    40,
+                    40,
+                    40
+                ],
+                "sold": [
+                    40,
+                    40,
+                    40
+                ]
+            },
+            {
+                "name": "basreng",
+                "cat": "snack-jajanan",
+                "cost": 1500,
+                "sell": 2000,
+                "stock": [
+                    50,
+                    50,
+                    50
+                ],
+                "sold": [
+                    17,
+                    17,
+                    17
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Desi",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Pilus",
+                "cat": "snack-jajanan",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    20,
+                    20,
+                    20
+                ],
+                "sold": [
+                    7,
+                    7,
+                    7
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Pak ade",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "kripik singkong",
+                "cat": "snack-jajanan",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    7,
+                    7,
+                    7
+                ],
+                "sold": [
+                    7,
+                    7,
+                    7
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Dzikry",
+        "class": "XI BD2",
+        "phone": null,
+        "products": [
+            {
+                "name": "Basreng",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    20,
+                    20,
+                    20
+                ],
+                "sold": [
+                    4,
+                    4,
+                    4
+                ]
+            }
+        ]
+    },
+    {
+        "name": "The Ristia",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "pin",
+                "cat": "makanan-utama",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    12,
+                    12,
+                    12
+                ],
+                "sold": [
+                    4,
+                    4,
+                    4
+                ]
+            },
+            {
+                "name": "boneka",
+                "cat": "makanan-utama",
+                "cost": 5000,
+                "sell": 5500,
+                "stock": [
+                    1,
+                    1,
+                    1
+                ],
+                "sold": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Bu hani",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Pilus",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    1,
+                    1,
+                    1
+                ],
+                "sold": [
+                    1,
+                    1,
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Teh sofie",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Snack  campur",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    18,
+                    18,
+                    18
+                ],
+                "sold": [
+                    15,
+                    15,
+                    15
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Kel 4",
+        "class": "XI AK 1",
+        "phone": null,
+        "products": [
+            {
+                "name": "Tote bag",
+                "cat": "makanan-utama",
+                "cost": 15000,
+                "sell": 15500,
+                "stock": [
+                    1,
+                    1,
+                    1
+                ],
+                "sold": [
+                    1,
+                    1,
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Bu Desi",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Makaroni spiral",
+                "cat": "snack-jajanan",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    20,
+                    20,
+                    20
+                ],
+                "sold": [
+                    18,
+                    18,
+                    18
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Bu rika",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Makaroni dinda",
+                "cat": "snack-jajanan",
+                "cost": 2500,
+                "sell": 3000,
+                "stock": [
+                    28,
+                    28,
+                    0
+                ],
+                "sold": [
+                    16,
+                    24,
+                    0
+                ]
+            },
+            {
+                "name": "Beton",
+                "cat": "snack-jajanan",
+                "cost": 2500,
+                "sell": 3000,
+                "stock": [
+                    18,
+                    18,
+                    0
+                ],
+                "sold": [
+                    0,
+                    18,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Pak max",
+        "class": null,
+        "phone": null,
+        "products": [
+            {
+                "name": "Kopi max tea indocafe",
+                "cat": "minuman",
+                "cost": 4500,
+                "sell": 5000,
+                "stock": [
+                    10,
+                    10,
+                    10
+                ],
+                "sold": [
+                    4,
+                    4,
+                    4
+                ]
+            },
+            {
+                "name": "Max tea milk tea",
+                "cat": "minuman",
+                "cost": 6600,
+                "sell": 7500,
+                "stock": [
+                    5,
+                    5,
+                    10
+                ],
+                "sold": [
+                    0,
+                    0,
+                    4
+                ]
+            },
+            {
+                "name": "Max tea matcha",
+                "cat": "minuman",
+                "cost": 6600,
+                "sell": 7500,
+                "stock": [
+                    5,
+                    5,
+                    0
+                ],
+                "sold": [
+                    1,
+                    1,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Kel 2",
+        "class": "XI AK 1",
+        "phone": null,
+        "products": [
+            {
+                "name": "Tote bag",
+                "cat": "makanan-utama",
+                "cost": 18000,
+                "sell": 18500,
+                "stock": [
+                    2,
+                    0,
+                    0
+                ],
+                "sold": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Shiva",
+        "class": null,
+        "phone": "083136611087",
+        "products": [
+            {
+                "name": "Kerupuk Seblak Besar",
+                "cat": "snack-jajanan",
+                "cost": 5500,
+                "sell": 6000,
+                "stock": [
+                    2,
+                    2,
+                    2
+                ],
+                "sold": [
+                    2,
+                    2,
+                    2
+                ]
+            },
+            {
+                "name": "Basreng",
+                "cat": "snack-jajanan",
+                "cost": 6500,
+                "sell": 7000,
+                "stock": [
+                    5,
+                    5,
+                    5
+                ],
+                "sold": [
+                    3,
+                    3,
+                    5
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Araa",
+        "class": null,
+        "phone": "083138813954",
+        "products": [
+            {
+                "name": "Kripcaa",
+                "cat": "snack-jajanan",
+                "cost": 3000,
+                "sell": 3500,
+                "stock": [
+                    25,
+                    25,
+                    25
+                ],
+                "sold": [
+                    7,
+                    8,
+                    9
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Bu iyus",
+        "class": null,
+        "phone": "*087834751025",
+        "products": [
+            {
+                "name": "Bareng kemasan kertas",
+                "cat": "snack-jajanan",
+                "cost": 4000,
+                "sell": 4500,
+                "stock": [
+                    0,
+                    29,
+                    33
+                ],
+                "sold": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        ]
+    }
+]

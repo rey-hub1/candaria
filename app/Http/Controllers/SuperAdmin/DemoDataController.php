@@ -40,7 +40,7 @@ class DemoDataController extends Controller
 
         $service->apply($validated['level']);
 
-        $label = ['none' => 'kosong', 'minimal' => 'sedikit', 'full' => 'banyak'][$validated['level']];
+        $label = ['none' => 'kosong', 'minimal' => 'sedikit', 'full' => 'banyak', 'v1' => 'data asli v1'][$validated['level']];
 
         return redirect()->route('super-admin.demo-data.index')
             ->with('success', "Data demo berhasil diatur ke mode \"{$label}\".");

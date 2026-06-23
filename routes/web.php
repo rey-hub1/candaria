@@ -8,6 +8,9 @@ use App\Http\Controllers\SellerController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\SettlementController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\WeeklyReportController;
+use App\Http\Controllers\DailyUploadController;
+use App\Http\Controllers\ChangeDebtController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MarginRuleController;
 use App\Http\Controllers\CashbookController;
@@ -67,6 +70,10 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
 
         // Force increment stock route
         Route::post('/products/{product}/force-increment', [ProductController::class, 'forceIncrement'])->name('products.force-increment');
+
+        // Hutang kembalian ke customer
+        Route::get('/change-debts', [ChangeDebtController::class, 'index'])->name('change-debts.index');
+        Route::post('/change-debts/{changeDebt}/pay', [ChangeDebtController::class, 'pay'])->name('change-debts.pay');
     });
 
     // Admin-only routes
@@ -96,6 +103,12 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::get('/reports/titipan', [ReportController::class, 'titipan'])->name('reports.titipan');
         Route::get('/reports/products', [ReportController::class, 'products'])->name('reports.products');
         Route::get('/reports/stock', [ReportController::class, 'stock'])->name('reports.stock');
+        // Laporan Harian (download wrapper untuk minggu ini)
+        Route::get('/laporan-harian', [DailyUploadController::class, 'index'])->name('daily-upload.index');
+
+        Route::get('/reports/weekly', [WeeklyReportController::class, 'index'])->name('reports.weekly');
+        Route::get('/reports/weekly/consignment', [WeeklyReportController::class, 'consignment'])->name('reports.weekly.consignment');
+        Route::get('/reports/weekly/daily', [WeeklyReportController::class, 'daily'])->name('reports.weekly.daily');
 
         // Margin Rules
         Route::resource('margin-rules', MarginRuleController::class)->except(['show']);
@@ -184,6 +197,9 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         
         Route::get('/test-runner', [\App\Http\Controllers\SuperAdmin\TestRunnerController::class, 'index'])->name('test-runner.index');
         Route::post('/test-runner/run', [\App\Http\Controllers\SuperAdmin\TestRunnerController::class, 'run'])->name('test-runner.run');
+
+        Route::get('/purge-transactions', [\App\Http\Controllers\SuperAdmin\TransactionPurgeController::class, 'index'])->name('purge-transactions.index');
+        Route::delete('/purge-transactions', [\App\Http\Controllers\SuperAdmin\TransactionPurgeController::class, 'destroy'])->name('purge-transactions.destroy');
     });
 });
 

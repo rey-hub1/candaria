@@ -74,9 +74,17 @@ class ReportController extends Controller
         $sellerId = $request->input('seller_id');
         $sellers = \App\Models\Seller::where('is_active', true)->get(['id', 'name', 'class']);
 
+        $filters = [
+            'search'   => $request->input('search', ''),
+            'status'   => $request->input('status', ''),
+            'sort'     => $request->input('sort', 'date'),
+            'dir'      => $request->input('dir', 'desc'),
+            'per_page' => $request->input('per_page', 15),
+        ];
+
         $isPdf = $request->input('export') === 'pdf';
-        $items = $reportService->getTitipanItems($startDate, $endDate, $sellerId, $isPdf);
-        $summary = $reportService->getTitipanSummary($startDate, $endDate, $sellerId);
+        $items = $reportService->getTitipanItems($startDate, $endDate, $sellerId, $isPdf, $filters);
+        $summary = $reportService->getTitipanSummary($startDate, $endDate, $sellerId, $filters);
 
         if ($request->input('export') === 'pdf') {
             $pdf = Pdf::loadView('reports.titipan_pdf', compact(
@@ -101,7 +109,7 @@ class ReportController extends Controller
             ), 'laporan-titipan-siswa-' . $startDate . '-to-' . $endDate . '.xlsx');
         }
 
-        return Inertia::render('Reports/Titipan', compact('items', 'startDate', 'endDate', 'summary', 'sellerId', 'sellers'));
+        return Inertia::render('Reports/Titipan', compact('items', 'startDate', 'endDate', 'summary', 'sellerId', 'sellers', 'filters'));
     }
 
     // Laporan Penjualan untuk Siswa Penitip (read-only, scoped ke seller sendiri)
@@ -119,7 +127,7 @@ class ReportController extends Controller
 
         if (!$seller) {
             $items = TransactionItem::whereRaw('0 = 1')->paginate(15);
-            $summary = (object) ['total_qty' => 0, 'total_seller' => 0, 'total_kantin' => 0];
+            $summary = (object) ['total_qty' => 0, 'total_seller' => 0, 'total_kantin' => 0, 'qty_week' => 0, 'qty_month' => 0, 'qty_all' => 0, 'total_products' => 0];
         } else {
             $items = $reportService->getTitipanItems($startDate, $endDate, $seller->id);
             $summary = $reportService->getTitipanSummary($startDate, $endDate, $seller->id);
@@ -184,7 +192,9 @@ class ReportController extends Controller
     // Laporan Produk & Stok Harian
     public function stock(Request $request)
     {
-        $date = Carbon::now()->toDateString();
+        $date = $request->input('date')
+            ? Carbon::parse($request->input('date'))->toDateString()
+            : Carbon::now()->toDateString();
         $products = Product::with(['seller', 'category'])->get();
 
         // Bulk load qtySold for all products on this date

@@ -19,6 +19,8 @@ class CheckoutRequest extends FormRequest
             'items.*.id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
             'paid_amount' => 'required|numeric|min:0',
+            'change_debt' => 'nullable|numeric|min:0',
+            'customer_note' => 'nullable|string|max:100',
         ];
     }
 

@@ -15,6 +15,9 @@ export default function Dashboard({
     thisMonthSales = 0,
     thisMonthProfit = 0,
     lowStockProducts = [],
+    titipanSoldWeek = 0,
+    titipanSoldMonth = 0,
+    titipanSoldAll = 0,
     isPenitip = false,
     myProducts = [],
     myEarningsToday = 0,
@@ -166,6 +169,28 @@ export default function Dashboard({
             </div>
 
             {auth.user.role === 'admin' && (
+                <div className="mb-6">
+                    <Link
+                        href={route('daily-upload.index')}
+                        className="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-primary-300 transition group"
+                    >
+                        <div className="p-3 bg-primary-50 rounded-lg text-primary-600 group-hover:bg-primary-100 transition shrink-0">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold text-slate-900 group-hover:text-primary-700 transition">Laporan Harian</p>
+                            <p className="text-xs text-slate-500 mt-0.5">Download laporan harian & konsyiansi minggu ini</p>
+                        </div>
+                        <svg className="w-4 h-4 text-slate-400 ml-auto group-hover:text-primary-500 transition" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
+                    </Link>
+                </div>
+            )}
+
+            {auth.user.role === 'admin' && (
                 <>
                     {/* Admin Stats Detail Row */}
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-8">
@@ -194,6 +219,28 @@ export default function Dashboard({
                             </Link>
                         </div>
                     </div>
+
+                    {/* Barang Titipan Terjual */}
+                    <Link href={route('reports.titipan')} className="block bg-white rounded-xl border border-slate-200 p-6 mb-8 hover:border-primary-300 transition group">
+                        <div className="flex items-center justify-between mb-4">
+                            <h4 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Barang Titipan Terjual</h4>
+                            <span className="text-xs font-semibold text-slate-400 group-hover:text-primary-600 transition">Laporan Titipan &rarr;</span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-4">
+                            <div>
+                                <p className="text-xs text-slate-400">Minggu Ini</p>
+                                <p className="text-2xl font-extrabold text-slate-800">{titipanSoldWeek}<span className="text-sm font-semibold text-slate-400"> pcs</span></p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-slate-400">Bulan Ini</p>
+                                <p className="text-2xl font-extrabold text-slate-800">{titipanSoldMonth}<span className="text-sm font-semibold text-slate-400"> pcs</span></p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-slate-400">Total</p>
+                                <p className="text-2xl font-extrabold text-primary-600">{titipanSoldAll}<span className="text-sm font-semibold text-slate-400"> pcs</span></p>
+                            </div>
+                        </div>
+                    </Link>
 
                     {/* Low Stock Alerts */}
                     {lowStockProducts.length > 0 && (

@@ -25,20 +25,19 @@ export default function Products({
 }) {
     const [search, setSearch] = useState('');
     const [filterType, setFilterType] = useState('all');
+    const [showAllLow, setShowAllLow] = useState(false);
 
     const handleExportExcel = () => { window.location.href = route('reports.products', { export: 'xlsx' }); };
     const handleExportPdf = () => { window.open(route('reports.products', { export: 'pdf' }), '_blank'); };
 
-    const lowStockAll = [...lowStockProductsKantin, ...lowStockProductsSiswa];
-
-    const stats = useMemo(() => {
-        const kantin = allProducts.filter(p => p.type === 'kantin').length;
-        const titipan = allProducts.filter(p => p.type === 'siswa').length;
-        const stockUnits = allProducts.reduce((s, p) => s + (p.stock || 0), 0);
-        const stockValue = allProducts.reduce((s, p) => s + (p.stock || 0) * (p.selling_price || 0), 0);
-        const totalSold = allProducts.reduce((s, p) => s + (p.sold_count || 0), 0);
-        return { kantin, titipan, stockUnits, stockValue, totalSold };
-    }, [allProducts]);
+    // Pisah "habis" (0) vs "menipis" (1–5); urutkan menipis dulu biar yang masih bisa di-restock paling depan
+    const lowStockAll = useMemo(() => {
+        const all = [...lowStockProductsKantin, ...lowStockProductsSiswa];
+        const habis = all.filter(p => (p.stock || 0) <= 0);
+        const menipis = all.filter(p => (p.stock || 0) > 0);
+        return { all, habis, menipis, sorted: [...menipis, ...habis] };
+    }, [lowStockProductsKantin, lowStockProductsSiswa]);
+    const LOW_PREVIEW = 8;
 
     const filteredProducts = useMemo(() => allProducts.filter(p => {
         const q = search.toLowerCase();
@@ -49,9 +48,21 @@ export default function Products({
         return matchSearch && matchType;
     }), [allProducts, search, filterType]);
 
+    // KPI mirror the rows currently shown so the totals always match the table
+    const isFiltered = filterType !== 'all' || search.trim() !== '';
+    const stats = useMemo(() => {
+        const kantin = filteredProducts.filter(p => p.type === 'kantin').length;
+        const titipan = filteredProducts.filter(p => p.type === 'siswa').length;
+        const stockUnits = filteredProducts.reduce((s, p) => s + (p.stock || 0), 0);
+        const stockValue = filteredProducts.reduce((s, p) => s + (p.stock || 0) * (p.selling_price || 0), 0);
+        const totalSold = filteredProducts.reduce((s, p) => s + (p.sold_count || 0), 0);
+        const lowStock = filteredProducts.filter(p => (p.stock || 0) <= 5).length;
+        return { kantin, titipan, stockUnits, stockValue, totalSold, lowStock };
+    }, [filteredProducts]);
+
     const kpis = [
         {
-            label: 'Total Produk', value: allProducts.length, unit: '',
+            label: 'Total Produk', value: filteredProducts.length, unit: '',
             sub: `${stats.kantin} Kantin · ${stats.titipan} Titipan`,
         },
         {
@@ -59,12 +70,12 @@ export default function Products({
             sub: `Nilai ${formatRupiah(stats.stockValue)}`,
         },
         {
-            label: 'Stok Kritis', value: lowStockAll.length, unit: 'item',
-            sub: lowStockAll.length > 0 ? 'Perlu restock segera' : 'Semua aman',
+            label: 'Stok Kritis', value: stats.lowStock, unit: 'item',
+            sub: stats.lowStock > 0 ? 'Perlu restock segera' : 'Semua aman',
         },
         {
             label: 'Total Terjual', value: stats.totalSold, unit: 'pcs',
-            sub: 'Akumulasi semua waktu',
+            sub: isFiltered ? 'Sesuai filter aktif' : 'Akumulasi semua waktu',
         },
     ];
 
@@ -82,7 +93,7 @@ export default function Products({
                 {/* === KPI STATS === */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
                     {kpis.map((k, i) => {
-                        const critical = k.label === 'Stok Kritis' && lowStockAll.length > 0;
+                        const critical = k.label === 'Stok Kritis' && stats.lowStock > 0;
                         return (
                             <div key={k.label} style={{ animationDelay: `${i * 70}ms` }}
                                 className={`rep-up p-4 sm:p-6 rounded-xl border shadow-sm ${critical ? 'bg-secondary-50 border-secondary-200' : 'bg-white border-slate-200'}`}>
@@ -116,21 +127,41 @@ export default function Products({
                         </div>
                     </div>
 
-                    {/* Stok Kritis Banner */}
-                    {lowStockAll.length > 0 && (
-                        <div className="px-5 md:px-6 py-3 bg-secondary-50 border-t border-secondary-200 flex flex-wrap gap-2 items-center">
-                            <span className="text-xs font-bold text-secondary-800 inline-flex items-center gap-1">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                                </svg>
-                                Stok Kritis (≤5 pcs):
-                            </span>
-                            {lowStockAll.map(p => (
-                                <span key={p.id} className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-white border border-secondary-300 text-secondary-800 rounded-full font-semibold">
-                                    {p.name}
-                                    <span className="text-secondary-600 font-bold">{p.stock}</span>
+                    {/* Stok Kritis Banner — ringkas + bisa dibuka penuh */}
+                    {lowStockAll.all.length > 0 && (
+                        <div className="px-5 md:px-6 py-3 bg-secondary-50 border-t border-secondary-200">
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                <span className="text-xs font-bold text-secondary-800 inline-flex items-center gap-1">
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                    </svg>
+                                    Stok Kritis (≤5 pcs):
                                 </span>
-                            ))}
+                                {lowStockAll.menipis.length > 0 && (
+                                    <span className="text-xs font-semibold text-amber-700">{lowStockAll.menipis.length} menipis</span>
+                                )}
+                                {lowStockAll.habis.length > 0 && (
+                                    <span className="text-xs font-semibold text-rose-700">{lowStockAll.habis.length} habis</span>
+                                )}
+                            </div>
+                            <div className="flex flex-wrap gap-2 items-center mt-2">
+                                {(showAllLow ? lowStockAll.sorted : lowStockAll.sorted.slice(0, LOW_PREVIEW)).map(p => (
+                                    <span key={p.id} className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full font-semibold border ${
+                                        (p.stock || 0) <= 0 ? 'bg-rose-50 border-rose-300 text-rose-700' : 'bg-white border-secondary-300 text-secondary-800'
+                                    }`}>
+                                        {p.name}
+                                        <span className="font-bold">{p.stock}</span>
+                                    </span>
+                                ))}
+                                {lowStockAll.sorted.length > LOW_PREVIEW && (
+                                    <button
+                                        onClick={() => setShowAllLow(v => !v)}
+                                        className="text-xs font-bold text-secondary-700 underline underline-offset-2 hover:text-secondary-900"
+                                    >
+                                        {showAllLow ? 'Tutup' : `Lihat semua (${lowStockAll.sorted.length})`}
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
