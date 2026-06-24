@@ -11,6 +11,9 @@ export default function Sales({
     grandTotalSales = 0,
     grandTotalProfitKantin = 0,
     grandTotalProfitSeller = 0,
+    changeDebts = [],
+    changeDebtTotal = 0,
+    changeDebtUnpaid = 0,
 }) {
     const filter = useDateFilter({
         initialStart: startDate,
@@ -31,8 +34,8 @@ export default function Sales({
     };
 
     return (
-        <AuthenticatedLayout title="Laporan Penjualan Harian">
-            <Head title="Laporan Penjualan Harian" />
+        <AuthenticatedLayout title="Laporan Penjualan">
+            <Head title="Laporan Penjualande" />
 
 
 
@@ -100,6 +103,52 @@ export default function Sales({
                                             </td>
                                             <td className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-right text-blue-600">
                                                 {formatRupiah(data.profit_seller)}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+
+                {/* Hutang Kembalian ke Customer */}
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div className="px-4 sm:px-6 py-4 border-b border-slate-100 bg-amber-50 flex items-center justify-between">
+                        <h3 className="text-base font-bold text-amber-900">Hutang Kembalian ke Customer</h3>
+                        <div className="text-right">
+                            <span className="text-xs text-amber-700">Total {formatRupiah(changeDebtTotal)}</span>
+                            <span className="ml-2 text-xs font-bold text-amber-800">Belum lunas: {formatRupiah(changeDebtUnpaid)}</span>
+                        </div>
+                    </div>
+
+                    {changeDebts.length === 0 ? (
+                        <div className="text-center py-10 text-slate-400 text-sm">
+                            Tidak ada hutang kembalian pada rentang tanggal tersebut.
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-slate-100">
+                                <thead>
+                                    <tr className="bg-slate-50">
+                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Tanggal</th>
+                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Nama</th>
+                                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Kelas</th>
+                                        <th className="px-4 sm:px-6 py-3 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Nominal</th>
+                                        <th className="px-4 sm:px-6 py-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 bg-white">
+                                    {changeDebts.map((d) => (
+                                        <tr key={d.id} className="hover:bg-slate-50 transition">
+                                            <td className="px-4 sm:px-6 py-3 whitespace-nowrap text-sm font-mono text-slate-700">{formatDateIndonesian(d.date)}</td>
+                                            <td className="px-4 sm:px-6 py-3 text-sm font-semibold text-slate-800">{d.customer_name || d.customer_note || '—'}</td>
+                                            <td className="px-4 sm:px-6 py-3 text-sm text-slate-600">{d.customer_class || '—'}</td>
+                                            <td className="px-4 sm:px-6 py-3 whitespace-nowrap text-sm text-right font-bold text-slate-900">{formatRupiah(d.amount)}</td>
+                                            <td className="px-4 sm:px-6 py-3 text-center">
+                                                <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${d.status === 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                                                    {d.status === 'paid' ? 'Lunas' : 'Belum'}
+                                                </span>
                                             </td>
                                         </tr>
                                     ))}

@@ -67,5 +67,38 @@
         @endif
     </tbody>
 </table>
+
+@if($changeDebts->isNotEmpty())
+<table>
+    <thead>
+        <tr><th colspan="5"></th></tr>
+        <tr>
+            <th colspan="5" style="font-weight: bold; font-size: 12px; text-align: left;">Hutang Kembalian ke Customer</th>
+        </tr>
+        <tr>
+            <th colspan="3" style="font-size: 10px; color:#555; text-align:left;">Total: Rp{{ number_format($changeDebtTotal, 0, ',', '.') }}</th>
+            <th colspan="2" style="font-size: 10px; color:#555; text-align:left;">Belum lunas: Rp{{ number_format($changeDebtUnpaid, 0, ',', '.') }}</th>
+        </tr>
+        <tr>
+            <th style="font-weight: bold; background-color: #e2e8f0; border: 1px solid #cbd5e1; text-align:left;">Tanggal</th>
+            <th style="font-weight: bold; background-color: #e2e8f0; border: 1px solid #cbd5e1; text-align:left;">Nama</th>
+            <th style="font-weight: bold; background-color: #e2e8f0; border: 1px solid #cbd5e1; text-align:left;">Kelas</th>
+            <th style="font-weight: bold; background-color: #e2e8f0; border: 1px solid #cbd5e1; text-align:right;">Nominal</th>
+            <th style="font-weight: bold; background-color: #e2e8f0; border: 1px solid #cbd5e1; text-align:left;">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($changeDebts as $cd)
+            <tr>
+                <td style="border: 1px solid #cbd5e1;">{{ \Carbon\Carbon::parse($cd->date)->format('d M Y') }}</td>
+                <td style="border: 1px solid #cbd5e1;">{{ $cd->customer_name ?: ($cd->customer_note ?: '-') }}</td>
+                <td style="border: 1px solid #cbd5e1;">{{ $cd->customer_class ?: '-' }}</td>
+                <td style="border: 1px solid #cbd5e1; text-align:right;">Rp{{ number_format($cd->amount, 0, ',', '.') }}</td>
+                <td style="border: 1px solid #cbd5e1;">{{ $cd->status === 'paid' ? 'Lunas' : 'Belum' }}</td>
+            </tr>
+        @endforeach
+    </tbody>
+</table>
+@endif
 </body>
 </html>

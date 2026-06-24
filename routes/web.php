@@ -10,6 +10,7 @@ use App\Http\Controllers\SettlementController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WeeklyReportController;
 use App\Http\Controllers\DailyUploadController;
+use App\Http\Controllers\ConsignmentController;
 use App\Http\Controllers\ChangeDebtController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MarginRuleController;
@@ -87,6 +88,11 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         // Products
         Route::resource('products', ProductController::class)->only(['index', 'store', 'update', 'destroy']);
         
+        // Stok Titipan Harian (penerimaan + ambil sisa)
+        Route::get('/stok-titipan', [ConsignmentController::class, 'index'])->name('consignments.index');
+        Route::post('/stok-titipan/terima', [ConsignmentController::class, 'intake'])->name('consignments.intake');
+        Route::post('/stok-titipan/ambil-sisa', [ConsignmentController::class, 'takeBack'])->name('consignments.takeback');
+
         // Settlements / Pembayaran Penitip
         Route::get('/settlements', [SettlementController::class, 'index'])->name('settlements.index');
         Route::post('/settlements', [SettlementController::class, 'store'])->name('settlements.store');

@@ -9,6 +9,7 @@ const ADMIN_MENU = [
     { label: 'Kategori', name: 'categories.index' },
     { label: 'Produk', name: 'products.index' },
     { label: 'Siswa Penitip', name: 'sellers.index' },
+    { label: 'Stok Titipan Harian', name: 'consignments.index' },
     { label: 'Kasir', name: 'transactions.create' },
     { label: 'Riwayat Transaksi', name: 'transactions.index' },
     { label: 'Pembayaran Penitip', name: 'settlements.index' },
@@ -201,6 +202,14 @@ export default function AuthenticatedLayout({ children, title }) {
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.386 11.386 0 0 1 8.625 21c-2.38 0-4.577-.732-6.375-1.96v-.109A4.125 4.125 0 0 1 9.75 16.5c1.802 0 3.327.962 4.121 2.393M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6.5 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"></path>
                         </svg>
                         Siswa Penitip
+                    </Link>
+
+                    {/* Stok Titipan Harian */}
+                    <Link href={route('consignments.index')} className={linkClass(isRouteActive('consignments.index'))}>
+                        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"></path>
+                        </svg>
+                        Stok Titipan Harian
                     </Link>
 
 

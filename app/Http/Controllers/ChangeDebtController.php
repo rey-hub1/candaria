@@ -18,12 +18,35 @@ class ChangeDebtController extends Controller
         $status = $request->input('status', 'unpaid');
         $search = $request->input('search');
 
-        $debts = ChangeDebt::with(['transaction:id,transaction_code', 'creator:id,name', 'payer:id,name'])
+        $base = ChangeDebt::with(['transaction:id,transaction_code', 'creator:id,name', 'payer:id,name'])
             ->when(in_array($status, ['unpaid', 'paid']), fn ($q) => $q->where('status', $status))
-            ->when($search, fn ($q) => $q->where('customer_note', 'like', "%{$search}%"))
-            ->latest()
-            ->paginate(20)
-            ->withQueryString();
+            ->when($search, fn ($q) => $q->where(function ($sub) use ($search) {
+                $sub->where('customer_name', 'like', "%{$search}%")
+                    ->orWhere('customer_class', 'like', "%{$search}%")
+                    ->orWhere('customer_note', 'like', "%{$search}%");
+            }))
+            ->latest();
+
+        // Export (filtered set, unpaginated) — konsisten dgn laporan lain.
+        $export = $request->input('export');
+        if (in_array($export, ['xlsx', 'pdf'], true)) {
+            $rows = $base->get();
+            $total = (int) $rows->sum('amount');
+            $unpaid = (int) $rows->where('status', 'unpaid')->sum('amount');
+            $fname = 'laporan-hutang-kembalian-'.now()->format('Ymd');
+
+            if ($export === 'pdf') {
+                return \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.change_debts_pdf', [
+                    'debts' => $rows, 'total' => $total, 'unpaid' => $unpaid,
+                ])->setPaper('a4', 'portrait')->stream($fname.'.pdf');
+            }
+
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new \App\Exports\ChangeDebtsExport($rows, $total, $unpaid), $fname.'.xlsx'
+            );
+        }
+
+        $debts = $base->paginate(20)->withQueryString();
 
         $totals = [
             'unpaid_count' => ChangeDebt::unpaid()->count(),

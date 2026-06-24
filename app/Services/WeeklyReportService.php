@@ -215,4 +215,12 @@ class WeeklyReportService
             'pembayaran_utang' => $pembayaranUtang,
         ];
     }
+
+    /** Rincian hutang kembalian ke customer yang dibuat pada satu tanggal. */
+    public function changeDebtsForDay(Carbon $date): \Illuminate\Support\Collection
+    {
+        return \App\Models\ChangeDebt::whereDate('date', $date->toDateString())
+            ->orderBy('id')
+            ->get(['customer_name', 'customer_class', 'customer_note', 'amount', 'status']);
+    }
 }

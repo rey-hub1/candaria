@@ -32,36 +32,53 @@ class ReportController extends Controller
         $grandTotalProfitKantin = $salesData->sum('profit_kantin');
         $grandTotalProfitSeller = $salesData->sum('profit_seller');
 
+        // Hutang kembalian ke customer (dalam rentang tanggal, by tanggal bisnis)
+        $changeDebts = \App\Models\ChangeDebt::query()
+            ->when($startDate && $endDate, fn ($q) => $q->whereBetween('date', [$startDate, $endDate]))
+            ->orderBy('date', 'desc')->latest('id')
+            ->get(['id', 'customer_name', 'customer_class', 'customer_note', 'amount', 'status', 'date']);
+        $changeDebtTotal = (int) $changeDebts->sum('amount');
+        $changeDebtUnpaid = (int) $changeDebts->where('status', 'unpaid')->sum('amount');
+
         if ($request->input('export') === 'pdf') {
             $pdf = Pdf::loadView('reports.sales_pdf', compact(
-                'salesData', 
-                'startDate', 
+                'salesData',
+                'startDate',
                 'endDate',
                 'grandTotalSales',
                 'grandTotalProfitKantin',
-                'grandTotalProfitSeller'
+                'grandTotalProfitSeller',
+                'changeDebts',
+                'changeDebtTotal',
+                'changeDebtUnpaid'
             ))->setPaper('a4', 'portrait');
             return $pdf->stream('laporan-penjualan-' . $startDate . '-to-' . $endDate . '.pdf');
         }
 
         if ($request->input('export') === 'xlsx') {
             return Excel::download(new SalesReportExport(
-                $salesData, 
-                $startDate, 
+                $salesData,
+                $startDate,
                 $endDate,
                 $grandTotalSales,
                 $grandTotalProfitKantin,
-                $grandTotalProfitSeller
+                $grandTotalProfitSeller,
+                $changeDebts,
+                $changeDebtTotal,
+                $changeDebtUnpaid
             ), 'laporan-penjualan-' . $startDate . '-to-' . $endDate . '.xlsx');
         }
 
         return Inertia::render('Reports/Sales', compact(
-            'salesData', 
-            'startDate', 
+            'salesData',
+            'startDate',
             'endDate',
             'grandTotalSales',
             'grandTotalProfitKantin',
-            'grandTotalProfitSeller'
+            'grandTotalProfitSeller',
+            'changeDebts',
+            'changeDebtTotal',
+            'changeDebtUnpaid'
         ));
     }
 

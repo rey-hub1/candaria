@@ -44,7 +44,8 @@
       "Bash(gh pr create --base main --head feat/void-audit-hardening --title 'feat: soft void, audit log, race-safe codes & service layer' --body ' *)",
       "Read(//Users/reynonawfal/.claude/skills/lean-coding/assets/**)",
       "Bash(npx eslint *)",
-      "Bash(grep -n \"ToastContainer\\\\|</div>\\\\s*$\\\\|^    \\);\" resources/js/Layouts/AuthenticatedLayout.jsx)"
+      "Bash(grep -n \"ToastContainer\\\\|</div>\\\\s*$\\\\|^    \\);\" resources/js/Layouts/AuthenticatedLayout.jsx)",
+      "Bash(git check-ignore *)"
     ]
   }
 }

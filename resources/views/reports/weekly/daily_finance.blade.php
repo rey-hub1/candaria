@@ -50,6 +50,24 @@
             <td style="{{ $hd }}"></td>
             <td style="{{ $hd }} text-align:right;">{{ $rp($saldo) }}</td>
         </tr>
+        @php $debts = $service->changeDebtsForDay($date); @endphp
+        @if($debts->count())
+            <tr><th colspan="5"></th></tr>
+            <tr>
+                <th colspan="2" style="{{ $hd }} text-align:left;">RINCIAN HUTANG KEMBALIAN</th>
+                <th style="{{ $hd }} text-align:left;">KELAS</th>
+                <th style="{{ $hd }} text-align:right;">NOMINAL</th>
+                <th style="{{ $hd }} text-align:left;">STATUS</th>
+            </tr>
+            @foreach($debts as $cd)
+                <tr>
+                    <td colspan="2" style="{{ $bd }}">{{ $cd->customer_name ?: ($cd->customer_note ?: '-') }}</td>
+                    <td style="{{ $bd }}">{{ $cd->customer_class ?: '-' }}</td>
+                    <td style="{{ $bd }} text-align:right;">{{ $rp($cd->amount) }}</td>
+                    <td style="{{ $bd }}">{{ $cd->status === 'paid' ? 'Lunas' : 'Belum' }}</td>
+                </tr>
+            @endforeach
+        @endif
         <tr><th colspan="5"></th></tr>
     @endforeach
 </table>

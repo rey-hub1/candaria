@@ -201,6 +201,37 @@
     </tbody>
 </table>
 
+@if($changeDebts->isNotEmpty())
+<div style="font-size:11px; font-weight:bold; color:#1b3a6b; text-transform:uppercase; margin: 6px 0;">
+    Hutang Kembalian ke Customer
+    <span style="font-weight:normal; font-size:8px; color:#8fa3b1;">
+        — Total Rp{{ number_format($changeDebtTotal, 0, ',', '.') }}, Belum lunas Rp{{ number_format($changeDebtUnpaid, 0, ',', '.') }}
+    </span>
+</div>
+<table class="data-table" style="margin-bottom:20px;">
+    <thead>
+        <tr>
+            <th style="text-align:left;">Tanggal</th>
+            <th style="text-align:left;">Nama</th>
+            <th style="text-align:left;">Kelas</th>
+            <th style="text-align:right;">Nominal</th>
+            <th style="text-align:left;">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($changeDebts as $cd)
+            <tr>
+                <td>{{ \Carbon\Carbon::parse($cd->date)->format('d M Y') }}</td>
+                <td>{{ $cd->customer_name ?: ($cd->customer_note ?: '-') }}</td>
+                <td>{{ $cd->customer_class ?: '-' }}</td>
+                <td class="r mn">Rp{{ number_format($cd->amount, 0, ',', '.') }}</td>
+                <td>{{ $cd->status === 'paid' ? 'Lunas' : 'Belum' }}</td>
+            </tr>
+        @endforeach
+    </tbody>
+</table>
+@endif
+
 <div class="footer-wrap">
     <table class="footer-table">
         <tr>

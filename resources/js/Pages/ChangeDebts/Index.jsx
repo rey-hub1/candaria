@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Pagination from '@/Components/Pagination';
+import DownloadMenu from '@/Components/DownloadMenu';
 import { formatRupiah } from '@/utils/format';
 
 export default function Index({ debts = { data: [], links: [] }, filters = {}, totals = {} }) {
@@ -58,16 +59,23 @@ export default function Index({ debts = { data: [], links: [] }, filters = {}, t
                         <Tab value="paid" label="Lunas" />
                         <Tab value="all" label="Semua" />
                     </div>
-                    <form onSubmit={onSearch} className="flex gap-2">
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Cari catatan/nama..."
-                            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-primary-500"
+                    <div className="flex gap-2 items-center">
+                        <form onSubmit={onSearch} className="flex gap-2">
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder="Cari nama/kelas..."
+                                className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-primary-500"
+                            />
+                            <button type="submit" className="rounded-lg bg-slate-800 text-white px-3 py-1.5 text-sm font-medium hover:bg-slate-900">Cari</button>
+                        </form>
+                        <DownloadMenu
+                            onExportExcel={() => { window.location.href = route('change-debts.index', { ...filters, export: 'xlsx' }); }}
+                            onExportPdf={() => { window.open(route('change-debts.index', { ...filters, export: 'pdf' }), '_blank'); }}
+                            label="Unduh"
                         />
-                        <button type="submit" className="rounded-lg bg-slate-800 text-white px-3 py-1.5 text-sm font-medium hover:bg-slate-900">Cari</button>
-                    </form>
+                    </div>
                 </div>
 
                 <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
@@ -75,7 +83,8 @@ export default function Index({ debts = { data: [], links: [] }, filters = {}, t
                         <thead className="bg-slate-50 text-slate-500 text-xs uppercase">
                             <tr>
                                 <th className="px-4 py-3 text-left">Tanggal</th>
-                                <th className="px-4 py-3 text-left">Catatan Customer</th>
+                                <th className="px-4 py-3 text-left">Nama</th>
+                                <th className="px-4 py-3 text-left">Kelas</th>
                                 <th className="px-4 py-3 text-left">Transaksi</th>
                                 <th className="px-4 py-3 text-right">Nominal</th>
                                 <th className="px-4 py-3 text-center">Status</th>
@@ -84,12 +93,13 @@ export default function Index({ debts = { data: [], links: [] }, filters = {}, t
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {debts.data.length === 0 ? (
-                                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400">Tidak ada data.</td></tr>
+                                <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400">Tidak ada data.</td></tr>
                             ) : (
                                 debts.data.map((d) => (
                                     <tr key={d.id} className="hover:bg-slate-50">
                                         <td className="px-4 py-3 whitespace-nowrap">{fmtDate(d.date)}</td>
-                                        <td className="px-4 py-3">{d.customer_note || <span className="text-slate-400 italic">—</span>}</td>
+                                        <td className="px-4 py-3 font-medium text-slate-800">{d.customer_name || d.customer_note || <span className="text-slate-400 italic">—</span>}</td>
+                                        <td className="px-4 py-3 text-slate-600">{d.customer_class || <span className="text-slate-400 italic">—</span>}</td>
                                         <td className="px-4 py-3 text-slate-500">{d.transaction?.transaction_code || '-'}</td>
                                         <td className="px-4 py-3 text-right font-semibold">{formatRupiah(d.amount)}</td>
                                         <td className="px-4 py-3 text-center">

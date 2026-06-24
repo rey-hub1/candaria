@@ -12,27 +12,32 @@ class ReportService
 {
     public function getSalesData($startDate, $endDate)
     {
+        // Pakai transaction_date (tanggal bisnis) — konsisten dgn laporan mingguan & titipan.
         $salesDataQuery = Transaction::active()->select(
-                DB::raw('DATE(created_at) as date'),
+                DB::raw('DATE(transaction_date) as date'),
                 DB::raw('COUNT(id) as transaction_count'),
                 DB::raw('SUM(total_amount) as total_sales')
             )
             ->when($startDate && $endDate, function($q) use ($startDate, $endDate) {
-                return $q->whereBetween(DB::raw('DATE(created_at)'), [$startDate, $endDate]);
+                return $q->whereBetween(DB::raw('DATE(transaction_date)'), [$startDate, $endDate]);
             })
-            ->groupBy(DB::raw('DATE(created_at)'))
+            ->groupBy(DB::raw('DATE(transaction_date)'))
             ->orderBy('date', 'desc')
             ->get()->keyBy('date');
 
-        $profitsQuery = TransactionItem::select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('SUM(profit_kantin) as profit_kantin'),
-                DB::raw('SUM(profit_seller) as profit_seller')
+        // Profit per tanggal bisnis: join ke transactions (aktif), group by transaction_date.
+        $profitsQuery = TransactionItem::query()
+            ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
+            ->where('transactions.status', Transaction::STATUS_COMPLETED)
+            ->select(
+                DB::raw('DATE(transactions.transaction_date) as date'),
+                DB::raw('SUM(transaction_items.profit_kantin) as profit_kantin'),
+                DB::raw('SUM(transaction_items.profit_seller) as profit_seller')
             )
             ->when($startDate && $endDate, function($q) use ($startDate, $endDate) {
-                return $q->whereBetween(DB::raw('DATE(created_at)'), [$startDate, $endDate]);
+                return $q->whereBetween(DB::raw('DATE(transactions.transaction_date)'), [$startDate, $endDate]);
             })
-            ->groupBy(DB::raw('DATE(created_at)'))
+            ->groupBy(DB::raw('DATE(transactions.transaction_date)'))
             ->get()->keyBy('date');
 
         $result = [];

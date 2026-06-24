@@ -38,9 +38,9 @@ class DashboardController extends Controller
         $todaySalesCount = $todayStats->count ?? 0;
         $todaySalesTotal = $todayStats->total ?? 0;
         
-        $recentTransactions = Transaction::with(['user', 'items.product'])
+        $recentTransactions = Transaction::with('user')
             ->latest()
-            ->take(5)
+            ->take(8)
             ->get();
 
         if ($user->role === 'admin') {
@@ -85,6 +85,53 @@ class DashboardController extends Controller
                 ->sum('quantity');
             $titipanSoldAll = $soldSiswa()->sum('quantity');
 
+            // Grafik 7 hari terakhir: omset + keuntungan kantin, keyed transaction_date
+            $chartStart = Carbon::today()->subDays(6)->toDateString();
+            $chartEnd = Carbon::today()->toDateString();
+
+            $omsetByDate = Transaction::active()
+                ->whereBetween(DB::raw('DATE(transaction_date)'), [$chartStart, $chartEnd])
+                ->selectRaw('DATE(transaction_date) as d, SUM(total_amount) as total')
+                ->groupBy('d')
+                ->pluck('total', 'd');
+
+            $profitByDate = TransactionItem::join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
+                ->where('transactions.status', Transaction::STATUS_COMPLETED)
+                ->whereBetween(DB::raw('DATE(transactions.transaction_date)'), [$chartStart, $chartEnd])
+                ->selectRaw('DATE(transactions.transaction_date) as d, SUM(transaction_items.profit_kantin) as total')
+                ->groupBy('d')
+                ->pluck('total', 'd');
+
+            $salesChart = [];
+            for ($i = 6; $i >= 0; $i--) {
+                $d = Carbon::today()->subDays($i);
+                $key = $d->toDateString();
+                $salesChart[] = [
+                    'date' => $d->format('d M'),
+                    'omset' => (float) ($omsetByDate[$key] ?? 0),
+                    'profit' => (float) ($profitByDate[$key] ?? 0),
+                ];
+            }
+
+            // Top produk kantin-wide (by qty)
+            $topProducts = TransactionItem::select(
+                    'product_id',
+                    DB::raw('SUM(quantity) as total_qty'),
+                    DB::raw('SUM(profit_kantin) as total_profit')
+                )
+                ->groupBy('product_id')
+                ->orderByDesc('total_qty')
+                ->take(5)
+                ->with('product')
+                ->get()
+                ->map(fn ($item) => [
+                    'id' => $item->product_id,
+                    'name' => $item->product?->name ?? 'Unknown',
+                    'type' => $item->product?->type,
+                    'qty' => (int) $item->total_qty,
+                    'profit' => (float) $item->total_profit,
+                ]);
+
             return Inertia::render('Dashboard', [
                 'todaySalesCount' => $todaySalesCount,
                 'todaySalesTotal' => (float) $todaySalesTotal,
@@ -99,6 +146,8 @@ class DashboardController extends Controller
                 'titipanSoldWeek' => (int) $titipanSoldWeek,
                 'titipanSoldMonth' => (int) $titipanSoldMonth,
                 'titipanSoldAll' => (int) $titipanSoldAll,
+                'salesChart' => $salesChart,
+                'adminTopProducts' => $topProducts,
             ]);
         }
 

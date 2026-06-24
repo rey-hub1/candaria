@@ -47,6 +47,7 @@ School canteen POS + consignment management system, expanding into an external-v
 - Image uploads stored via `Storage::disk('public')`, exposed through `appends = ['image_url']` accessor (see `Product::getImageUrlAttribute`).
 - Money amounts: integers/decimals in rupiah, no separate currency field.
 - Auto-generated codes (product code, transaction code) follow a prefix + zero-padded sequence pattern, computed in model `boot()`.
+- All "download/export" UI uses the shared `resources/js/Components/DownloadMenu.jsx` — one "Unduh" button that opens a modal to pick Excel/PDF. Pass `onExportExcel`/`onExportPdf` callbacks (omit one to hide it); `DateRangeFilter` already renders it. Don't add standalone per-format export buttons. (Exception: Weekly/DailyUpload download two *different* reports in one format — not a format chooser.)
 
 ## Gotchas
 - SQLite DB file must exist (`touch database/database.sqlite`) before migrating.

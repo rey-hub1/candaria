@@ -14,6 +14,7 @@ import { useDateFilter } from '@/hooks/useDateFilter';
 export default function Index({ sellers = { data: [], links: [], total: 0 }, filters = {}, totalUnpaid = 0 }) {
     const [payModal, setPayModal] = useState(false);
     const [selectedSeller, setSelectedSeller] = useState(null);
+    const [takeBackSeller, setTakeBackSeller] = useState(null);
 
     const filter = useDateFilter({
         initialStart: filters.start_date || '',
@@ -139,6 +140,14 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                                                         Cairkan
                                                     </button>
                                                 )}
+                                                {seller.products && seller.products.length > 0 && (
+                                                    <button
+                                                        onClick={() => setTakeBackSeller(seller)}
+                                                        className="inline-flex items-center px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold text-xs rounded transition"
+                                                    >
+                                                        Ambil Sisa
+                                                    </button>
+                                                )}
                                                 <Link
                                                     href={route('settlements.show', seller.id)}
                                                     className="inline-flex items-center px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded transition"
@@ -234,6 +243,102 @@ export default function Index({ sellers = { data: [], links: [], total: 0 }, fil
                     </div>
                 </div>
             )}
+
+            {takeBackSeller && (
+                <TakeBackModal seller={takeBackSeller} onClose={() => setTakeBackSeller(null)} />
+            )}
         </AuthenticatedLayout>
+    );
+}
+
+function TakeBackModal({ seller, onClose }) {
+    // leave (disisakan) per product_id, default 0 = penitip ambil semua
+    const [leaves, setLeaves] = useState({});
+    const [saving, setSaving] = useState(false);
+
+    const setLeave = (p, val) => {
+        const n = Math.max(0, Math.min(p.stock, parseInt(val, 10) || 0));
+        setLeaves((prev) => ({ ...prev, [p.id]: n }));
+    };
+
+    const items = seller.products.map((p) => ({ product_id: p.id, leave: leaves[p.id] ?? 0 }));
+
+    const submit = () => {
+        setSaving(true);
+        router.post(
+            route('consignments.takeback'),
+            { items },
+            {
+                preserveScroll: true,
+                onSuccess: onClose,
+                onFinish: () => setSaving(false),
+            }
+        );
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4">
+            <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl max-h-[85vh] flex flex-col">
+                <div className="flex items-center justify-between mb-1">
+                    <h3 className="text-lg font-bold text-slate-900">Ambil Sisa Stok</h3>
+                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <p className="text-xs text-slate-500 mb-4">
+                    {seller.name} · {seller.class || '-'}. Isi kolom "Sisakan" kalau ada yang dititipkan lagi (default 0 = diambil semua).
+                </p>
+
+                <div className="overflow-y-auto -mx-2 px-2 flex-1">
+                    <table className="min-w-full text-sm">
+                        <thead className="sticky top-0 bg-white">
+                            <tr className="text-[10px] uppercase tracking-wider text-slate-400">
+                                <th className="px-2 py-2 text-left font-bold">Produk</th>
+                                <th className="px-2 py-2 text-center font-bold">Stok</th>
+                                <th className="px-2 py-2 text-center font-bold">Sisakan</th>
+                                <th className="px-2 py-2 text-center font-bold">Diambil</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {seller.products.map((p) => {
+                                const leave = leaves[p.id] ?? 0;
+                                const taken = Math.max(0, p.stock - leave);
+                                return (
+                                    <tr key={p.id}>
+                                        <td className="px-2 py-2">
+                                            <div className="font-semibold text-slate-800">{p.name}</div>
+                                            <div className="text-[10px] text-slate-400 font-mono">{p.code}</div>
+                                        </td>
+                                        <td className="px-2 py-2 text-center font-bold text-slate-700">{p.stock}</td>
+                                        <td className="px-2 py-2 text-center">
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                max={p.stock}
+                                                value={leaves[p.id] ?? 0}
+                                                onChange={(e) => setLeave(p, e.target.value)}
+                                                className="w-16 px-2 py-1.5 text-center font-bold text-slate-900 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                            />
+                                        </td>
+                                        <td className="px-2 py-2 text-center font-bold text-amber-600">{taken}</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div className="flex gap-3 mt-5 pt-4 border-t border-slate-100">
+                    <button onClick={onClose} className="flex-1 py-2.5 bg-slate-100 text-slate-700 font-bold text-sm rounded-xl hover:bg-slate-200 transition">
+                        Batal
+                    </button>
+                    <button onClick={submit} disabled={saving} className="flex-1 py-2.5 bg-amber-600 text-white font-bold text-sm rounded-xl hover:bg-amber-700 transition disabled:opacity-50">
+                        {saving ? 'Memproses...' : 'Simpan'}
+                    </button>
+                </div>
+            </div>
+        </div>
     );
 }

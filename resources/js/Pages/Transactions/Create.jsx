@@ -73,40 +73,119 @@ const ProductCard = React.memo(function ProductCard({ product, cartQty = 0, onAd
     );
 });
 
-// Blok titip kembalian: muncul saat ada kembalian. Kasir isi nominal yang
-// dititipkan (customer ambil nanti) + catatan nama/kelas. Sisanya diberikan.
-function TitipKembalian({ change, titip, setTitip, note, setNote }) {
+// Blok hutang ke customer: muncul saat ada kembalian. Kasir pencet tombol
+// "Hutang ke Customer" (kantin ga ada receh) → default titip seluruh kembalian,
+// lalu tulis nama + kelas. Bisa diedit untuk titip sebagian.
+// Receh yang dititip default: kalau kembalian kelipatan 1000 → titip 1000,
+// kalau ada sisa 500 → titip 500 saja. Cth: 2500→500, 2000→1000, 3000→1000.
+function suggestTitip(change) {
+    if (change <= 0) return 0;
+    const rem = change % 1000;
+    return Math.min(change, rem === 0 ? 1000 : rem);
+}
+
+function TitipKembalian({ change, titip, setTitip, name, setName, customerClass, setCustomerClass }) {
     if (change <= 0) return null;
     const safeTitip = Math.min(change, Math.max(0, Number(titip) || 0));
+    const active = safeTitip > 0;
+
+    const aktifkan = () => {
+        setTitip(suggestTitip(change)); // default: receh (500/1000)
+    };
+
+    const batalkan = () => {
+        setTitip(0);
+        setName("");
+        setCustomerClass("");
+    };
+
+    if (!active) {
+        return (
+            <button
+                type="button"
+                onClick={aktifkan}
+                className="w-full flex items-center justify-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-800 hover:bg-amber-100 transition"
+            >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                Hutang ke Customer (titip kembalian)
+            </button>
+        );
+    }
+
     return (
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm space-y-2">
-            <label className="block font-semibold text-amber-800">
-                Titip kembalian (customer ambil nanti)
-            </label>
-            <input
-                type="number"
-                inputMode="numeric"
-                min={0}
-                max={change}
-                value={titip || ""}
-                onChange={(e) => setTitip(Math.min(change, Math.max(0, Number(e.target.value) || 0)))}
-                placeholder="Nominal dititipkan (Rp)"
-                className="w-full rounded-md border border-amber-300 px-2 py-1.5 text-sm focus:ring-2 focus:ring-amber-500"
-            />
-            {safeTitip > 0 && (
+            <div className="flex items-center justify-between">
+                <label className="font-semibold text-amber-800">Hutang ke Customer</label>
+                <button type="button" onClick={batalkan} className="text-xs font-semibold text-amber-700 hover:text-amber-900 underline">
+                    Batal
+                </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
                 <input
                     type="text"
                     maxLength={100}
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    placeholder="Catatan: nama / kelas customer"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Nama customer *"
+                    className="rounded-md border border-amber-300 px-2 py-1.5 text-sm focus:ring-2 focus:ring-amber-500"
+                />
+                <input
+                    type="text"
+                    maxLength={50}
+                    value={customerClass}
+                    onChange={(e) => setCustomerClass(e.target.value)}
+                    placeholder="Kelas"
+                    className="rounded-md border border-amber-300 px-2 py-1.5 text-sm focus:ring-2 focus:ring-amber-500"
+                />
+            </div>
+
+            <div>
+                <label className="block text-xs text-amber-700 mb-1">Nominal dihutang (Rp)</label>
+                <input
+                    type="number"
+                    inputMode="numeric"
+                    min={0}
+                    max={change}
+                    value={titip || ""}
+                    onChange={(e) => setTitip(Math.min(change, Math.max(0, Number(e.target.value) || 0)))}
+                    placeholder="Nominal dihutang (Rp)"
                     className="w-full rounded-md border border-amber-300 px-2 py-1.5 text-sm focus:ring-2 focus:ring-amber-500"
                 />
-            )}
+                <div className="flex gap-1.5 mt-1.5">
+                    {[500, 1000].filter((v) => v <= change).map((v) => (
+                        <button
+                            key={v}
+                            type="button"
+                            onClick={() => setTitip(v)}
+                            className={`px-2.5 py-1 rounded-md text-xs font-bold transition ${
+                                safeTitip === v ? 'bg-amber-600 text-white' : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                            }`}
+                        >
+                            {formatRupiah(v)}
+                        </button>
+                    ))}
+                    <button
+                        type="button"
+                        onClick={() => setTitip(change)}
+                        className={`px-2.5 py-1 rounded-md text-xs font-bold transition ${
+                            safeTitip === change ? 'bg-amber-600 text-white' : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                        }`}
+                    >
+                        Semua
+                    </button>
+                </div>
+            </div>
+
             <div className="flex justify-between text-xs text-amber-700">
                 <span>Diberikan sekarang</span>
                 <span className="font-bold">{formatRupiah(change - safeTitip)}</span>
             </div>
+            {!name.trim() && (
+                <p className="text-xs text-rose-600 font-medium">Nama customer wajib diisi.</p>
+            )}
         </div>
     );
 }
@@ -132,7 +211,8 @@ export default function Create({
     const [paidAmount, setPaidAmount] = useState(0);
     // Titip kembalian: kasir tak bisa kasih kembalian penuh → jadi hutang ke customer.
     const [titipKembalian, setTitipKembalian] = useState(0);
-    const [customerNote, setCustomerNote] = useState("");
+    const [customerName, setCustomerName] = useState("");
+    const [customerClass, setCustomerClass] = useState("");
 
     // Custom Keyboard State
     const [activeInput, setActiveInput] = useState(null); // 'search', 'paidAmount', or null
@@ -303,6 +383,12 @@ export default function Create({
     const handleCheckoutSubmit = (e) => {
         if (e) e.preventDefault();
 
+        // Hutang ke customer wajib ada nama.
+        if ((Number(titipKembalian) || 0) > 0 && !customerName.trim()) {
+            openAlert({ message: "Nama customer wajib diisi untuk hutang kembalian." });
+            return;
+        }
+
         if (addSoundRef.current) {
             addSoundRef.current.currentTime = 0;
             addSoundRef.current
@@ -321,14 +407,16 @@ export default function Create({
         router.post(route("checkout"), {
             paid_amount: paidAmount,
             change_debt: titipKembalian || 0,
-            customer_note: customerNote || null,
+            customer_name: customerName || null,
+            customer_class: customerClass || null,
             items: items
         }, {
             onSuccess: () => {
                 setCart({});
                 setPaidAmount(0);
                 setTitipKembalian(0);
-                setCustomerNote("");
+                setCustomerName("");
+                setCustomerClass("");
             }
         });
     };
@@ -432,7 +520,7 @@ export default function Create({
                 </div>
 
                 {/* Right Column: Desktop Sidebar Cart */}
-                <div className="hidden lg:flex lg:flex-col bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden h-full">
+                <div className="hidden lg:flex lg:flex-col bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden lg:self-start lg:max-h-full">
                     {/* Cart Header */}
                     <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
                         <div className="flex items-center gap-2">
@@ -466,7 +554,7 @@ export default function Create({
                     </div>
 
                     {/* Cart Items List */}
-                    <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-2">
+                    <div className="flex-1 min-h-0 max-h-[40vh] overflow-y-auto p-4 space-y-2">
                         {cartItems.length === 0 ? (
                             <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 text-sm">
                                 <svg
@@ -763,8 +851,10 @@ export default function Create({
                                     change={paidAmount >= totalAmount ? paidAmount - totalAmount : 0}
                                     titip={titipKembalian}
                                     setTitip={setTitipKembalian}
-                                    note={customerNote}
-                                    setNote={setCustomerNote}
+                                    name={customerName}
+                                    setName={setCustomerName}
+                                    customerClass={customerClass}
+                                    setCustomerClass={setCustomerClass}
                                 />
 
                                 {/* Submit Button */}
@@ -1146,8 +1236,10 @@ export default function Create({
                                     change={paidAmount >= totalAmount ? paidAmount - totalAmount : 0}
                                     titip={titipKembalian}
                                     setTitip={setTitipKembalian}
-                                    note={customerNote}
-                                    setNote={setCustomerNote}
+                                    name={customerName}
+                                    setName={setCustomerName}
+                                    customerClass={customerClass}
+                                    setCustomerClass={setCustomerClass}
                                 />
 
                                 <button

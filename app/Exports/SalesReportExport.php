@@ -14,8 +14,11 @@ class SalesReportExport implements FromView, ShouldAutoSize
     protected $grandTotalSales;
     protected $grandTotalProfitKantin;
     protected $grandTotalProfitSeller;
+    protected $changeDebts;
+    protected $changeDebtTotal;
+    protected $changeDebtUnpaid;
 
-    public function __construct($salesData, $startDate, $endDate, $grandTotalSales, $grandTotalProfitKantin, $grandTotalProfitSeller)
+    public function __construct($salesData, $startDate, $endDate, $grandTotalSales, $grandTotalProfitKantin, $grandTotalProfitSeller, $changeDebts = null, $changeDebtTotal = 0, $changeDebtUnpaid = 0)
     {
         $this->salesData = $salesData;
         $this->startDate = $startDate;
@@ -23,6 +26,9 @@ class SalesReportExport implements FromView, ShouldAutoSize
         $this->grandTotalSales = $grandTotalSales;
         $this->grandTotalProfitKantin = $grandTotalProfitKantin;
         $this->grandTotalProfitSeller = $grandTotalProfitSeller;
+        $this->changeDebts = $changeDebts ?? collect();
+        $this->changeDebtTotal = $changeDebtTotal;
+        $this->changeDebtUnpaid = $changeDebtUnpaid;
     }
 
     public function view(): View
@@ -34,6 +40,9 @@ class SalesReportExport implements FromView, ShouldAutoSize
             'grandTotalSales' => $this->grandTotalSales,
             'grandTotalProfitKantin' => $this->grandTotalProfitKantin,
             'grandTotalProfitSeller' => $this->grandTotalProfitSeller,
+            'changeDebts' => $this->changeDebts,
+            'changeDebtTotal' => $this->changeDebtTotal,
+            'changeDebtUnpaid' => $this->changeDebtUnpaid,
         ]);
     }
 }

@@ -14,6 +14,8 @@ class ChangeDebt extends Model
 
     protected $fillable = [
         'transaction_id',
+        'customer_name',
+        'customer_class',
         'customer_note',
         'amount',
         'status',

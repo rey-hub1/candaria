@@ -20,7 +20,8 @@ class CheckoutRequest extends FormRequest
             'items.*.quantity' => 'required|integer|min:1',
             'paid_amount' => 'required|numeric|min:0',
             'change_debt' => 'nullable|numeric|min:0',
-            'customer_note' => 'nullable|string|max:100',
+            'customer_name' => 'nullable|string|max:100',
+            'customer_class' => 'nullable|string|max:50',
         ];
     }
 

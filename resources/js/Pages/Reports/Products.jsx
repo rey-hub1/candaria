@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatRupiah } from '@/utils/format';
+import DownloadMenu from '@/Components/DownloadMenu';
 
 const stockTone = (stock) =>
     stock <= 5
@@ -116,14 +117,7 @@ export default function Products({
                             <p className="text-xs text-slate-500 mt-0.5">{allProducts.length} produk terdaftar dalam inventaris</p>
                         </div>
                         <div className="flex gap-2 shrink-0">
-                            <button onClick={handleExportExcel} className="flex-1 sm:flex-none justify-center px-3 py-2 bg-primary-600 hover:bg-primary-700 active:scale-95 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
-                                Excel
-                            </button>
-                            <button onClick={handleExportPdf} className="flex-1 sm:flex-none justify-center px-3 py-2 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
-                                PDF
-                            </button>
+                            <DownloadMenu onExportExcel={handleExportExcel} onExportPdf={handleExportPdf} />
                         </div>
                     </div>
 

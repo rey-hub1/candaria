@@ -8,6 +8,7 @@ Cashier checkout flow with stock deduction, payment, and soft-void/audit support
 - `app/Models/TransactionItem.php` — soft-deletable line items
 - `app/Models/Cashbook.php` — cash ledger (income/expense entries)
 - `app/Http/Controllers/TransactionController.php` — `create` (POS UI), `checkout`, `index`, `show`, `destroy` (= void)
+- `app/Exports/TransactionsExport.php` + `resources/views/reports/transactions_xlsx.blade.php` / `transactions_pdf.blade.php` — ekspor riwayat (xlsx/pdf) dari set terfilter
 - `resources/js/Pages/Transactions/` — POS screen + history
 
 ## How it works
@@ -25,3 +26,5 @@ Cashier checkout flow with stock deduction, payment, and soft-void/audit support
 - `Transactions/Create.jsx` `ProductCard` shows `product.stock - cartQty` (remaining stock) so the displayed count reflects items already in cart, without re-fetching.
 - Out-of-stock products are NOT filtered out — `TransactionController::create` keeps them but sorts them to the bottom (`CASE WHEN stock > 0 THEN 0 ELSE 1`), so they're still searchable.
 - Force-add: when remaining stock ≤ 0, the `ProductCard` button switches to amber "Paksa Tambah". A SINGLE press (or scan/Enter) forces it — posts `products.force-increment` (bumps real stock +1) and adds to cart. No multi-click counter.
+- `Transactions/Index.jsx` (riwayat) filter via query params on the `transactions.index` route itself (no shared `FilterBar`): `search`, `start_date`/`end_date`, `status` (completed/voided), `cashier_id`, `min_amount`/`max_amount`. `index()` also returns `cashiers` (distinct users with txns) for the dropdown. Rows expand inline to show `items` (qty × `selling_price`) + titip-kembalian (`change_debt`) — items/changeDebt are eager-loaded, no extra fetch.
+- Export: same `transactions.index` route with `?export=xlsx|pdf` streams the full filtered set (unpaginated) via `TransactionsExport` / `transactions_pdf` blade. Frontend uses plain `<a href>` so the browser downloads.

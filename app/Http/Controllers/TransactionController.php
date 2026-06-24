@@ -16,10 +16,15 @@ class TransactionController extends Controller
     public function __construct(private TransactionService $service) {}
 
     // List all transactions (for reports/history)
-    public function index()
+    public function index(Request $request)
     {
-        $filters = request()->only(['search', 'sort', 'dir', 'start_date', 'end_date']);
-        $query = Transaction::with(['user', 'items.product'])->filter($filters, ['transaction_code']);
+        $filters = $request->only([
+            'search', 'sort', 'dir', 'start_date', 'end_date',
+            'status', 'cashier_id', 'min_amount', 'max_amount',
+        ]);
+
+        $query = Transaction::with(['user', 'items.product', 'changeDebt'])
+            ->filter($filters, ['transaction_code']);
 
         if (! empty($filters['start_date'])) {
             $query->whereDate('created_at', '>=', $filters['start_date']);
@@ -27,10 +32,48 @@ class TransactionController extends Controller
         if (! empty($filters['end_date'])) {
             $query->whereDate('created_at', '<=', $filters['end_date']);
         }
+        if (! empty($filters['status']) && in_array($filters['status'], [Transaction::STATUS_COMPLETED, Transaction::STATUS_VOIDED], true)) {
+            $query->where('status', $filters['status']);
+        }
+        if (! empty($filters['cashier_id'])) {
+            $query->where('user_id', $filters['cashier_id']);
+        }
+        if (is_numeric($filters['min_amount'] ?? null)) {
+            $query->where('total_amount', '>=', $filters['min_amount']);
+        }
+        if (is_numeric($filters['max_amount'] ?? null)) {
+            $query->where('total_amount', '<=', $filters['max_amount']);
+        }
+
+        // Export filtered set (full, unpaginated)
+        $export = $request->input('export');
+        if (in_array($export, ['xlsx', 'pdf'], true)) {
+            $rows = $query->latest()->get();
+            $fname = 'riwayat-transaksi-'.now()->format('Ymd-His');
+
+            if ($export === 'pdf') {
+                return \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.transactions_pdf', [
+                    'transactions' => $rows,
+                    'filters' => $filters,
+                ])->setPaper('a4', 'landscape')->stream($fname.'.pdf');
+            }
+
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new \App\Exports\TransactionsExport($rows, $filters),
+                $fname.'.xlsx'
+            );
+        }
 
         $transactions = $query->latest()->paginate(15)->withQueryString();
 
-        return Inertia::render('Transactions/Index', ['transactions' => $transactions, 'filters' => $filters]);
+        $cashiers = \App\Models\User::whereIn('id', Transaction::query()->distinct()->pluck('user_id'))
+            ->orderBy('name')->get(['id', 'name']);
+
+        return Inertia::render('Transactions/Index', [
+            'transactions' => $transactions,
+            'filters' => $filters,
+            'cashiers' => $cashiers,
+        ]);
     }
 
     // Cashier interface
@@ -76,7 +119,8 @@ class TransactionController extends Controller
                 (float) $request->validated('paid_amount'),
                 $request->user(),
                 (float) ($request->validated('change_debt') ?? 0),
-                $request->validated('customer_note'),
+                $request->validated('customer_name'),
+                $request->validated('customer_class'),
             );
         } catch (TransactionException $e) {
             return redirect()->back()->with('error', $e->getMessage());
@@ -93,6 +137,7 @@ class TransactionController extends Controller
         $transaction = Transaction::with([
             'user',
             'voider',
+            'changeDebt',
             'items' => fn ($q) => $q->withTrashed()->with('product.seller'),
         ])->findOrFail($id);
 

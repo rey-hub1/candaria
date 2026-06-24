@@ -21,6 +21,53 @@ export default function Show({ transaction = {}, printModal = false }) {
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     };
 
+    const buildShareText = () => {
+        const lines = [];
+        lines.push('*KANTIN SEKOLAH — SMKN 2 PURWAKARTA*');
+        lines.push(`No. Transaksi: ${transaction.transaction_code}`);
+        lines.push(`Tanggal: ${formatDate(transaction.created_at)}`);
+        if (transaction.user?.name) lines.push(`Kasir: ${transaction.user.name}`);
+        if (transaction.status === 'voided') lines.push('*** TRANSAKSI DIBATALKAN ***');
+        lines.push('--------------------------------');
+        (transaction.items || []).forEach((it) => {
+            lines.push(`${it.quantity}x ${it.product?.name ?? 'Produk'} — ${formatRupiah(it.selling_price * it.quantity)}`);
+        });
+        lines.push('--------------------------------');
+        lines.push(`TOTAL : ${formatRupiah(transaction.total_amount)}`);
+        lines.push(`BAYAR : ${formatRupiah(transaction.paid_amount)}`);
+        lines.push(`KEMBALIAN : ${formatRupiah(transaction.change_amount)}`);
+        if (transaction.change_debt) {
+            const cd = transaction.change_debt;
+            const atas = (cd.customer_name || '-') + (cd.customer_class ? ` / ${cd.customer_class}` : '');
+            lines.push(`HUTANG (TITIP) : ${formatRupiah(cd.amount)} — a/n ${atas} [${cd.status === 'paid' ? 'Lunas' : 'Belum Lunas'}]`);
+            lines.push(`DIBERIKAN : ${formatRupiah(transaction.change_amount - cd.amount)}`);
+        }
+        lines.push('--------------------------------');
+        lines.push('Terima kasih atas kunjungan Anda!');
+        return lines.join('\n');
+    };
+
+    const handleShare = async () => {
+        const text = buildShareText();
+        const shareData = { title: `Struk ${transaction.transaction_code}`, text };
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
+                return;
+            }
+        } catch (e) {
+            if (e?.name === 'AbortError') return; // user batal
+        }
+        // Fallback: copy ke clipboard
+        try {
+            await navigator.clipboard.writeText(text);
+            openAlert({ message: 'Detail transaksi disalin ke clipboard.', danger: false });
+        } catch (e) {
+            // Fallback terakhir: buka WhatsApp dengan teks
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        }
+    };
+
 
     return (
         <AuthenticatedLayout title="Detail Transaksi">
@@ -79,6 +126,15 @@ export default function Show({ transaction = {}, printModal = false }) {
                         </button>
                         )}
                         <button
+                            onClick={handleShare}
+                            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-lg shadow-sm transition flex items-center justify-center gap-1.5 flex-1 sm:flex-none"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
+                            </svg>
+                            Bagikan
+                        </button>
+                        <button
                             onClick={() => window.print()}
                             className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-lg shadow-sm transition flex items-center justify-center gap-1.5 flex-1 sm:flex-none"
                         >
@@ -100,6 +156,23 @@ export default function Show({ transaction = {}, printModal = false }) {
                         {transaction.voider?.name && (
                             <p className="text-xs text-rose-500 mt-0.5">Oleh: {transaction.voider.name}</p>
                         )}
+                    </div>
+                )}
+
+                {/* Badge hutang kembalian ke customer */}
+                {transaction.change_debt && (
+                    <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 px-5 py-4 print:hidden">
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm font-bold text-amber-800">Ada Hutang Kembalian ke Customer</p>
+                            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${transaction.change_debt.status === 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-200 text-amber-800'}`}>
+                                {transaction.change_debt.status === 'paid' ? 'Lunas' : 'Belum Lunas'}
+                            </span>
+                        </div>
+                        <p className="text-lg font-extrabold text-amber-900 mt-1">{formatRupiah(transaction.change_debt.amount)}</p>
+                        <p className="text-xs text-amber-700 mt-0.5">
+                            {transaction.change_debt.customer_name || transaction.change_debt.customer_note || '—'}
+                            {transaction.change_debt.customer_class ? ` · ${transaction.change_debt.customer_class}` : ''}
+                        </p>
                     </div>
                 )}
 
@@ -176,6 +249,22 @@ export default function Show({ transaction = {}, printModal = false }) {
                             <span>KEMBALIAN :</span>
                             <span>{formatRupiah(transaction.change_amount)}</span>
                         </div>
+                        {transaction.change_debt && (
+                            <>
+                                <div className="flex justify-between">
+                                    <span>HUTANG (TITIP) :</span>
+                                    <span>{formatRupiah(transaction.change_debt.amount)}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>DIBERIKAN :</span>
+                                    <span>{formatRupiah(transaction.change_amount - transaction.change_debt.amount)}</span>
+                                </div>
+                                <div className="flex justify-between text-[11px]">
+                                    <span>HUTANG ATAS NAMA :</span>
+                                    <span>{(transaction.change_debt.customer_name || '-') + (transaction.change_debt.customer_class ? ' / ' + transaction.change_debt.customer_class : '')}</span>
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     {/* Footer / Greetings */}

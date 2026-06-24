@@ -24,7 +24,7 @@ class TransactionService
      *
      * @throws TransactionException
      */
-    public function checkout(array $items, float $paidAmount, User $cashier, float $changeDebt = 0, ?string $customerNote = null): Transaction
+    public function checkout(array $items, float $paidAmount, User $cashier, float $changeDebt = 0, ?string $customerName = null, ?string $customerClass = null): Transaction
     {
         $itemIds = array_column($items, 'id');
         $products = Product::whereIn('id', $itemIds)->get()->keyBy('id');
@@ -56,7 +56,7 @@ class TransactionService
         // Kembalian yang dititipkan tak boleh melebihi kembalian sebenarnya.
         $changeDebt = max(0, min($changeDebt, $changeAmount));
 
-        return DB::transaction(function () use ($cart, $totalAmount, $paidAmount, $changeAmount, $changeDebt, $customerNote, $cashier) {
+        return DB::transaction(function () use ($cart, $totalAmount, $paidAmount, $changeAmount, $changeDebt, $customerName, $customerClass, $cashier) {
             $transaction = $this->createTransactionWithCode($cashier, $totalAmount, $paidAmount, $changeAmount);
 
             foreach ($cart as $line) {
@@ -102,16 +102,19 @@ class TransactionService
             if ($changeDebt > 0) {
                 $debt = \App\Models\ChangeDebt::create([
                     'transaction_id' => $transaction->id,
-                    'customer_note' => $customerNote,
+                    'customer_name' => $customerName,
+                    'customer_class' => $customerClass,
                     'amount' => $changeDebt,
                     'status' => \App\Models\ChangeDebt::STATUS_UNPAID,
                     'date' => now()->toDateString(),
                     'created_by' => $cashier->id,
                 ]);
 
+                $label = trim(($customerName ?? '').($customerClass ? ' - '.$customerClass : ''));
+
                 Cashbook::create([
                     'date' => now()->toDateString(),
-                    'description' => 'Hutang kembalian '.$transaction->transaction_code.($customerNote ? ' ('.$customerNote.')' : ''),
+                    'description' => 'Hutang kembalian '.$transaction->transaction_code.($label !== '' ? ' ('.$label.')' : ''),
                     'type' => 'debit',
                     'amount' => $changeDebt,
                     'source' => 'change_debt',

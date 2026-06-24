@@ -53,6 +53,7 @@ class SettlementController extends Controller
                     $query->whereDate('seller_settlements.created_at', '<=', $endDate);
                 }
             }, 'total_paid')
+            ->with(['products' => fn ($q) => $q->where('type', 'siswa')->where('stock', '>', 0)->orderBy('name')])
             ->filter($filters, ['name', 'class']);
 
         if ($request->input('export')) {

@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatRupiah } from '@/utils/format';
+import DownloadMenu from '@/Components/DownloadMenu';
 
 export default function Stock({ reportData = [], date = '' }) {
     const [search, setSearch] = useState('');
@@ -89,26 +90,11 @@ export default function Stock({ reportData = [], date = '' }) {
                             />
                         </div>
                         <div className="flex items-center gap-2 ml-auto">
-                            <button
-                                type="button"
-                                onClick={handleExportExcel}
-                                className="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm rounded-lg shadow-sm transition flex items-center gap-1.5"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
-                                </svg>
-                                Ekspor Excel
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleExportPdf}
-                                className="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-sm rounded-lg shadow-sm transition flex items-center gap-1.5"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"></path>
-                                </svg>
-                                Ekspor PDF
-                            </button>
+                            <DownloadMenu
+                                onExportExcel={handleExportExcel}
+                                onExportPdf={handleExportPdf}
+                                buttonClassName="px-5 py-2 bg-primary-50 text-primary-700 hover:bg-primary-100 border border-primary-200 font-bold text-sm rounded-lg shadow-sm transition flex items-center gap-1.5"
+                            />
                             <button
                                 type="button"
                                 onClick={() => window.print()}
