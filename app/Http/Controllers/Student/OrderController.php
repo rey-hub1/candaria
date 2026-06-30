@@ -3,22 +3,17 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
-use App\Models\FeatureFlag;
-use App\Models\MenuItem;
 use App\Models\Order;
-use App\Models\Setting;
-use App\Models\Vendor;
 use App\Notifications\NewOrderReceived;
+use App\Notifications\OrderCancelledByStudent;
 use App\Services\OrderService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class OrderController extends Controller
 {
-
     public function index(Request $request): Response
     {
         $orders = Order::with('vendor:id,name,logo')
@@ -49,7 +44,7 @@ class OrderController extends Controller
             'delivery_slot' => ['required', 'in:09:00,12:00'],
             'payment_method' => ['required', 'in:cash,qris'],
             'notes' => ['nullable', 'string', 'max:1000'],
-            'items' => ['required', 'array', 'min:1'],
+            'items' => ['required', 'array', 'min:1', 'max:30'],
             'items.*.menu_item_id' => ['required', 'exists:menu_items,id'],
             'items.*.qty' => ['required', 'integer', 'min:1', 'max:50'],
             'items.*.notes' => ['nullable', 'string', 'max:255'],
@@ -75,7 +70,8 @@ class OrderController extends Controller
             'cancelled_reason' => 'Dibatalkan oleh siswa.',
         ]);
 
+        $order->vendor->user?->notify(new OrderCancelledByStudent($order));
+
         return redirect()->back()->with('success', 'Pesanan dibatalkan.');
     }
-
 }

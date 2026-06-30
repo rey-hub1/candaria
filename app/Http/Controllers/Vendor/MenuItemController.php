@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MarketplaceCategory;
 use App\Models\MenuItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class MenuItemController extends Controller
@@ -48,7 +49,12 @@ class MenuItemController extends Controller
         $menuItem->update($data);
 
         if ($request->hasFile('image')) {
+            $oldImage = $menuItem->getRawOriginal('image');
             $menuItem->update(['image' => $request->file('image')->store('menu-items', 'public')]);
+
+            if ($oldImage) {
+                Storage::disk('public')->delete($oldImage);
+            }
         }
 
         return back()->with('success', 'Menu berhasil diperbarui.');
@@ -58,7 +64,13 @@ class MenuItemController extends Controller
     {
         $this->authorizeOwner($request, $menuItem);
 
+        $image = $menuItem->getRawOriginal('image');
+
         $menuItem->delete();
+
+        if ($image) {
+            Storage::disk('public')->delete($image);
+        }
 
         return back()->with('success', 'Menu berhasil dihapus.');
     }

@@ -3,12 +3,14 @@
 namespace App\Services;
 
 use App\Models\Cashbook;
+use App\Models\ChangeDebt;
 use App\Models\Consignment;
 use App\Models\Product;
+use App\Models\Seller;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 /**
  * Laporan mingguan: rekap KONSYIANSI (per hari, per seller) & HARIAN
@@ -19,18 +21,20 @@ use Illuminate\Support\Facades\DB;
 class WeeklyReportService
 {
     public const HARI = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+
     public const BULAN = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
     /** "15 Juni 2026" (config locale default 'en', jadi format manual). */
     public function tanggalIndo(Carbon $date): string
     {
-        return $date->format('d') . ' ' . self::BULAN[$date->month] . ' ' . $date->format('Y');
+        return $date->format('d').' '.self::BULAN[$date->month].' '.$date->format('Y');
     }
 
     /** Senin–Minggu dari minggu yang memuat $anchor. */
     public function weekRange($anchor): array
     {
         $date = $anchor ? Carbon::parse($anchor) : Carbon::today();
+
         return [$date->copy()->startOfWeek(Carbon::MONDAY), $date->copy()->endOfWeek(Carbon::SUNDAY)];
     }
 
@@ -56,7 +60,7 @@ class WeeklyReportService
     }
 
     /** Qty terjual per product pada satu tanggal (transaction_date), transaksi aktif saja. */
-    protected function soldByProduct(string $date): \Illuminate\Support\Collection
+    protected function soldByProduct(string $date): Collection
     {
         return TransactionItem::query()
             ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
@@ -68,7 +72,7 @@ class WeeklyReportService
     }
 
     /** Stok masuk (type=in) per product pada satu tanggal. */
-    protected function stockInByProduct(string $date): \Illuminate\Support\Collection
+    protected function stockInByProduct(string $date): Collection
     {
         return Consignment::where('type', 'in')
             ->whereDate('date', $date)
@@ -88,7 +92,7 @@ class WeeklyReportService
         $sold = $this->soldByProduct($d);
         $stockIn = $this->stockInByProduct($d);
 
-        $sellers = \App\Models\Seller::where('is_active', true)
+        $sellers = Seller::where('is_active', true)
             ->with(['products' => fn ($q) => $q->where('type', 'siswa')->orderBy('name')])
             ->orderBy('name')
             ->get();
@@ -202,12 +206,14 @@ class WeeklyReportService
             ->first();
 
         // Hutang kembalian: yang baru dititip (kas masuk) & yang dilunasi (kas keluar) hari itu.
-        $hutangCustomer = (int) \App\Models\ChangeDebt::whereDate('date', $d)->sum('amount');
-        $pembayaranUtang = (int) \App\Models\ChangeDebt::where('status', \App\Models\ChangeDebt::STATUS_PAID)
+        $hutangCustomer = (int) ChangeDebt::whereDate('date', $d)->sum('amount');
+        $pembayaranUtang = (int) ChangeDebt::where('status', ChangeDebt::STATUS_PAID)
             ->whereDate('paid_at', $d)->sum('amount');
 
         return [
-            'penjualan_harian' => $penjualanHarian,
+            // Kantin-only: total penjualan dikurangi omset konsinyasi, supaya tidak
+            // double-count dengan baris "Omset Konsyiansi" di ledger harian.
+            'penjualan_harian' => $penjualanHarian - (int) $kons->omset,
             'pengeluaran' => $pengeluaran,
             'omset_konsyiansi' => (int) $kons->omset,
             'stor_ke_seller' => (int) $kons->stor,
@@ -217,9 +223,9 @@ class WeeklyReportService
     }
 
     /** Rincian hutang kembalian ke customer yang dibuat pada satu tanggal. */
-    public function changeDebtsForDay(Carbon $date): \Illuminate\Support\Collection
+    public function changeDebtsForDay(Carbon $date): Collection
     {
-        return \App\Models\ChangeDebt::whereDate('date', $date->toDateString())
+        return ChangeDebt::whereDate('date', $date->toDateString())
             ->orderBy('id')
             ->get(['customer_name', 'customer_class', 'customer_note', 'amount', 'status']);
     }

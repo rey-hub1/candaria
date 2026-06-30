@@ -17,7 +17,7 @@
             // baris: [keterangan, debit, kredit]
             $lines = [
                 ['Kas masuk', 0, 0],
-                ['Penjualan Harian', $f['penjualan_harian'], 0],
+                ['Penjualan Kantin', $f['penjualan_harian'], 0],
                 ['Pengeluaran', 0, $f['pengeluaran']],
                 ['Omset Konsyiansi', $f['omset_konsyiansi'], 0],
                 ['Stor Ke Seller', 0, $f['stor_ke_seller']],

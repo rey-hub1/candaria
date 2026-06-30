@@ -26,7 +26,7 @@ class WeeklyReportController extends Controller
             'anchor' => $request->input('week', Carbon::today()->toDateString()),
             'activeDays' => collect($days)->map(fn ($d) => [
                 'date' => $d->toDateString(),
-                'label' => $this->service->namaHari($d) . ', ' . $d->format('d M Y'),
+                'label' => $this->service->namaHari($d).', '.$d->format('d M Y'),
             ]),
         ]);
     }
@@ -34,7 +34,7 @@ class WeeklyReportController extends Controller
     public function consignment(Request $request)
     {
         [$start, $end] = $this->service->weekRange($request->input('week'));
-        $name = 'LAPORAN KONSYIANSI ' . $this->fileRange($start, $start->copy()->addDays(4)) . '.xlsx';
+        $name = 'LAPORAN KONSYIANSI '.$this->fileRange($start, $end).'.xlsx';
 
         return Excel::download(new WeeklyConsignmentExport($start, $end, $this->service), $name);
     }
@@ -42,7 +42,7 @@ class WeeklyReportController extends Controller
     public function daily(Request $request)
     {
         [$start, $end] = $this->service->weekRange($request->input('week'));
-        $name = 'LAPORAN HARIAN ' . $this->fileRange($start, $start->copy()->addDays(4)) . '.xlsx';
+        $name = 'LAPORAN HARIAN '.$this->fileRange($start, $end).'.xlsx';
 
         return Excel::download(new WeeklyDailyExport($start, $end, $this->service), $name);
     }
@@ -52,8 +52,9 @@ class WeeklyReportController extends Controller
     {
         $bulan = ['', 'JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI', 'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'];
         if ($start->month === $end->month) {
-            return $start->format('d') . '-' . $end->format('d') . ' ' . $bulan[$end->month] . ' ' . $end->format('Y');
+            return $start->format('d').'-'.$end->format('d').' '.$bulan[$end->month].' '.$end->format('Y');
         }
-        return $start->format('d') . ' ' . $bulan[$start->month] . '-' . $end->format('d') . ' ' . $bulan[$end->month] . ' ' . $end->format('Y');
+
+        return $start->format('d').' '.$bulan[$start->month].'-'.$end->format('d').' '.$bulan[$end->month].' '.$end->format('Y');
     }
 }

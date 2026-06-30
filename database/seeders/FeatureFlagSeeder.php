@@ -11,6 +11,7 @@ class FeatureFlagSeeder extends Seeder
     {
         $flags = [
             ['key' => 'cashbook', 'label' => 'Mutasi & Buku Kas', 'description' => 'Modul mutasi saldo & buku kas admin.', 'group' => 'general', 'is_enabled' => true],
+            ['key' => 'public_menu', 'label' => 'Halaman Publik & Menu', 'description' => 'Landing page (/) & katalog menu publik (/menu). Matikan untuk deployment internal tanpa wajah publik.', 'group' => 'general', 'is_enabled' => true],
             ['key' => 'force_password_change', 'label' => 'Wajib Ganti Password Pertama Login', 'description' => 'Siswa & penitip wajib mengganti password saat pertama kali masuk.', 'group' => 'general', 'is_enabled' => false],
 
             // Default fresh build/clone: hanya `cashbook` (umum) nyala, sisanya mati.
@@ -23,6 +24,10 @@ class FeatureFlagSeeder extends Seeder
             ['key' => 'vendor_wallet', 'label' => 'Saldo Mitra', 'description' => 'Modul saldo & pencairan untuk mitra.', 'group' => 'marketplace', 'is_enabled' => false],
             ['key' => 'order_slot_09', 'label' => 'Slot Antar 09:00', 'description' => 'Slot pengantaran pesanan jam 09:00.', 'group' => 'marketplace', 'is_enabled' => false],
             ['key' => 'order_slot_12', 'label' => 'Slot Antar 12:00', 'description' => 'Slot pengantaran pesanan jam 12:00.', 'group' => 'marketplace', 'is_enabled' => false],
+
+            ['key' => 'wa_change_debt', 'label' => 'WA Hutang Kembalian', 'description' => 'Kirim notifikasi WhatsApp saat kembalian dititip & ingatkan manual.', 'group' => 'whatsapp', 'is_enabled' => false],
+            ['key' => 'wa_weekly_report', 'label' => 'WA Laporan Mingguan', 'description' => 'Kirim laporan mingguan Excel ke admin via WhatsApp tiap Senin pagi.', 'group' => 'whatsapp', 'is_enabled' => false],
+            ['key' => 'wa_penitip_otp', 'label' => 'WA OTP Ubah Password Penitip', 'description' => 'Penitip dapat reset password via kode OTP yang dikirim ke WhatsApp.', 'group' => 'whatsapp', 'is_enabled' => false],
         ];
 
         foreach ($flags as $flag) {

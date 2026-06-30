@@ -7,11 +7,14 @@ use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Models\Vendor;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class OrderService
 {
+    private const MAX_CODE_ATTEMPTS = 5;
+
     private const SLOT_FLAGS = [
         '09:00' => 'order_slot_09',
         '12:00' => 'order_slot_12',
@@ -38,8 +41,28 @@ class OrderService
         $slot = $validated['delivery_slot'];
         $this->ensureSlotAvailable($slot);
 
+        // order_code dibuat di Order::boot (max+1). Dua checkout bersamaan bisa
+        // dapat nomor sama → unique violation. Retry beberapa kali.
+        $lastError = null;
+        for ($attempt = 0; $attempt < self::MAX_CODE_ATTEMPTS; $attempt++) {
+            try {
+                return $this->persistOrder($validated, $vendor, $slot, $user);
+            } catch (QueryException $e) {
+                if (! str_contains(strtolower($e->getMessage()), 'order_code')) {
+                    throw $e;
+                }
+                $lastError = $e;
+            }
+        }
+
+        throw new \RuntimeException('Gagal membuat kode pesanan, coba lagi.', 0, $lastError);
+    }
+
+    private function persistOrder(array $validated, Vendor $vendor, string $slot, $user): Order
+    {
         return DB::transaction(function () use ($validated, $vendor, $slot, $user) {
             $this->ensureSlotQuotaAvailable($vendor, $slot);
+            $this->ensureStudentSlotCap($user, $vendor, $slot);
 
             $subtotal = 0;
             $itemsToCreate = [];
@@ -102,6 +125,30 @@ class OrderService
 
         if (now()->format('H:i') > $cutoffTime) {
             throw ValidationException::withMessages(['delivery_slot' => "Pemesanan untuk slot {$slot} sudah ditutup (batas {$cutoffTime})."]);
+        }
+    }
+
+    /**
+     * Cegah satu siswa memborong kuota slot vendor. Batas order aktif per siswa
+     * per vendor per slot dikonfigurasi lewat Setting (default 2).
+     */
+    private function ensureStudentSlotCap($user, Vendor $vendor, string $slot): void
+    {
+        $cap = (int) Setting::get('marketplace_max_orders_per_student_slot', 2);
+        if ($cap <= 0) {
+            return;
+        }
+
+        $count = Order::where('student_id', $user->id)
+            ->where('vendor_id', $vendor->id)
+            ->whereDate('delivery_date', now()->toDateString())
+            ->where('delivery_slot', $slot)
+            ->where('status', '!=', 'cancelled')
+            ->lockForUpdate()
+            ->count();
+
+        if ($count >= $cap) {
+            throw ValidationException::withMessages(['delivery_slot' => "Maksimal {$cap} pesanan aktif untuk slot ini. Selesaikan atau batalkan pesanan sebelumnya."]);
         }
     }
 

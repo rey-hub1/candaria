@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Transaction;
+use App\Models\TransactionItem;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -62,7 +64,21 @@ class TransactionPurgeController extends Controller
             'range' => ['required', 'in:'.implode(',', self::RANGES)],
         ]);
 
+        // Operasi destruktif permanen — tidak boleh jalan di produksi.
+        abort_if(app()->isProduction(), 403, 'Purge transaksi tidak tersedia di lingkungan produksi.');
+
         $cutoff = $this->cutoff($validated['range']);
+
+        // Jangan hard-delete item yang sudah dicairkan ke penitip — itu memutus jejak
+        // audit settlement (ledger penitip menunjuk pembayaran tanpa sale).
+        $settledCount = TransactionItem::whereNotNull('seller_settlement_id')
+            ->whereHas('transaction', fn ($q) => $q->whereDate('transaction_date', '<', $cutoff))
+            ->count();
+
+        if ($settledCount > 0) {
+            return redirect()->route('super-admin.purge-transactions.index')
+                ->with('error', "Tidak bisa purge: {$settledCount} item dalam rentang ini sudah dicairkan ke penitip. Hapus akan merusak jejak audit pencairan.");
+        }
 
         $deleted = DB::transaction(function () use ($cutoff) {
             // Query-builder delete → SQL DELETE memicu FK cascade pada transaction_items.
@@ -72,6 +88,12 @@ class TransactionPurgeController extends Controller
 
         $labels = ['1w' => '1 minggu', '1m' => '1 bulan', '3m' => '3 bulan', '6m' => '6 bulan', '1y' => '1 tahun'];
         $label = $labels[$validated['range']];
+
+        ActivityLog::record('purge', "Purge {$deleted} transaksi sebelum {$cutoff->toDateString()} ({$label})", null, [
+            'range' => $validated['range'],
+            'cutoff' => $cutoff->toDateString(),
+            'deleted' => $deleted,
+        ]);
 
         return redirect()->route('super-admin.purge-transactions.index')
             ->with('success', "{$deleted} transaksi lebih tua dari {$label} (sebelum {$cutoff->toDateString()}) berhasil dihapus permanen.");

@@ -1,9 +1,17 @@
 <?php
 
+use App\Http\Middleware\EnsureFeatureEnabled;
+use App\Http\Middleware\EnsurePasswordChanged;
+use App\Http\Middleware\EnsureStudentPasswordChanged;
+use App\Http\Middleware\EnsureVendorExists;
+use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\IdleTimeout;
+use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -14,28 +22,30 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
-            \App\Http\Middleware\IdleTimeout::class,
-            \App\Http\Middleware\HandleInertiaRequests::class,
+            IdleTimeout::class,
+            HandleInertiaRequests::class,
         ]);
 
         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
-            'feature' => \App\Http\Middleware\EnsureFeatureEnabled::class,
-            'student.password_changed' => \App\Http\Middleware\EnsureStudentPasswordChanged::class,
-            'password.changed' => \App\Http\Middleware\EnsurePasswordChanged::class,
+            'role' => RoleMiddleware::class,
+            'feature' => EnsureFeatureEnabled::class,
+            'student.password_changed' => EnsureStudentPasswordChanged::class,
+            'password.changed' => EnsurePasswordChanged::class,
+            'vendor.exists' => EnsureVendorExists::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->respond(function (Response $response, \Throwable $e, Request $request) {
-            if (!app()->environment(['local', 'testing']) && in_array($response->getStatusCode(), [500, 503, 404, 403])) {
-                return \Inertia\Inertia::render('Error', ['status' => $response->getStatusCode()])
+        $exceptions->respond(function (Response $response, Throwable $e, Request $request) {
+            if (! app()->environment(['local', 'testing']) && in_array($response->getStatusCode(), [500, 503, 404, 403])) {
+                return Inertia::render('Error', ['status' => $response->getStatusCode()])
                     ->toResponse($request)
                     ->setStatusCode($response->getStatusCode());
             } elseif (in_array($response->getStatusCode(), [404, 403])) {
-                return \Inertia\Inertia::render('Error', ['status' => $response->getStatusCode()])
+                return Inertia::render('Error', ['status' => $response->getStatusCode()])
                     ->toResponse($request)
                     ->setStatusCode($response->getStatusCode());
             }
+
             return $response;
         });
     })->create();

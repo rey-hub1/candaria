@@ -2,15 +2,20 @@
 
 namespace App\Models;
 
+use App\Traits\Filterable;
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ChangeDebt extends Model
 {
-    use \App\Traits\Filterable, \App\Traits\LogsActivity;
+    use Filterable, LogsActivity;
 
     public const STATUS_UNPAID = 'unpaid';
+
     public const STATUS_PAID = 'paid';
+
+    public const STATUS_CANCELLED = 'cancelled';
 
     protected $fillable = [
         'transaction_id',

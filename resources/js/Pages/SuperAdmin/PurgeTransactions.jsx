@@ -3,6 +3,7 @@ import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ConfirmModal from '@/Components/ConfirmModal';
 import { useDialog } from '@/hooks/useDialog';
+import { Trash2, AlertTriangle } from 'lucide-react';
 
 const RANGES = [
     { range: '1w', label: '1 minggu', desc: 'Hapus transaksi yang lebih tua dari 1 minggu lalu.' },
@@ -67,7 +68,7 @@ export default function PurgeTransactions({ previews, totals }) {
                                 key={item.range}
                                 className="rounded-xl border border-slate-200 bg-white shadow-sm p-4 flex items-start gap-4"
                             >
-                                <span className="text-2xl shrink-0">🗑️</span>
+                                <Trash2 className="w-6 h-6 shrink-0 text-rose-400" />
                                 <div className="min-w-0 flex-1">
                                     <div className="flex items-center gap-2">
                                         <p className="text-sm font-bold text-slate-900">Lebih tua dari {item.label}</p>
@@ -90,8 +91,9 @@ export default function PurgeTransactions({ previews, totals }) {
                     })}
                 </div>
 
-                <p className="text-xs text-slate-400 mt-6">
-                    ⚠️ Penghapusan bersifat PERMANEN dan tidak bisa dibatalkan. Transaksi (termasuk yang sudah
+                <p className="text-xs text-slate-400 mt-6 flex items-start gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-500 mt-0.5" />
+                    Penghapusan bersifat PERMANEN dan tidak bisa dibatalkan. Transaksi (termasuk yang sudah
                     void) beserta item-nya dihapus dari database. Entri buku kas (Cashbook) tidak diubah.
                 </p>
             </div>

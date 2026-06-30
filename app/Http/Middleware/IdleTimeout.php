@@ -19,9 +19,9 @@ class IdleTimeout
      * Role yang tidak terdaftar = ikut SESSION_LIFETIME global (tanpa batasan ekstra).
      */
     private const IDLE_MINUTES = [
-        'super_admin' => 43200, // 30 hari (1 bulan)
-        'admin' => 43200,       // 30 hari (1 bulan)
-        'cashier' => 43200,     // 30 hari (1 bulan)
+        'super_admin' => 720, // 12 jam
+        'admin' => 480,       // 8 jam (1 hari kerja)
+        'cashier' => 480,     // 8 jam (1 shift)
     ];
 
     public function handle(Request $request, Closure $next): Response

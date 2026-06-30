@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProductsReportExport;
+use App\Exports\SalesReportExport;
+use App\Exports\StockReportExport;
+use App\Exports\TitipanReportExport;
+use App\Models\ChangeDebt;
 use App\Models\Product;
+use App\Models\Seller;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\Exports\SalesReportExport;
-use App\Exports\TitipanReportExport;
-use App\Exports\ProductsReportExport;
 use App\Services\ReportService;
-use Maatwebsite\Excel\Facades\Excel;
-
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -33,7 +34,7 @@ class ReportController extends Controller
         $grandTotalProfitSeller = $salesData->sum('profit_seller');
 
         // Hutang kembalian ke customer (dalam rentang tanggal, by tanggal bisnis)
-        $changeDebts = \App\Models\ChangeDebt::query()
+        $changeDebts = ChangeDebt::query()
             ->when($startDate && $endDate, fn ($q) => $q->whereBetween('date', [$startDate, $endDate]))
             ->orderBy('date', 'desc')->latest('id')
             ->get(['id', 'customer_name', 'customer_class', 'customer_note', 'amount', 'status', 'date']);
@@ -52,7 +53,8 @@ class ReportController extends Controller
                 'changeDebtTotal',
                 'changeDebtUnpaid'
             ))->setPaper('a4', 'portrait');
-            return $pdf->stream('laporan-penjualan-' . $startDate . '-to-' . $endDate . '.pdf');
+
+            return $pdf->stream('laporan-penjualan-'.$startDate.'-to-'.$endDate.'.pdf');
         }
 
         if ($request->input('export') === 'xlsx') {
@@ -66,7 +68,7 @@ class ReportController extends Controller
                 $changeDebts,
                 $changeDebtTotal,
                 $changeDebtUnpaid
-            ), 'laporan-penjualan-' . $startDate . '-to-' . $endDate . '.xlsx');
+            ), 'laporan-penjualan-'.$startDate.'-to-'.$endDate.'.xlsx');
         }
 
         return Inertia::render('Reports/Sales', compact(
@@ -89,13 +91,13 @@ class ReportController extends Controller
         $endDate = $request->input('end_date');
 
         $sellerId = $request->input('seller_id');
-        $sellers = \App\Models\Seller::where('is_active', true)->get(['id', 'name', 'class']);
+        $sellers = Seller::where('is_active', true)->get(['id', 'name', 'class']);
 
         $filters = [
-            'search'   => $request->input('search', ''),
-            'status'   => $request->input('status', ''),
-            'sort'     => $request->input('sort', 'date'),
-            'dir'      => $request->input('dir', 'desc'),
+            'search' => $request->input('search', ''),
+            'status' => $request->input('status', ''),
+            'sort' => $request->input('sort', 'date'),
+            'dir' => $request->input('dir', 'desc'),
             'per_page' => $request->input('per_page', 15),
         ];
 
@@ -105,14 +107,15 @@ class ReportController extends Controller
 
         if ($request->input('export') === 'pdf') {
             $pdf = Pdf::loadView('reports.titipan_pdf', compact(
-                'items', 
-                'startDate', 
-                'endDate', 
+                'items',
+                'startDate',
+                'endDate',
                 'summary',
                 'sellerId',
                 'sellers'
             ))->setPaper('a4', 'landscape');
-            return $pdf->stream('laporan-titipan-siswa-' . $startDate . '-to-' . $endDate . '.pdf');
+
+            return $pdf->stream('laporan-titipan-siswa-'.$startDate.'-to-'.$endDate.'.pdf');
         }
 
         if ($request->input('export') === 'xlsx') {
@@ -123,7 +126,7 @@ class ReportController extends Controller
                 $summary,
                 $sellerId,
                 $sellers
-            ), 'laporan-titipan-siswa-' . $startDate . '-to-' . $endDate . '.xlsx');
+            ), 'laporan-titipan-siswa-'.$startDate.'-to-'.$endDate.'.xlsx');
         }
 
         return Inertia::render('Reports/Titipan', compact('items', 'startDate', 'endDate', 'summary', 'sellerId', 'sellers', 'filters'));
@@ -137,12 +140,12 @@ class ReportController extends Controller
             abort(403);
         }
 
-        $seller = \App\Models\Seller::where('phone', $user->phone)->first();
+        $seller = Seller::where('phone', $user->phone)->first();
 
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        if (!$seller) {
+        if (! $seller) {
             $items = TransactionItem::whereRaw('0 = 1')->paginate(15);
             $summary = (object) ['total_qty' => 0, 'total_seller' => 0, 'total_kantin' => 0, 'qty_week' => 0, 'qty_month' => 0, 'qty_all' => 0, 'total_products' => 0];
         } else {
@@ -158,7 +161,7 @@ class ReportController extends Controller
     {
         // 1. ALL Products (primary — full inventory view)
         $allProducts = Product::with(['category', 'seller'])
-            ->withSum('transactionItems as sold_count', 'quantity')
+            ->withSum(['transactionItems as sold_count' => fn ($q) => $q->whereHas('transaction', fn ($t) => $t->where('status', Transaction::STATUS_COMPLETED))], 'quantity')
             ->orderBy('category_id')
             ->orderBy('name')
             ->get();
@@ -190,6 +193,7 @@ class ReportController extends Controller
         if ($request->input('export') === 'pdf') {
             $pdf = Pdf::loadView('reports.products_pdf', compact('topProductsKantin', 'topProductsSiswa', 'lowStockProductsKantin', 'lowStockProductsSiswa'))
                 ->setPaper('a4', 'portrait');
+
             return $pdf->stream('laporan-produk-terlaris-dan-stok.pdf');
         }
 
@@ -198,10 +202,10 @@ class ReportController extends Controller
         }
 
         return Inertia::render('Reports/Products', [
-            'allProducts'           => $allProducts->values(),
-            'topProductsKantin'     => $topProductsKantin->values(),
-            'topProductsSiswa'      => $topProductsSiswa->values(),
-            'lowStockProductsKantin'=> $lowStockProductsKantin->values(),
+            'allProducts' => $allProducts->values(),
+            'topProductsKantin' => $topProductsKantin->values(),
+            'topProductsSiswa' => $topProductsSiswa->values(),
+            'lowStockProductsKantin' => $lowStockProductsKantin->values(),
             'lowStockProductsSiswa' => $lowStockProductsSiswa->values(),
         ]);
     }
@@ -214,17 +218,25 @@ class ReportController extends Controller
             : Carbon::now()->toDateString();
         $products = Product::with(['seller', 'category'])->get();
 
-        // Bulk load qtySold for all products on this date
-        $qtySoldQuery = TransactionItem::whereDate('created_at', $date)
-            ->selectRaw('product_id, SUM(quantity) as sum_qty')
-            ->groupBy('product_id')
+        // Pakai transaction_date (tanggal bisnis), bukan created_at — konsisten dgn
+        // semua report lain; benar untuk transaksi backdate / lewat tengah malam.
+        // Hanya transaksi completed (SoftDeletes item voided sudah dikecualikan).
+        $qtySoldQuery = TransactionItem::query()
+            ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
+            ->where('transactions.status', Transaction::STATUS_COMPLETED)
+            ->whereDate('transactions.transaction_date', $date)
+            ->selectRaw('transaction_items.product_id as product_id, SUM(transaction_items.quantity) as sum_qty')
+            ->groupBy('transaction_items.product_id')
             ->get()
             ->keyBy('product_id');
 
         // Bulk load qtySoldAfter for all products
-        $qtySoldAfterQuery = TransactionItem::whereDate('created_at', '>', $date)
-            ->selectRaw('product_id, SUM(quantity) as sum_qty')
-            ->groupBy('product_id')
+        $qtySoldAfterQuery = TransactionItem::query()
+            ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
+            ->where('transactions.status', Transaction::STATUS_COMPLETED)
+            ->whereDate('transactions.transaction_date', '>', $date)
+            ->selectRaw('transaction_items.product_id as product_id, SUM(transaction_items.quantity) as sum_qty')
+            ->groupBy('transaction_items.product_id')
             ->get()
             ->keyBy('product_id');
 
@@ -253,14 +265,14 @@ class ReportController extends Controller
             }
 
             // Owner (Pemilik)
-            $pemilik = $product->type === 'kantin' 
-                ? 'Kantin' 
+            $pemilik = $product->type === 'kantin'
+                ? 'Kantin'
                 : ($product->seller ? $product->seller->name : 'Siswa');
 
             // Total Harga (Total Sales Value)
             $totalHarga = $qtySold * $product->selling_price;
 
-            $reportData[] = (object)[
+            $reportData[] = (object) [
                 'product' => $product,
                 'stok_pagi' => $stokPagi,
                 'tambahan_stok' => $tambahanStok,
@@ -277,11 +289,12 @@ class ReportController extends Controller
         if ($request->input('export') === 'pdf') {
             $pdf = Pdf::loadView('reports.stock_pdf', compact('reportData', 'date'))
                 ->setPaper('a4', 'landscape'); // Landscape to fit 10 columns
-            return $pdf->stream('laporan-stok-harian-' . $date . '.pdf');
+
+            return $pdf->stream('laporan-stok-harian-'.$date.'.pdf');
         }
 
         if ($request->input('export') === 'xlsx') {
-            return Excel::download(new \App\Exports\StockReportExport($reportData, $date), 'laporan-stok-harian-' . $date . '.xlsx');
+            return Excel::download(new StockReportExport($reportData, $date), 'laporan-stok-harian-'.$date.'.xlsx');
         }
 
         return Inertia::render('Reports/Stock', compact('reportData', 'date'));

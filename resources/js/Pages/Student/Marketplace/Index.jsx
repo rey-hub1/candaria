@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Utensils } from 'lucide-react';
 
 export default function Index({ vendors, categories }) {
     const [category, setCategory] = useState('');
@@ -52,7 +53,7 @@ export default function Index({ vendors, categories }) {
                                 {vendor.logo_url ? (
                                     <img src={vendor.logo_url} alt={vendor.name} className="w-full h-full object-cover" />
                                 ) : (
-                                    <span className="text-2xl">🍽️</span>
+                                    <Utensils className="w-7 h-7 text-slate-400" />
                                 )}
                             </div>
                             <div className="min-w-0">

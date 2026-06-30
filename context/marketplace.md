@@ -8,7 +8,7 @@ gated by `marketplace` feature flag.
 ## Tables/models
 - `vendors` — `user_id` (nullable, FK to a `vendor`-role User), `name`, `slug` (auto-generated, collision-checked), `description`, `logo`, `category`, `status` (pending/active/suspended), `phone`, `address`, `balance`, `is_open`, `joined_at`. SoftDeletes. `scopeActive()`.
 - `menu_items` — belongs to vendor, cascade-deleted with vendor. `name`, `description`, `price`, `image`, `category`, `is_active`. SoftDeletes. `scopeActive()`.
-- `menu_option_groups` / `menu_options` — **legacy/unused.** Tables + `MenuItem::optionGroups()` relation still exist but are no longer written or read by any flow (options removed in favor of free-text notes). Not dropped to avoid a destructive migration; safe to drop later if desired.
+- ~~`menu_option_groups` / `menu_options` / `order_item_options`~~ — **removed (2026-06-25).** Models, migrations, relations, and the `OrderService` option-pricing logic deleted; tables dropped. The feature was half-built (schema only, never surfaced in UI or priced at checkout). Customization is free-text notes only.
 
 ## Admin: manage categories (`/admin/marketplace-categories`)
 - `marketplace_categories` table — `type` (`vendor` = kategori mitra, `menu` = kategori item), `name`, `is_active`, `sort_order`. Unique `(type, name)`. Model `MarketplaceCategory` (scopes: `type()`, `active()`, `ordered()`). Separate from the canteen `Category` model (products).

@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\FeatureFlag;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 /*
@@ -17,6 +19,24 @@ use Tests\TestCase;
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Feature');
+
+/*
+ * Feature flag default fail-closed (lihat FeatureFlag::enabled): flag yang
+ * belum di-seed → OFF. Aktifkan semua flag sebelum tiap test supaya gate
+ * middleware tetap diuji jujur tanpa mengandalkan default lama (fail-open).
+ * Test yang memang menguji "flag mati" tinggal meng-override setelah ini.
+ */
+uses()->beforeEach(function () {
+    Cache::flush();
+
+    foreach ([
+        'cashbook', 'public_menu', 'force_password_change', 'marketplace', 'marketplace_orders',
+        'vendor_self_register', 'student_login', 'payment_qris', 'vendor_wallet',
+        'order_slot_09', 'order_slot_12',
+    ] as $key) {
+        FeatureFlag::updateOrCreate(['key' => $key], ['is_enabled' => true, 'label' => $key]);
+    }
+})->in('Feature');
 
 /*
 |--------------------------------------------------------------------------

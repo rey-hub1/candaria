@@ -22,6 +22,9 @@ Branch `candaria2`, gated by `marketplace` (browse) + `marketplace_orders`
 - Slot availability: `FeatureFlag::enabled('order_slot_09'|'order_slot_12')`.
 - Cutoff times: `Setting::get('marketplace_cutoff_09', '08:00')` / `marketplace_cutoff_12` (default `'10:30'`). Order rejected if `now()->format('H:i') > cutoff`.
 - `delivery_date` is always "today" (`now()->toDateString()`).
+- Quota per slot: `Vendor::max_orders_per_slot` (null = unlimited), dicek `lockForUpdate` di `OrderService::ensureSlotQuotaAvailable`.
+- Cap per siswa per slot: `Setting::get('marketplace_max_orders_per_student_slot', 2)` (0 = nonaktif), dicek `OrderService::ensureStudentSlotCap` — cegah 1 siswa borong kuota.
+- `order_code` race: `OrderService::createOrder` retry sampai 5x kalau unique `order_code` bentrok (kode dibuat di `Order::boot`).
 
 ## Vendor flow (`/mitra/pesanan`, role=vendor)
 - `Vendor\OrderController@index` — `Pages/Vendor/Orders/Index.jsx`, filters by `date` (default today, uses `whereDate()` — see gotcha), `slot`, `status`.

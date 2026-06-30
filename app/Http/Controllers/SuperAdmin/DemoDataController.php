@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Seller;
@@ -41,6 +42,12 @@ class DemoDataController extends Controller
         $service->apply($validated['level']);
 
         $label = ['none' => 'kosong', 'minimal' => 'sedikit', 'full' => 'banyak', 'v1' => 'data asli v1'][$validated['level']];
+
+        // Log SETELAH wipe (activity_logs tidak lagi di-wipe) agar jejak reset
+        // bertahan — siapa & ke level apa.
+        ActivityLog::record('demo_reset', "Reset data demo ke mode \"{$label}\"", null, [
+            'level' => $validated['level'],
+        ]);
 
         return redirect()->route('super-admin.demo-data.index')
             ->with('success', "Data demo berhasil diatur ke mode \"{$label}\".");

@@ -2,54 +2,61 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\CashbookExport;
 use App\Models\Cashbook;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CashbookController extends Controller
 {
     public function index(Request $request)
     {
         $filters = $request->only(['search', 'sort', 'dir', 'start_date', 'end_date', 'preset']);
-        
+
         $query = Cashbook::with('user')->filter($filters, ['description', 'source']);
 
-        if (!empty($filters['start_date'])) {
+        if (! empty($filters['start_date'])) {
             $query->whereDate('date', '>=', $filters['start_date']);
         }
-        if (!empty($filters['end_date'])) {
+        if (! empty($filters['end_date'])) {
             $query->whereDate('date', '<=', $filters['end_date']);
         }
-        
-        
+
         // Default sort if not provided
-        if (!$request->has('sort')) {
+        if (! $request->has('sort')) {
             $query->orderBy('date', 'desc')->orderBy('id', 'desc');
         }
 
         $cashbooks = $query->paginate(20)->withQueryString();
-        
-        // Calculate total balance
-        $totalDebit = Cashbook::where('type', 'debit')->sum('amount');
-        $totalCredit = Cashbook::where('type', 'credit')->sum('amount');
-        $currentBalance = $totalDebit - $totalCredit;
+
+        // Total debit/kredit untuk periode yang difilter — supaya angka ringkasan
+        // selaras dengan baris yang ditampilkan, bukan all-time.
+        $totalDebit = (clone $query)->where('type', 'debit')->sum('amount');
+        $totalCredit = (clone $query)->where('type', 'credit')->sum('amount');
+
+        // Saldo kas riil = akumulasi seluruh mutasi (tak terpengaruh filter).
+        $currentBalance = Cashbook::where('type', 'debit')->sum('amount')
+            - Cashbook::where('type', 'credit')->sum('amount');
 
         // Export Logic
         if ($request->input('export') === 'pdf' || $request->input('export') === 'xlsx') {
-            $exportData = $query->get();
+            $exportData = (clone $query)->get();
             $exportTotalDebit = $exportData->where('type', 'debit')->sum('amount');
             $exportTotalCredit = $exportData->where('type', 'credit')->sum('amount');
             $exportCurrentBalance = $exportTotalDebit - $exportTotalCredit;
 
             if ($request->input('export') === 'pdf') {
-                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.cashbooks_pdf', compact('exportData', 'exportTotalDebit', 'exportTotalCredit', 'exportCurrentBalance'))
+                $pdf = Pdf::loadView('reports.cashbooks_pdf', compact('exportData', 'exportTotalDebit', 'exportTotalCredit', 'exportCurrentBalance'))
                     ->setPaper('a4', 'portrait');
+
                 return $pdf->stream('laporan-buku-kas.pdf');
             }
 
             if ($request->input('export') === 'xlsx') {
-                return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\CashbookExport($exportData, $exportTotalDebit, $exportTotalCredit, $exportCurrentBalance), 'laporan-buku-kas.xlsx');
+                return Excel::download(new CashbookExport($exportData, $exportTotalDebit, $exportTotalCredit, $exportCurrentBalance), 'laporan-buku-kas.xlsx');
             }
         }
 

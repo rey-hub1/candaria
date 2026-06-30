@@ -1,49 +1,54 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\SellerController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\SettlementController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\WeeklyReportController;
-use App\Http\Controllers\DailyUploadController;
-use App\Http\Controllers\ConsignmentController;
-use App\Http\Controllers\ChangeDebtController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\MarginRuleController;
-use App\Http\Controllers\CashbookController;
-use App\Http\Controllers\SettingController;
-use App\Http\Controllers\PublicController;
 use App\Http\Controllers\ActivityLogController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\SuperAdmin\FeatureFlagController;
-use App\Http\Controllers\SuperAdmin\DemoDataController;
-use App\Http\Controllers\Admin\VendorController as AdminVendorController;
-use App\Http\Controllers\Admin\MarketplaceCategoryController;
 use App\Http\Controllers\Admin\Marketplace\OrderController as AdminMarketplaceOrderController;
+use App\Http\Controllers\Admin\MarketplaceCategoryController;
 use App\Http\Controllers\Admin\MarketplaceReportController;
-use App\Http\Controllers\Vendor\DashboardController as VendorDashboardController;
-use App\Http\Controllers\Vendor\MenuItemController;
+use App\Http\Controllers\Admin\VendorController as AdminVendorController;
+use App\Http\Controllers\Admin\VendorSettlementController;
+use App\Http\Controllers\Auth\ForcePasswordController;
+use App\Http\Controllers\CashbookController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ChangeDebtController;
+use App\Http\Controllers\ConsignmentController;
+use App\Http\Controllers\DailyUploadController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MarginRuleController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SellerController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\SettlementController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
-use App\Http\Controllers\Student\PasswordController as StudentPasswordController;
 use App\Http\Controllers\Student\MarketplaceController;
 use App\Http\Controllers\Student\OrderController as StudentOrderController;
+use App\Http\Controllers\Student\PasswordController as StudentPasswordController;
+use App\Http\Controllers\SuperAdmin\DemoDataController;
+use App\Http\Controllers\SuperAdmin\FeatureFlagController;
+use App\Http\Controllers\SuperAdmin\TestRunnerController;
+use App\Http\Controllers\SuperAdmin\TransactionPurgeController;
+use App\Http\Controllers\SuperAdmin\WaTestController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\Vendor\DashboardController as VendorDashboardController;
+use App\Http\Controllers\Vendor\MenuItemController;
 use App\Http\Controllers\Vendor\OrderController as VendorOrderController;
 use App\Http\Controllers\Vendor\WalletController as VendorWalletController;
-use App\Http\Controllers\Admin\VendorSettlementController;
+use App\Http\Controllers\WeeklyReportController;
 use Illuminate\Support\Facades\Route;
 
-// Public pages
+// Public pages — gated by `public_menu` flag.
+// `/menu` 404 saat mati (halaman dalam); `/` redirect ke login (root jangan 404).
 Route::get('/', [PublicController::class, 'welcome']);
-Route::get('/menu', [PublicController::class, 'menu'])->name('menu');
+Route::middleware(['feature:public_menu'])->get('/menu', [PublicController::class, 'menu'])->name('menu');
 
 Route::middleware(['auth', 'password.changed'])->group(function () {
     // Wajib ganti password saat pertama login (penitip) — gated by flag
-    Route::get('/ganti-password', [\App\Http\Controllers\Auth\ForcePasswordController::class, 'edit'])->name('password.force');
-    Route::put('/ganti-password', [\App\Http\Controllers\Auth\ForcePasswordController::class, 'update'])->name('password.force.update');
+    Route::get('/ganti-password', [ForcePasswordController::class, 'edit'])->name('password.force');
+    Route::put('/ganti-password', [ForcePasswordController::class, 'update'])->name('password.force.update');
 
     // Dashboard (accessible by both admin & cashier)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -64,7 +69,7 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
     Route::middleware(['role:admin,cashier'])->group(function () {
         Route::get('/cashier', [TransactionController::class, 'create'])->name('transactions.create');
         Route::post('/checkout', [TransactionController::class, 'checkout'])->name('checkout');
-        
+
         Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
         Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show');
         Route::delete('/transactions/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
@@ -81,13 +86,13 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
     Route::middleware(['role:admin'])->group(function () {
         // Categories
         Route::resource('categories', CategoryController::class)->only(['index', 'store', 'update', 'destroy']);
-        
+
         // Sellers / Penitip
         Route::resource('sellers', SellerController::class)->only(['index', 'store', 'update', 'destroy']);
-        
+
         // Products
         Route::resource('products', ProductController::class)->only(['index', 'store', 'update', 'destroy']);
-        
+
         // Stok Titipan Harian (penerimaan + ambil sisa)
         Route::get('/stok-titipan', [ConsignmentController::class, 'index'])->name('consignments.index');
         Route::post('/stok-titipan/terima', [ConsignmentController::class, 'intake'])->name('consignments.intake');
@@ -96,12 +101,12 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         // Settlements / Pembayaran Penitip
         Route::get('/settlements', [SettlementController::class, 'index'])->name('settlements.index');
         Route::post('/settlements', [SettlementController::class, 'store'])->name('settlements.store');
-        
+
         // Mutasi Saldo / Buku Kas
         Route::middleware(['feature:cashbook'])->group(function () {
             Route::resource('cashbooks', CashbookController::class)->only(['index', 'store', 'destroy']);
         });
-        
+
         Route::get('/settlements/{settlement}', [SettlementController::class, 'show'])->name('settlements.show');
 
         // Reports
@@ -150,7 +155,7 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
     });
 
     // Marketplace: vendor/mitra dashboard
-    Route::middleware(['role:vendor', 'feature:marketplace'])->prefix('mitra')->name('vendor.')->group(function () {
+    Route::middleware(['role:vendor', 'feature:marketplace', 'vendor.exists'])->prefix('mitra')->name('vendor.')->group(function () {
         Route::get('/', [VendorDashboardController::class, 'index'])->name('dashboard');
         Route::get('/profile', [VendorDashboardController::class, 'profile'])->name('profile');
         Route::put('/profile', [VendorDashboardController::class, 'updateProfile'])->name('profile.update');
@@ -200,12 +205,19 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::put('/feature-flags/{featureFlag}', [FeatureFlagController::class, 'update'])->name('feature-flags.update');
         Route::get('/demo-data', [DemoDataController::class, 'index'])->name('demo-data.index');
         Route::post('/demo-data', [DemoDataController::class, 'apply'])->name('demo-data.apply');
-        
-        Route::get('/test-runner', [\App\Http\Controllers\SuperAdmin\TestRunnerController::class, 'index'])->name('test-runner.index');
-        Route::post('/test-runner/run', [\App\Http\Controllers\SuperAdmin\TestRunnerController::class, 'run'])->name('test-runner.run');
 
-        Route::get('/purge-transactions', [\App\Http\Controllers\SuperAdmin\TransactionPurgeController::class, 'index'])->name('purge-transactions.index');
-        Route::delete('/purge-transactions', [\App\Http\Controllers\SuperAdmin\TransactionPurgeController::class, 'destroy'])->name('purge-transactions.destroy');
+        Route::get('/test-runner', [TestRunnerController::class, 'index'])->name('test-runner.index');
+        Route::post('/test-runner/run', [TestRunnerController::class, 'run'])->name('test-runner.run');
+
+        Route::get('/purge-transactions', [TransactionPurgeController::class, 'index'])->name('purge-transactions.index');
+        Route::delete('/purge-transactions', [TransactionPurgeController::class, 'destroy'])->name('purge-transactions.destroy');
+
+        Route::get('/wa-test', [WaTestController::class, 'index'])->name('wa-test.index');
+        Route::post('/wa-test/phone', [WaTestController::class, 'savePhone'])->name('wa-test.phone');
+        Route::post('/wa-test/text', [WaTestController::class, 'testText'])->name('wa-test.text');
+        Route::post('/wa-test/image', [WaTestController::class, 'testImage'])->name('wa-test.image');
+        Route::post('/wa-test/document', [WaTestController::class, 'testDocument'])->name('wa-test.document');
+        Route::get('/wa-test/ping', [WaTestController::class, 'pingStatus'])->name('wa-test.ping');
     });
 });
 

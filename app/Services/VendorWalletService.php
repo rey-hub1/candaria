@@ -7,6 +7,7 @@ use App\Models\Vendor;
 use App\Models\VendorLedger;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class VendorWalletService
 {
@@ -26,6 +27,13 @@ class VendorWalletService
             $locked = Vendor::lockForUpdate()->findOrFail($vendor->id);
 
             $balanceAfter = $locked->balance + $signedAmount;
+
+            if ($balanceAfter < 0) {
+                throw ValidationException::withMessages([
+                    'amount' => "Saldo {$locked->name} tidak mencukupi.",
+                ]);
+            }
+
             $locked->update(['balance' => $balanceAfter]);
 
             return VendorLedger::create([

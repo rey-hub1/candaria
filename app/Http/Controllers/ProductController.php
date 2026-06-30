@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Seller;
@@ -15,16 +16,17 @@ class ProductController extends Controller
     {
         $filters = request()->only(['search', 'seller_search', 'sort', 'dir']);
         $query = Product::with(['category', 'seller'])->filter($filters, ['name', 'code', 'type', 'category.name']);
-        
-        if (!empty($filters['seller_search'])) {
-            $query->whereHas('seller', function($q) use ($filters) {
-                $q->where('name', 'like', '%' . $filters['seller_search'] . '%');
+
+        if (! empty($filters['seller_search'])) {
+            $query->whereHas('seller', function ($q) use ($filters) {
+                $q->where('name', 'like', '%'.$filters['seller_search'].'%');
             });
         }
-        
+
         $products = $query->paginate(15)->withQueryString();
         $categories = Category::all();
         $sellers = Seller::where('is_active', true)->get();
+
         return Inertia::render('Products/Index', ['products' => $products, 'categories' => $categories, 'sellers' => $sellers, 'filters' => $filters]);
     }
 
@@ -73,6 +75,12 @@ class ProductController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
+        // Cegah ganti type (kantin↔siswa) bila produk sudah punya riwayat transaksi —
+        // item lama & baru akan punya interpretasi profit berbeda → rekonsiliasi rusak.
+        if ($request->type !== $product->type && $product->transactionItems()->exists()) {
+            return redirect()->back()->with('error', 'Tipe produk tidak bisa diubah karena sudah memiliki riwayat transaksi.');
+        }
+
         $data = $request->only('name', 'category_id', 'type', 'cost_price', 'stock');
 
         if ($request->type === 'kantin') {
@@ -101,13 +109,24 @@ class ProductController extends Controller
             return redirect()->route('products.index')->with('error', 'Produk tidak bisa dihapus karena sudah memiliki riwayat transaksi.');
         }
 
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
+        }
+
         $product->delete();
+
         return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
     }
 
     public function forceIncrement(Product $product)
     {
         $product->increment('stock', 1);
+
+        // Penambahan stok paksa rawan disalahgunakan — catat ke audit log.
+        ActivityLog::record('force_increment', "Tambah paksa stok {$product->name} (+1)", $product, [
+            'stock_after' => $product->stock,
+        ]);
+
         return redirect()->back()->with('success', "Stok {$product->name} berhasil ditambah 1 secara paksa.");
     }
 }

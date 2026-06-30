@@ -45,7 +45,8 @@
       "Read(//Users/reynonawfal/.claude/skills/lean-coding/assets/**)",
       "Bash(npx eslint *)",
       "Bash(grep -n \"ToastContainer\\\\|</div>\\\\s*$\\\\|^    \\);\" resources/js/Layouts/AuthenticatedLayout.jsx)",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "Bash(python3 *)"
     ]
   }
 }

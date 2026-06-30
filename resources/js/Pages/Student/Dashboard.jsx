@@ -2,6 +2,7 @@ import React from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatRupiah } from '@/utils/format';
+import { UtensilsCrossed, Receipt, Waves } from 'lucide-react';
 
 const STATUS_LABEL = {
     pending: 'Menunggu Konfirmasi',
@@ -29,7 +30,7 @@ export default function Dashboard({ student, recentOrders = [], activeOrderCount
             <Head title="Beranda" />
 
             <div className="mb-6">
-                <h1 className="text-xl font-bold text-slate-900">Halo, {student?.name || 'Siswa'} 👋</h1>
+                <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">Halo, {student?.name || 'Siswa'} <Waves className="w-5 h-5 text-amber-400" /></h1>
                 <p className="text-sm text-slate-500 mt-1">
                     {student?.class && <>Kelas {student.class} · </>}
                     NISN {student?.nisn}
@@ -47,7 +48,7 @@ export default function Dashboard({ student, recentOrders = [], activeOrderCount
                                 <p className="text-base font-bold">Jajan Sekarang</p>
                                 <p className="text-sm text-white/80 mt-0.5">Pesan dari mitra sekolah</p>
                             </div>
-                            <span className="text-3xl">🍱</span>
+                            <UtensilsCrossed className="w-8 h-8 text-white/80" />
                         </Link>
 
                         <Link
@@ -60,7 +61,7 @@ export default function Dashboard({ student, recentOrders = [], activeOrderCount
                                     {activeOrderCount > 0 ? `${activeOrderCount} pesanan aktif` : 'Lihat riwayat pesanan'}
                                 </p>
                             </div>
-                            <span className="text-3xl">🧾</span>
+                            <Receipt className="w-8 h-8 text-slate-400" />
                         </Link>
                     </div>
 

@@ -20,8 +20,9 @@ Useful for demos & testing.
 Default/current level stored in `settings` key `demo_data_level` (read via `DemoDataService::currentLevel()`, defaults `full`).
 
 ## What is preserved vs wiped
-- **Preserved (essentials):** staff login users (admin@canteen.com, cashier@canteen.com, superadmin@candaria.com — all password `password`), feature flags, margin rules, canteen `categories`, `marketplace_categories`.
-- **Wiped + reseeded (demo):** products, sellers, consignments, transactions/items, cashbooks, seller_settlements, vendors, menu_items (+legacy option tables), orders/items/status history, vendor_ledgers/settlements, notifications, activity_logs, and demo login users (roles `penitip`/`vendor`/`student`).
+- **Preserved (essentials):** staff login users — `staffUser()` reuses any existing user of that role (tidak bikin akun paralel; kalau belum ada, firstOrCreate default `password`), feature flags, margin rules, canteen `categories`, `marketplace_categories`. **`activity_logs` juga dipreserve** — jejak audit (reset/purge) bertahan melewati reset.
+- **Wiped + reseeded (demo):** products, sellers, consignments, transactions/items, cashbooks, seller_settlements, vendors, menu_items, orders/items/status history, vendor_ledgers/settlements, notifications, and demo login users (roles `penitip`/`vendor`/`student`).
+- **Guard:** `apply()` `abort_if(app()->isProduction())` — reset tidak bisa jalan di produksi. Tiap reset dicatat ke `activity_logs` (`demo_reset`).
 
 ## Code
 - `App\Services\DemoDataService` — `apply(level)` runs in a DB transaction: `wipe()` (FK checks disabled, raw `DB::table()->delete()` to bypass soft-deletes) → `ensureEssentials()` (idempotent firstOrCreate + `FeatureFlagSeeder`) → `seedCanteen()` + `seedMarketplace()` at preset volume. Product codes/selling-price and order codes are left to model `boot()`.

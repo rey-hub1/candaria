@@ -3,33 +3,34 @@ import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ConfirmModal from '@/Components/ConfirmModal';
 import { useDialog } from '@/hooks/useDialog';
+import { ClipboardList, Package, Leaf, Trash2, AlertTriangle } from 'lucide-react';
 
 const MODES = [
     {
         level: 'v1',
         label: 'Data Asli V1',
-        emoji: '📋',
+        icon: <ClipboardList className="w-6 h-6 text-emerald-600" />,
         desc: 'Data konsinyasi nyata 3 hari (Senin–Rabu) dari rekap penjualan. Tanggal otomatis menyesuaikan minggu lalu. Tanpa data marketplace.',
         accent: 'border-emerald-300 bg-emerald-50',
     },
     {
         level: 'full',
         label: 'Banyak',
-        emoji: '📦',
+        icon: <Package className="w-6 h-6 text-primary-600" />,
         desc: 'Data demo lengkap: banyak penitip, produk, transaksi ~2 minggu, beberapa mitra + menu, beberapa siswa & pesanan.',
         accent: 'border-primary-300 bg-primary-50',
     },
     {
         level: 'minimal',
         label: 'Sedikit',
-        emoji: '🍃',
+        icon: <Leaf className="w-6 h-6 text-amber-600" />,
         desc: 'Data secukupnya untuk coba-coba: sedikit penitip, produk, transaksi, 1 mitra, 2 siswa, 1 pesanan per siswa.',
         accent: 'border-amber-300 bg-amber-50',
     },
     {
         level: 'none',
         label: 'Kosong',
-        emoji: '🗑️',
+        icon: <Trash2 className="w-6 h-6 text-rose-500" />,
         desc: 'Hapus semua data demo. Hanya akun login inti, feature flag, margin, dan kategori yang dipertahankan.',
         accent: 'border-rose-300 bg-rose-50',
     },
@@ -100,7 +101,7 @@ export default function DemoData({ currentLevel, counts }) {
                                 key={mode.level}
                                 className={`rounded-xl border shadow-sm p-4 flex items-start gap-4 ${active ? mode.accent : 'border-slate-200 bg-white'}`}
                             >
-                                <span className="text-2xl shrink-0">{mode.emoji}</span>
+                                <span className="shrink-0">{mode.icon}</span>
                                 <div className="min-w-0 flex-1">
                                     <div className="flex items-center gap-2">
                                         <p className="text-sm font-bold text-slate-900">{mode.label}</p>
@@ -124,8 +125,9 @@ export default function DemoData({ currentLevel, counts }) {
                     })}
                 </div>
 
-                <p className="text-xs text-slate-400 mt-6">
-                    ⚠️ Setiap penerapan menghapus data demo lama lebih dulu. Akun login (admin, kasir, pembina),
+                <p className="text-xs text-slate-400 mt-6 flex items-start gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-500 mt-0.5" />
+                    Setiap penerapan menghapus data demo lama lebih dulu. Akun login (admin, kasir, pembina),
                     feature flag, aturan margin, dan kategori selalu dipertahankan.
                 </p>
             </div>

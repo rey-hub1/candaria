@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'waha' => [
+        'base_url' => env('WA_BASE_URL', 'http://localhost:3000'),
+        'api_key'  => env('WA_API_KEY'),
+        'session'  => env('WA_SESSION', 'default'),
+        'enabled'  => env('WA_ENABLED', false),
+    ],
+
 ];

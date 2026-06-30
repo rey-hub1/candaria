@@ -8,6 +8,7 @@ use App\Notifications\OrderStatusUpdated;
 use App\Services\VendorWalletService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -58,20 +59,33 @@ class OrderController extends Controller
             'cancelled_reason' => ['required_if:status,cancelled', 'nullable', 'string', 'max:255'],
         ]);
 
-        $allowed = self::TRANSITIONS[$order->status] ?? [];
+        // Status update + credit wallet harus atomik dan terkunci, supaya dua request
+        // "delivered" yang bersamaan tidak menggandakan saldo vendor.
+        DB::transaction(function () use ($order, $validated, $wallet, $vendor) {
+            $locked = Order::lockForUpdate()->findOrFail($order->id);
 
-        if (! in_array($validated['status'], $allowed, true)) {
-            throw ValidationException::withMessages(['status' => "Tidak bisa ubah status dari \"{$order->status}\" ke \"{$validated['status']}\"."]);
-        }
+            $allowed = self::TRANSITIONS[$locked->status] ?? [];
 
-        $order->update([
-            'status' => $validated['status'],
-            'cancelled_reason' => $validated['status'] === 'cancelled' ? $validated['cancelled_reason'] : $order->cancelled_reason,
-        ]);
+            if (! in_array($validated['status'], $allowed, true)) {
+                throw ValidationException::withMessages(['status' => "Tidak bisa ubah status dari \"{$locked->status}\" ke \"{$validated['status']}\"."]);
+            }
 
-        if ($validated['status'] === 'delivered') {
-            $wallet->credit($vendor, (float) $order->total, $order, "Pesanan {$order->order_code}");
-        }
+            $locked->update([
+                'status' => $validated['status'],
+                'cancelled_reason' => $validated['status'] === 'cancelled' ? $validated['cancelled_reason'] : $locked->cancelled_reason,
+            ]);
+
+            if ($validated['status'] === 'delivered') {
+                $wallet->credit($vendor, (float) $locked->total, $locked, "Pesanan {$locked->order_code}");
+
+                // Order cash dibayar tunai saat serah-terima → tandai lunas.
+                if ($locked->payment_method === 'cash') {
+                    $locked->update(['payment_status' => 'paid']);
+                }
+            }
+
+            $order->setRawAttributes($locked->getAttributes());
+        });
 
         $order->student->notify(new OrderStatusUpdated($order));
 

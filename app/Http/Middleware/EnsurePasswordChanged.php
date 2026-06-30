@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsurePasswordChanged
 {
     /**
-     * Paksa penitip mengganti password saat pertama login — hanya saat
+     * Paksa penitip & vendor mengganti password saat pertama login — hanya saat
      * feature flag `force_password_change` menyala. Siswa ditangani oleh
      * EnsureStudentPasswordChanged.
      */
@@ -20,7 +20,7 @@ class EnsurePasswordChanged
 
         if (
             $user
-            && $user->role === 'penitip'
+            && in_array($user->role, ['penitip', 'vendor'], true)
             && $user->must_change_password
             && FeatureFlag::enabled('force_password_change')
             && ! $request->routeIs('password.force', 'logout')

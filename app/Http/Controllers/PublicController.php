@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\FeatureFlag;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -12,6 +13,11 @@ class PublicController extends Controller
     // Landing page with popular products
     public function welcome()
     {
+        // Wajah publik dimatikan → langsung ke login (root jangan dibikin 404).
+        if (! FeatureFlag::enabled('public_menu')) {
+            return redirect()->route('login');
+        }
+
         $popularProducts = Product::with('category:id,name')
             ->select(['id', 'category_id', 'name', 'selling_price', 'stock', 'image', 'code'])
             ->where('stock', '>', 0)

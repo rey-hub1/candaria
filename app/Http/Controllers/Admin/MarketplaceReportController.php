@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -17,8 +16,9 @@ class MarketplaceReportController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
+        // Revenue hanya diakui untuk order yang benar-benar selesai (delivered).
         $sales = Order::join('vendors', 'vendors.id', '=', 'orders.vendor_id')
-            ->whereIn('orders.status', ['confirmed', 'preparing', 'ready', 'delivered'])
+            ->where('orders.status', 'delivered')
             ->when($startDate && $endDate, function ($q) use ($startDate, $endDate) {
                 return $q->whereBetween(DB::raw('DATE(orders.delivery_date)'), [$startDate, $endDate]);
             })

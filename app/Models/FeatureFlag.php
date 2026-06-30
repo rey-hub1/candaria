@@ -16,7 +16,8 @@ class FeatureFlag extends Model
         'is_enabled' => 'boolean',
     ];
 
-    public static function enabled(string $key, bool $default = true): bool
+    // Default fail-closed: flag tak dikenal/belum di-seed → fitur OFF, bukan ON.
+    public static function enabled(string $key, bool $default = false): bool
     {
         return Cache::rememberForever("feature_flag.$key", function () use ($key, $default) {
             $flag = static::where('key', $key)->first();

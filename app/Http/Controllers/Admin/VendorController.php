@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 
 class VendorController extends Controller
@@ -35,7 +36,7 @@ class VendorController extends Controller
             'address' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'owner_email' => 'required|email|unique:users,email',
-            'owner_password' => 'required|string|min:6',
+            'owner_password' => ['required', 'string', Password::defaults()],
         ]);
 
         $owner = User::create([

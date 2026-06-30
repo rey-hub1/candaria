@@ -12,7 +12,6 @@ use App\Models\Seller;
 use App\Models\Setting;
 use App\Models\Student;
 use App\Models\Transaction;
-use App\Models\TransactionItem;
 use App\Models\User;
 use App\Models\Vendor;
 use Carbon\Carbon;
@@ -35,12 +34,14 @@ class DemoDataService
 
     /** Tabel data demo/transaksional yang dibersihkan saat reset (urutan aman FK). */
     private const DEMO_TABLES = [
-        'order_item_options', 'order_status_histories', 'order_items', 'orders',
-        'vendor_ledgers', 'vendor_settlements', 'menu_options', 'menu_option_groups',
+        'order_status_histories', 'order_items', 'orders',
+        'vendor_ledgers', 'vendor_settlements',
         'menu_items', 'vendors', 'students',
         'change_debts',
         'transaction_items', 'transactions', 'seller_settlements', 'consignments',
-        'cashbooks', 'products', 'sellers', 'notifications', 'activity_logs',
+        'cashbooks', 'products', 'sellers', 'notifications',
+        // 'activity_logs' SENGAJA tidak di-wipe — jejak audit (termasuk siapa yang
+        // menjalankan reset/purge) harus bertahan melewati reset demo.
     ];
 
     private function preset(string $level): array
@@ -70,6 +71,9 @@ class DemoDataService
     {
         abort_unless(in_array($level, self::LEVELS, true), 422);
 
+        // Operasi destruktif (wipe seluruh DB demo) tidak boleh jalan di produksi.
+        abort_if(app()->isProduction(), 403, 'Reset data demo tidak tersedia di lingkungan produksi.');
+
         DB::transaction(function () use ($level) {
             $this->wipe();
             $this->ensureEssentials();
@@ -91,19 +95,23 @@ class DemoDataService
     {
         Schema::disableForeignKeyConstraints();
 
-        foreach (self::DEMO_TABLES as $table) {
-            DB::table($table)->delete();
+        try {
+            foreach (self::DEMO_TABLES as $table) {
+                DB::table($table)->delete();
+            }
+
+            // Hapus akun login demo (penitip/vendor/student); sisakan staf inti.
+            DB::table('users')->whereIn('role', ['penitip', 'vendor', 'student'])->delete();
+        } finally {
+            // Wajib re-enable walau delete gagal — kalau tidak, koneksi sisa request
+            // jalan tanpa proteksi FK.
+            Schema::enableForeignKeyConstraints();
         }
-
-        // Hapus akun login demo (penitip/vendor/student); sisakan staf inti.
-        DB::table('users')->whereIn('role', ['penitip', 'vendor', 'student'])->delete();
-
-        Schema::enableForeignKeyConstraints();
     }
 
     private function ensureEssentials(): void
     {
-        (new FeatureFlagSeeder())->run();
+        (new FeatureFlagSeeder)->run();
 
         $this->staffUser('Admin Kantin', 'admin@canteen.com', 'admin');
         $this->staffUser('Kasir Kantin', 'cashier@canteen.com', 'cashier');
@@ -126,6 +134,14 @@ class DemoDataService
 
     private function staffUser(string $name, string $email, string $role): User
     {
+        // Jangan bikin akun paralel: kalau sudah ada staf dengan role ini (mis. admin
+        // asli yang emailnya sudah diganti), pakai yang ada — cegah backdoor akun demo
+        // berpassword 'password' muncul diam-diam di samping akun sungguhan.
+        $existing = User::where('role', $role)->first();
+        if ($existing) {
+            return $existing;
+        }
+
         return User::firstOrCreate(
             ['email' => $email],
             ['name' => $name, 'password' => Hash::make('password'), 'role' => $role]

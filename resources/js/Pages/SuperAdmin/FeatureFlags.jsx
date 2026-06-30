@@ -1,6 +1,7 @@
 import React from 'react';
 import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Check } from 'lucide-react';
 
 const GROUP_LABELS = {
     general: 'Umum',
@@ -109,7 +110,7 @@ export default function FeatureFlags({ flags = {} }) {
                                     </div>
                                     <p className="text-xs text-slate-500 mt-1">{t.description}</p>
                                     {active && (
-                                        <p className="text-[11px] font-semibold text-primary-600 mt-2">✓ Aktif</p>
+                                        <p className="text-[11px] font-semibold text-primary-600 mt-2 flex items-center gap-1"><Check className="w-3 h-3" /> Aktif</p>
                                     )}
                                 </button>
                             );

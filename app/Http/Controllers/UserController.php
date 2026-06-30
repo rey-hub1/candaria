@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
-
 use Inertia\Inertia;
 
 class UserController extends Controller
@@ -15,6 +14,7 @@ class UserController extends Controller
     {
         $filters = request()->only(['search', 'sort', 'dir']);
         $users = User::whereIn('role', ['admin', 'cashier'])->filter($filters, ['name', 'email', 'role'])->paginate(15)->withQueryString();
+
         return Inertia::render('Users/Index', ['users' => $users, 'filters' => $filters]);
     }
 
@@ -44,7 +44,11 @@ class UserController extends Controller
     {
         $isSuperAdmin = auth()->user()->role === 'super_admin';
 
-        if (!$isSuperAdmin && $user->role === 'admin') {
+        // Akun super_admin tidak dikelola lewat layar ini — cegah admin biasa
+        // mengubah email/password atau menurunkan role super_admin via PUT langsung.
+        abort_if($user->role === 'super_admin', 403, 'Akun Super Admin tidak dapat diubah dari sini.');
+
+        if (! $isSuperAdmin && $user->role === 'admin') {
             abort(403, 'Hanya Super Admin yang dapat mengubah akun Admin.');
         }
 
@@ -52,7 +56,7 @@ class UserController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', $allowedRoles],
         ]);
@@ -74,6 +78,8 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        abort_if($user->role === 'super_admin', 403, 'Akun Super Admin tidak dapat dihapus dari sini.');
+
         if ($user->role === 'admin' && auth()->user()->role !== 'super_admin') {
             return redirect()->route('users.index')->with('error', 'Hanya Super Admin yang dapat menghapus akun Admin.');
         }
@@ -91,6 +97,7 @@ class UserController extends Controller
         }
 
         $user->delete();
+
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus.');
     }
 }

@@ -8,6 +8,7 @@ use App\Models\VendorSettlement;
 use App\Services\VendorWalletService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -38,18 +39,19 @@ class VendorSettlementController extends Controller
 
         $vendor = Vendor::findOrFail($validated['vendor_id']);
 
-        if ($validated['amount'] > $vendor->balance) {
-            return redirect()->back()->with('error', "Saldo {$vendor->name} tidak mencukupi.");
-        }
+        // Debit + record settlement harus atomik. Cek saldo tidak cukup ditegakkan
+        // di dalam VendorWalletService::applyMutation (di bawah lockForUpdate),
+        // sehingga aman dari race overdraft.
+        DB::transaction(function () use ($wallet, $vendor, $validated, $request) {
+            $wallet->debit($vendor, $validated['amount'], $validated['notes'] ?? "Pencairan saldo {$vendor->name}");
 
-        $wallet->debit($vendor, $validated['amount'], $validated['notes'] ?? "Pencairan saldo {$vendor->name}");
-
-        VendorSettlement::create([
-            'vendor_id' => $vendor->id,
-            'amount' => $validated['amount'],
-            'notes' => $validated['notes'] ?? null,
-            'created_by' => $request->user()->id,
-        ]);
+            VendorSettlement::create([
+                'vendor_id' => $vendor->id,
+                'amount' => $validated['amount'],
+                'notes' => $validated['notes'] ?? null,
+                'created_by' => $request->user()->id,
+            ]);
+        });
 
         return redirect()->back()->with('success', "Berhasil mencairkan saldo {$vendor->name}.");
     }

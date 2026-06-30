@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\TransactionException;
 use App\Models\ActivityLog;
 use App\Models\Cashbook;
+use App\Models\ChangeDebt;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
@@ -100,12 +101,12 @@ class TransactionService
             // Kembalian dititip (kasir tak bisa kasih kembalian penuh) → hutang ke
             // customer. Uang receh-nya tetap di laci, jadi catat sebagai kas masuk.
             if ($changeDebt > 0) {
-                $debt = \App\Models\ChangeDebt::create([
+                $debt = ChangeDebt::create([
                     'transaction_id' => $transaction->id,
                     'customer_name' => $customerName,
                     'customer_class' => $customerClass,
                     'amount' => $changeDebt,
-                    'status' => \App\Models\ChangeDebt::STATUS_UNPAID,
+                    'status' => ChangeDebt::STATUS_UNPAID,
                     'date' => now()->toDateString(),
                     'created_by' => $cashier->id,
                 ]);
@@ -145,48 +146,76 @@ class TransactionService
             throw new TransactionException('Transaksi sudah dibatalkan sebelumnya.');
         }
 
-        foreach ($transaction->items as $item) {
-            if ($item->seller_settlement_id !== null) {
-                throw new TransactionException('Transaksi tidak dapat dibatalkan karena keuntungan sudah dicairkan ke penitip.');
-            }
-        }
-
         return DB::transaction(function () use ($transaction, $reason, $admin) {
-            $itemsByProduct = $transaction->items->groupBy('product_id');
+            // Re-fetch + lock di dalam transaction supaya dua request void bersamaan
+            // tidak menggandakan pengembalian stok & contra cashbook (cek TOCTOU).
+            $locked = Transaction::lockForUpdate()->findOrFail($transaction->id);
+            if ($locked->isVoided()) {
+                throw new TransactionException('Transaksi sudah dibatalkan sebelumnya.');
+            }
 
-            foreach ($itemsByProduct as $productId => $items) {
+            $items = $locked->items()->get();
+
+            foreach ($items as $item) {
+                if ($item->seller_settlement_id !== null) {
+                    throw new TransactionException('Transaksi tidak dapat dibatalkan karena keuntungan sudah dicairkan ke penitip.');
+                }
+            }
+
+            $itemsByProduct = $items->groupBy('product_id');
+
+            foreach ($itemsByProduct as $productId => $group) {
                 $product = Product::lockForUpdate()->find($productId);
                 if ($product) {
-                    $product->increment('stock', $items->sum('quantity'));
+                    $product->increment('stock', $group->sum('quantity'));
                 }
             }
 
             // Bulk soft-delete in one query — excluded from all aggregates
-            TransactionItem::whereIn('id', $transaction->items->pluck('id'))->update(['deleted_at' => now()]);
+            TransactionItem::whereIn('id', $items->pluck('id'))->update(['deleted_at' => now()]);
 
             // Contra entry keeps the cashbook audit trail intact (net zero).
             Cashbook::create([
                 'date' => now()->toDateString(),
-                'description' => 'Pembatalan '.$transaction->transaction_code,
+                'description' => 'Pembatalan '.$locked->transaction_code,
                 'type' => 'credit',
-                'amount' => $transaction->total_amount,
+                'amount' => $locked->total_amount,
                 'source' => 'transaction',
-                'reference_id' => $transaction->id,
+                'reference_id' => $locked->id,
                 'user_id' => $admin->id,
             ]);
 
-            $transaction->update([
+            // Hutang kembalian ikut dibatalkan: kalau belum dilunasi, balikkan kas
+            // receh-nya (contra credit) dan tandai cancelled supaya tak bisa "dibayar"
+            // untuk transaksi yang sudah tidak ada. Kalau sudah dilunasi, kas debit
+            // (checkout) & credit (pelunasan) sudah net-zero — tak perlu apa-apa.
+            $debt = $locked->changeDebt;
+            if ($debt && $debt->status === ChangeDebt::STATUS_UNPAID) {
+                Cashbook::create([
+                    'date' => now()->toDateString(),
+                    'description' => 'Pembatalan hutang kembalian '.$locked->transaction_code,
+                    'type' => 'credit',
+                    'amount' => $debt->amount,
+                    'source' => 'change_debt',
+                    'reference_id' => $debt->id,
+                    'user_id' => $admin->id,
+                ]);
+
+                $debt->update(['status' => ChangeDebt::STATUS_CANCELLED]);
+            }
+
+            $locked->update([
                 'status' => Transaction::STATUS_VOIDED,
                 'voided_at' => now(),
                 'void_reason' => $reason,
                 'voided_by' => $admin->id,
             ]);
 
-            ActivityLog::record('voided', "Membatalkan transaksi {$transaction->transaction_code}", $transaction, [
+            ActivityLog::record('voided', "Membatalkan transaksi {$locked->transaction_code}", $locked, [
                 'reason' => $reason,
             ]);
 
-            return $transaction;
+            return $locked;
         });
     }
 
@@ -196,30 +225,37 @@ class TransactionService
      *
      * @throws TransactionException
      */
-    public function settleChangeDebt(\App\Models\ChangeDebt $debt, User $user): \App\Models\ChangeDebt
+    public function settleChangeDebt(ChangeDebt $debt, User $user): ChangeDebt
     {
-        if ($debt->isPaid()) {
-            throw new TransactionException('Hutang kembalian ini sudah dilunasi.');
+        if ($debt->status !== ChangeDebt::STATUS_UNPAID) {
+            throw new TransactionException('Hutang kembalian ini sudah dilunasi atau dibatalkan.');
         }
 
         return DB::transaction(function () use ($debt, $user) {
-            $debt->update([
-                'status' => \App\Models\ChangeDebt::STATUS_PAID,
+            // Lock + re-cek status di dalam transaction supaya dua request pelunasan
+            // bersamaan tidak menggandakan kas keluar (race double-payment).
+            $locked = ChangeDebt::lockForUpdate()->findOrFail($debt->id);
+            if ($locked->status !== ChangeDebt::STATUS_UNPAID) {
+                throw new TransactionException('Hutang kembalian ini sudah dilunasi atau dibatalkan.');
+            }
+
+            $locked->update([
+                'status' => ChangeDebt::STATUS_PAID,
                 'paid_at' => now(),
                 'paid_by' => $user->id,
             ]);
 
             Cashbook::create([
                 'date' => now()->toDateString(),
-                'description' => 'Pembayaran hutang kembalian'.($debt->transaction ? ' '.$debt->transaction->transaction_code : '').($debt->customer_note ? ' ('.$debt->customer_note.')' : ''),
+                'description' => 'Pembayaran hutang kembalian'.($locked->transaction ? ' '.$locked->transaction->transaction_code : '').($locked->customer_note ? ' ('.$locked->customer_note.')' : ''),
                 'type' => 'credit',
-                'amount' => $debt->amount,
+                'amount' => $locked->amount,
                 'source' => 'change_debt',
-                'reference_id' => $debt->id,
+                'reference_id' => $locked->id,
                 'user_id' => $user->id,
             ]);
 
-            return $debt;
+            return $locked;
         });
     }
 

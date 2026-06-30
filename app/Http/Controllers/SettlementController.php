@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SettlementsReportExport;
+use App\Models\Cashbook;
 use App\Models\Seller;
 use App\Models\SellerSettlement;
 use App\Models\TransactionItem;
-use App\Models\Cashbook;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
-use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Exports\SettlementsReportExport;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 
 class SettlementController extends Controller
@@ -21,18 +21,21 @@ class SettlementController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only(['search', 'sort', 'dir', 'start_date', 'end_date', 'preset']);
-        
+
         $startDate = $filters['start_date'] ?? null;
         $endDate = $filters['end_date'] ?? null;
 
         // Use a subquery to calculate earnings and payments
         $query = Seller::withCount('products')
             ->select('sellers.*')
-            ->selectSub(function($query) use ($startDate, $endDate) {
+            ->selectSub(function ($query) use ($startDate, $endDate) {
                 $query->selectRaw('COALESCE(SUM(transaction_items.profit_seller), 0)')
                     ->from('transaction_items')
                     ->join('products', 'products.id', '=', 'transaction_items.product_id')
-                    ->whereColumn('products.seller_id', 'sellers.id');
+                    ->whereColumn('products.seller_id', 'sellers.id')
+                    // Query builder mentah tidak kena SoftDeletes scope — kecualikan
+                    // item dari transaksi yang sudah di-void secara eksplisit.
+                    ->whereNull('transaction_items.deleted_at');
 
                 if ($startDate) {
                     $query->whereDate('transaction_items.created_at', '>=', $startDate);
@@ -41,7 +44,7 @@ class SettlementController extends Controller
                     $query->whereDate('transaction_items.created_at', '<=', $endDate);
                 }
             }, 'total_earnings')
-            ->selectSub(function($query) use ($startDate, $endDate) {
+            ->selectSub(function ($query) use ($startDate, $endDate) {
                 $query->selectRaw('COALESCE(SUM(total_amount), 0)')
                     ->from('seller_settlements')
                     ->whereColumn('seller_id', 'sellers.id');
@@ -71,27 +74,29 @@ class SettlementController extends Controller
                     'endDate' => $endDate,
                     'totalUnpaid' => $totalUnpaidAll,
                 ])->setPaper('a4', 'portrait');
-                return $pdf->stream('laporan-pembayaran-penitip-' . now()->format('Y-m-d') . '.pdf');
+
+                return $pdf->stream('laporan-pembayaran-penitip-'.now()->format('Y-m-d').'.pdf');
             }
 
             if ($request->input('export') === 'xlsx') {
-                return Excel::download(new SettlementsReportExport($allSellers, $startDate, $endDate, $totalUnpaidAll), 'laporan-pembayaran-penitip-' . now()->format('Y-m-d') . '.xlsx');
+                return Excel::download(new SettlementsReportExport($allSellers, $startDate, $endDate, $totalUnpaidAll), 'laporan-pembayaran-penitip-'.now()->format('Y-m-d').'.xlsx');
             }
         }
 
+        // totalUnpaid harus lintas SEMUA seller, bukan hanya halaman aktif.
+        $totalUnpaid = (clone $query)->get()
+            ->sum(fn ($s) => $s->total_earnings - $s->total_paid);
+
         $sellers = $query->paginate(15)->withQueryString();
 
-        // Calculate total unpaid across all sellers for summary
-        $totalUnpaid = 0;
         foreach ($sellers as $seller) {
             $seller->unpaid_amount = $seller->total_earnings - $seller->total_paid;
-            $totalUnpaid += $seller->unpaid_amount;
         }
 
         return Inertia::render('Settlements/Index', [
             'sellers' => $sellers,
             'filters' => $filters,
-            'totalUnpaid' => $totalUnpaid
+            'totalUnpaid' => $totalUnpaid,
         ]);
     }
 
@@ -101,13 +106,13 @@ class SettlementController extends Controller
         $seller = Seller::findOrFail($id);
 
         // Calculate total earnings
-        $totalEarnings = TransactionItem::whereHas('product', function($q) use ($id) {
+        $totalEarnings = TransactionItem::whereHas('product', function ($q) use ($id) {
             $q->where('seller_id', $id);
         })->sum('profit_seller');
 
         // Calculate total paid
         $totalPaid = SellerSettlement::where('seller_id', $id)->sum('total_amount');
-        
+
         $seller->unpaid_amount = $totalEarnings - $totalPaid;
         $seller->total_earnings = $totalEarnings;
         $seller->total_paid = $totalPaid;
@@ -135,9 +140,9 @@ class SettlementController extends Controller
                 'created_at',
                 DB::raw("'payout' as type"),
                 'total_amount as amount',
-                DB::raw("NULL as quantity"),
-                DB::raw("NULL as product_id"),
-                DB::raw("NULL as transaction_id"),
+                DB::raw('NULL as quantity'),
+                DB::raw('NULL as product_id'),
+                DB::raw('NULL as transaction_id'),
                 'notes'
             )
             ->latest()
@@ -148,7 +153,7 @@ class SettlementController extends Controller
 
         return Inertia::render('Settlements/Show', [
             'seller' => $seller,
-            'ledger' => $ledger
+            'ledger' => $ledger,
         ]);
     }
 
@@ -158,7 +163,7 @@ class SettlementController extends Controller
         $request->validate([
             'seller_id' => 'required|exists:sellers,id',
             'amount' => 'required|numeric|min:1',
-            'notes' => 'nullable|string|max:255'
+            'notes' => 'nullable|string|max:255',
         ]);
 
         $sellerId = $request->input('seller_id');
@@ -169,19 +174,34 @@ class SettlementController extends Controller
 
             $seller = Seller::findOrFail($sellerId);
 
+            // Cegah over-payment: jumlah cair tidak boleh melebihi saldo belum
+            // dibayar. Earnings via Eloquent (SoftDeletes aktif → item voided
+            // dikecualikan). Dihitung di dalam transaction agar konsisten.
+            $earnings = TransactionItem::whereHas('product', function ($q) use ($sellerId) {
+                $q->where('seller_id', $sellerId);
+            })->sum('profit_seller');
+            $paid = SellerSettlement::where('seller_id', $sellerId)->sum('total_amount');
+            $unpaid = $earnings - $paid;
+
+            if ($amountToPay > $unpaid) {
+                DB::rollBack();
+
+                return redirect()->back()->with('error', 'Jumlah pencairan melebihi saldo penitip yang belum dibayar (Rp'.number_format($unpaid, 0, ',', '.').').');
+            }
+
             // Create settlement record (Payout)
             $settlement = SellerSettlement::create([
                 'seller_id' => $sellerId,
                 'user_id' => Auth::id(),
                 'total_amount' => $amountToPay,
                 'settlement_date' => Carbon::now(),
-                'notes' => $request->input('notes') ?? "Pencairan dana untuk {$seller->name}"
+                'notes' => $request->input('notes') ?? "Pencairan dana untuk {$seller->name}",
             ]);
 
             // Create Cashbook entry for expense (Credit)
             Cashbook::create([
                 'date' => now()->toDateString(),
-                'description' => 'Pencairan Penitip: ' . $seller->name,
+                'description' => 'Pencairan Penitip: '.$seller->name,
                 'type' => 'credit',
                 'amount' => $amountToPay,
                 'source' => 'settlement',
@@ -190,12 +210,12 @@ class SettlementController extends Controller
             ]);
 
             // Update seller_settlement_id in transaction_items using FIFO
-            $unpaidItems = TransactionItem::whereHas('product', function($q) use ($sellerId) {
+            $unpaidItems = TransactionItem::whereHas('product', function ($q) use ($sellerId) {
                 $q->where('seller_id', $sellerId);
             })->whereNull('seller_settlement_id')
-              ->where('profit_seller', '>', 0)
-              ->orderBy('created_at', 'asc')
-              ->get();
+                ->where('profit_seller', '>', 0)
+                ->orderBy('created_at', 'asc')
+                ->get();
 
             $remainingAmount = $amountToPay;
             $itemsToUpdate = [];
@@ -210,21 +230,22 @@ class SettlementController extends Controller
                 }
             }
 
-            if (!empty($itemsToUpdate)) {
+            if (! empty($itemsToUpdate)) {
                 TransactionItem::whereIn('id', $itemsToUpdate)->update([
-                    'seller_settlement_id' => $settlement->id
+                    'seller_settlement_id' => $settlement->id,
                 ]);
             }
 
             DB::commit();
 
             return redirect()->back()
-                ->with('success', "Berhasil mencairkan dana sebesar Rp" . number_format($amountToPay, 0, ',', '.') . " ke {$seller->name}.");
+                ->with('success', 'Berhasil mencairkan dana sebesar Rp'.number_format($amountToPay, 0, ',', '.')." ke {$seller->name}.");
 
         } catch (\Exception $e) {
             DB::rollBack();
+
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat memproses pembayaran: ' . $e->getMessage());
+                ->with('error', 'Terjadi kesalahan saat memproses pembayaran: '.$e->getMessage());
         }
     }
 }

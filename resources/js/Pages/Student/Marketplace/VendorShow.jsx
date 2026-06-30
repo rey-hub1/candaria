@@ -3,6 +3,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatRupiah } from '@/utils/format';
 import { getCart, saveCart, cartItemKey, cartTotal } from '@/utils/cart';
+import { Utensils, UtensilsCrossed, X } from 'lucide-react';
 
 export default function VendorShow({ vendor }) {
     const [cart, setCart] = useState(null);
@@ -93,7 +94,7 @@ export default function VendorShow({ vendor }) {
                     {vendor.logo_url ? (
                         <img src={vendor.logo_url} alt={vendor.name} className="w-full h-full object-cover" />
                     ) : (
-                        <span className="text-2xl">🍽️</span>
+                        <Utensils className="w-7 h-7 text-slate-400" />
                     )}
                 </div>
                 <div>
@@ -133,7 +134,7 @@ export default function VendorShow({ vendor }) {
                                         {item.image_url ? (
                                             <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                                         ) : (
-                                            <span className="text-xl">🍱</span>
+                                            <UtensilsCrossed className="w-6 h-6 text-slate-400" />
                                         )}
                                     </div>
                                     <div className="min-w-0 flex-1">
@@ -209,7 +210,7 @@ export default function VendorShow({ vendor }) {
                     <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[85vh] overflow-y-auto">
                         <div className="p-4 border-b border-slate-100 flex items-center justify-between">
                             <h3 className="font-bold text-slate-900">Keranjang · {cart.vendorName}</h3>
-                            <button onClick={() => setCartOpen(false)} className="text-slate-400 hover:text-slate-600">✕</button>
+                            <button onClick={() => setCartOpen(false)} className="text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
                         </div>
 
                         <div className="divide-y divide-slate-100">

@@ -49,6 +49,10 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        // Siswa & vendor punya riwayat transaksi/pesanan yang FK-nya akan ikut
+        // ter-cascade. Blokir self-delete; penghapusan harus lewat admin.
+        abort_if(in_array($user->role, ['student', 'vendor', 'penitip'], true), 403, 'Akun ini tidak bisa menghapus dirinya sendiri. Hubungi admin.');
+
         Auth::logout();
 
         $user->delete();

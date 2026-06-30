@@ -17,7 +17,7 @@ Tombol manual untuk mengunduh 2 file Excel rekap satu minggu, meniru format spre
 - **HARIAN** — `WithMultipleSheets`, 3 sheet, tiap hari sebagai blok:
   - `PENJUALAN HARIAN` — produk `type=kantin`; stok direkonstruksi historis (`stock + qtySoldAfter`, mirip `ReportController::stock`). Kosong jika tak ada penjualan kantin (mis. data v1 yang murni konsinyasi).
   - `PENGELUARAN HARIAN` — Cashbook `type=credit` + `source=manual` per hari. (Kolom QTY tak ada di DB → kosong.)
-  - `KEUANGAN HARIAN` — ringkasan: Penjualan Harian, Pengeluaran, Omset Konsyiansi, Stor Ke Seller, + Hutang pada customer & Pembayaran utang (dari `change_debts`, lihat [[change-debt]]). Hanya "Kas masuk" yang masih 0 (tak ada di POS).
+  - `KEUANGAN HARIAN` — ringkasan: Penjualan Kantin, Pengeluaran, Omset Konsyiansi, Stor Ke Seller, + Hutang pada customer & Pembayaran utang (dari `change_debts`, lihat [[change-debt]]). Hanya "Kas masuk" yang masih 0 (tak ada di POS). **Catatan:** `dailyFinance.penjualan_harian` = total penjualan **dikurangi** omset konsinyasi (kantin-only), agar tidak double-count dengan baris Omset Konsyiansi di ledger D/K.
 
 ## Kode
 - `App\Services\WeeklyReportService` — semua query/agregasi (`weekRange`, `activeDays`, `consignmentDay`, `dailySales`, `dailyExpenses`, `dailyFinance`).

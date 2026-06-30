@@ -31,7 +31,7 @@ School canteen POS + consignment management system, expanding into an external-v
 - `context/consignment.md` — sellers, products, settlements, margin rules
 - `context/settings-and-flags.md` — `Setting` model (key-value config) and shared Inertia props
 - `context/marketplace-expansion.md` — status of the vendor marketplace work (see `plan/marketplace-expansion-plan.md` for full design)
-- `context/marketplace.md` — vendors, menu items, option groups/options (Phase 2 implementation)
+- `context/marketplace.md` — vendors, menu items (option groups/options removed — free-text notes only)
 - `context/student-accounts.md` — NISN-based student login, forced password change (Phase 3 implementation)
 - `context/marketplace-orders.md` — student browse/cart/checkout/orders + vendor order management (Phase 4 implementation)
 - `context/marketplace-wallet.md` — vendor wallet/ledger + admin settlements (Phase 5 implementation)
@@ -40,6 +40,7 @@ School canteen POS + consignment management system, expanding into an external-v
 - `context/weekly-report.md` — manual weekly Excel export (KONSYIANSI + HARIAN), keyed off `transaction_date`
 - `context/change-debt.md` — hutang kembalian ke customer (titip kembalian saat checkout, pelunasan, masuk buku kas & laporan)
 - `context/purge-transactions.md` — tool super-admin hapus permanen transaksi lama (1w/1m/3m/6m/1y), keyed off `transaction_date`, item ikut (FK cascade), cashbook dibiarkan
+- `context/whatsapp.md` — infra WA via Waha: WhatsAppService, SendWhatsAppMessage job, 3 feature flags (wa_change_debt/wa_weekly_report/wa_penitip_otp)
 
 ## Conventions
 - Models needing audit trail use `use LogsActivity` (writes to `activity_logs`).

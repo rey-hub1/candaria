@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\TransactionException;
+use App\Exports\TransactionsExport;
 use App\Http\Requests\CheckoutRequest;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Transaction;
+use App\Models\User;
 use App\Services\TransactionService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TransactionController extends Controller
 {
@@ -26,11 +30,13 @@ class TransactionController extends Controller
         $query = Transaction::with(['user', 'items.product', 'changeDebt'])
             ->filter($filters, ['transaction_code']);
 
+        // Pakai transaction_date (tanggal bisnis) — konsisten dgn semua laporan
+        // keuangan, supaya history & report rekonsiliasi.
         if (! empty($filters['start_date'])) {
-            $query->whereDate('created_at', '>=', $filters['start_date']);
+            $query->whereDate('transaction_date', '>=', $filters['start_date']);
         }
         if (! empty($filters['end_date'])) {
-            $query->whereDate('created_at', '<=', $filters['end_date']);
+            $query->whereDate('transaction_date', '<=', $filters['end_date']);
         }
         if (! empty($filters['status']) && in_array($filters['status'], [Transaction::STATUS_COMPLETED, Transaction::STATUS_VOIDED], true)) {
             $query->where('status', $filters['status']);
@@ -52,21 +58,21 @@ class TransactionController extends Controller
             $fname = 'riwayat-transaksi-'.now()->format('Ymd-His');
 
             if ($export === 'pdf') {
-                return \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.transactions_pdf', [
+                return Pdf::loadView('reports.transactions_pdf', [
                     'transactions' => $rows,
                     'filters' => $filters,
                 ])->setPaper('a4', 'landscape')->stream($fname.'.pdf');
             }
 
-            return \Maatwebsite\Excel\Facades\Excel::download(
-                new \App\Exports\TransactionsExport($rows, $filters),
+            return Excel::download(
+                new TransactionsExport($rows, $filters),
                 $fname.'.xlsx'
             );
         }
 
         $transactions = $query->latest()->paginate(15)->withQueryString();
 
-        $cashiers = \App\Models\User::whereIn('id', Transaction::query()->distinct()->pluck('user_id'))
+        $cashiers = User::whereIn('id', Transaction::query()->distinct()->pluck('user_id'))
             ->orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('Transactions/Index', [
@@ -154,8 +160,14 @@ class TransactionController extends Controller
     {
         $transaction = Transaction::with('items')->findOrFail($id);
 
+        // Kasir hanya boleh void transaksinya sendiri; admin/super_admin bebas.
+        $user = $request->user();
+        if ($user->role === 'cashier' && $transaction->user_id !== $user->id) {
+            return redirect()->back()->with('error', 'Kasir hanya dapat membatalkan transaksinya sendiri.');
+        }
+
         try {
-            $this->service->void($transaction, $request->input('reason'), $request->user());
+            $this->service->void($transaction, $request->input('reason'), $user);
         } catch (TransactionException $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

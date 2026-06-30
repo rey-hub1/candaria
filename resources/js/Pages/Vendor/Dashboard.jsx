@@ -2,6 +2,7 @@ import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatRupiah } from '@/utils/format';
+import { Waves } from 'lucide-react';
 
 export default function Dashboard({ vendor, stats = {} }) {
     return (
@@ -9,7 +10,7 @@ export default function Dashboard({ vendor, stats = {} }) {
             <Head title="Dashboard Mitra" />
 
             <div className="mb-6">
-                <h1 className="text-xl font-bold text-slate-900">Halo, {vendor?.name || 'Mitra'} 👋</h1>
+                <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">Halo, {vendor?.name || 'Mitra'} <Waves className="w-5 h-5 text-amber-400" /></h1>
                 <p className="text-sm text-slate-500 mt-1">
                     Status toko: <span className={`font-semibold ${vendor?.is_open ? 'text-primary-600' : 'text-rose-600'}`}>{vendor?.is_open ? 'Buka' : 'Tutup'}</span>
                     {' · '}
