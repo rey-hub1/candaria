@@ -4,13 +4,9 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
+import LanguageSwitcher from '@/Components/LanguageSwitcher';
+import { useTranslation } from '@/i18n';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-
-const STUDENT_PERKS = [
-    { title: 'Jajan tanpa antre', desc: 'Pesan dari kantin & mitra sekolah' },
-    { title: 'Cukup pakai NISN', desc: 'Login dengan Nomor Induk Siswa' },
-    { title: 'Pantau pesanan', desc: 'Lacak status pesananmu real-time' },
-];
 
 const STAFF_ACCOUNTS = [
     { label: 'Super Admin', login: 'superadmin@candaria.com', password: 'password' },
@@ -21,12 +17,13 @@ const STAFF_ACCOUNTS = [
 ];
 
 function EyeToggle({ show, onClick }) {
+    const { t } = useTranslation();
     return (
         <button
             type="button"
             className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-primary-600 transition"
             onClick={onClick}
-            aria-label={show ? 'Sembunyikan sandi' : 'Tampilkan sandi'}
+            aria-label={show ? t('auth.hidePassword') : t('auth.showPassword')}
         >
             {show ? (
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
@@ -43,6 +40,7 @@ function EyeToggle({ show, onClick }) {
 }
 
 export default function Login({ status, studentLoginEnabled = true }) {
+    const { t } = useTranslation();
     const [mode, setMode] = useState(studentLoginEnabled ? 'student' : 'staff');
     const [showPassword, setShowPassword] = useState(false);
 
@@ -76,7 +74,11 @@ export default function Login({ status, studentLoginEnabled = true }) {
 
     return (
         <div className="min-h-screen flex bg-white font-sans text-slate-900 overflow-x-hidden">
-            <Head title="Masuk" />
+            <Head title={t('auth.pageTitle')} />
+
+            <div className="absolute top-6 left-6 z-20">
+                <LanguageSwitcher variant="light" />
+            </div>
 
             {/* Left: brand panel — student-first, flat indigo, gold accents */}
             <div className="hidden lg:flex lg:w-[44%] relative bg-primary-950 text-white flex-col justify-between p-14 xl:p-16">
@@ -97,16 +99,16 @@ export default function Login({ status, studentLoginEnabled = true }) {
                 <div className="relative z-10 max-w-md opacity-0 animate-fade-in-left" style={{ animationDelay: '0.2s' }}>
                     <div className="w-12 h-1 bg-secondary-500 mb-8" />
                     <h1 className="text-4xl xl:text-5xl font-extrabold leading-[1.1] tracking-tight">
-                        Pesan jajananmu,
+                        {t('auth.headlineTop')}
                         <br />
-                        <span className="text-secondary-400">tanpa antre.</span>
+                        <span className="text-secondary-400">{t('auth.headlineAccent')}</span>
                     </h1>
                     <p className="mt-6 text-primary-200/70 text-base leading-relaxed">
-                        Masuk dengan akun siswa untuk memesan makanan dari kantin dan mitra sekolah. Pegawai kantin juga bisa masuk di halaman ini.
+                        {t('auth.brandIntro')}
                     </p>
 
                     <ul className="mt-10 divide-y divide-white/10 border-y border-white/10">
-                        {STUDENT_PERKS.map((p, i) => (
+                        {t('auth.perks').map((p, i) => (
                             <li
                                 key={p.title}
                                 className="flex items-center gap-4 py-4 opacity-0 animate-fade-in-left"
@@ -134,7 +136,7 @@ export default function Login({ status, studentLoginEnabled = true }) {
                 <Link
                     href="/"
                     className="absolute top-6 right-6 lg:top-8 lg:right-8 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition"
-                    aria-label="Kembali ke Beranda"
+                    aria-label={t('auth.backToHome')}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -156,7 +158,7 @@ export default function Login({ status, studentLoginEnabled = true }) {
                                     mode === 'student' ? 'bg-white text-primary-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                                 }`}
                             >
-                                Siswa
+                                {t('auth.tabStudent')}
                             </button>
                             <button
                                 type="button"
@@ -165,7 +167,7 @@ export default function Login({ status, studentLoginEnabled = true }) {
                                     mode === 'staff' ? 'bg-white text-primary-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                                 }`}
                             >
-                                Pegawai
+                                {t('auth.tabStaff')}
                             </button>
                         </div>
                     )}
@@ -173,12 +175,12 @@ export default function Login({ status, studentLoginEnabled = true }) {
                     <div className="mb-8">
                         <div className="w-12 h-1 bg-secondary-500 mb-6" />
                         <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">
-                            {mode === 'student' ? 'Masuk akun siswa' : 'Masuk akun pegawai'}
+                            {mode === 'student' ? t('auth.titleStudent') : t('auth.titleStaff')}
                         </h2>
                         <p className="mt-2 text-sm text-slate-500">
                             {mode === 'student'
-                                ? 'Gunakan NISN dan password untuk memesan jajanan.'
-                                : 'Akun kasir, penitip, mitra, atau administrator.'}
+                                ? t('auth.subtitleStudent')
+                                : t('auth.subtitleStaff')}
                         </p>
                     </div>
 
@@ -202,14 +204,14 @@ export default function Login({ status, studentLoginEnabled = true }) {
                                     autoComplete="username"
                                     isFocused={true}
                                     onChange={(e) => studentForm.setData('nisn', e.target.value)}
-                                    placeholder="Nomor Induk Siswa Nasional"
+                                    placeholder={t('auth.nisnPlaceholder')}
                                     required
                                 />
                                 <InputError message={studentForm.errors.nisn} className="mt-1" />
                             </div>
 
                             <div className="space-y-1.5">
-                                <InputLabel htmlFor="student-password" value="Password" className="text-slate-600 font-semibold text-xs uppercase tracking-wider" />
+                                <InputLabel htmlFor="student-password" value={t('auth.password')} className="text-slate-600 font-semibold text-xs uppercase tracking-wider" />
                                 <div className="relative">
                                     <TextInput
                                         id="student-password"
@@ -219,7 +221,7 @@ export default function Login({ status, studentLoginEnabled = true }) {
                                         className="block w-full px-4 pr-11 py-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-500/15 focus:border-primary-500 text-slate-800 transition"
                                         autoComplete="current-password"
                                         onChange={(e) => studentForm.setData('password', e.target.value)}
-                                        placeholder="Default: tanggal lahir (ddmmyyyy)"
+                                        placeholder={t('auth.studentPasswordPlaceholder')}
                                         required
                                     />
                                     <EyeToggle show={showPassword} onClick={() => setShowPassword(!showPassword)} />
@@ -231,7 +233,7 @@ export default function Login({ status, studentLoginEnabled = true }) {
                                 className="w-full justify-center py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-bold tracking-wide transition focus:ring-2 focus:ring-primary-500/40"
                                 disabled={studentForm.processing}
                             >
-                                {studentForm.processing ? 'Masuk...' : 'Masuk'}
+                                {studentForm.processing ? t('auth.signingIn') : t('auth.signIn')}
                             </PrimaryButton>
                         </form>
                     )}
@@ -240,7 +242,7 @@ export default function Login({ status, studentLoginEnabled = true }) {
                     {mode === 'staff' && (
                         <form onSubmit={submitStaff} className="space-y-5">
                             <div className="space-y-1.5">
-                                <InputLabel htmlFor="login" value="Email / Nomor Telepon" className="text-slate-600 font-semibold text-xs uppercase tracking-wider" />
+                                <InputLabel htmlFor="login" value={t('auth.staffLoginLabel')} className="text-slate-600 font-semibold text-xs uppercase tracking-wider" />
                                 <TextInput
                                     id="login"
                                     type="text"
@@ -250,14 +252,14 @@ export default function Login({ status, studentLoginEnabled = true }) {
                                     autoComplete="username"
                                     isFocused={true}
                                     onChange={(e) => staffForm.setData('login', e.target.value)}
-                                    placeholder="nama@email.com / 081234..."
+                                    placeholder={t('auth.staffLoginPlaceholder')}
                                     required
                                 />
                                 <InputError message={staffForm.errors.login} className="mt-1" />
                             </div>
 
                             <div className="space-y-1.5">
-                                <InputLabel htmlFor="staff-password" value="Kata Sandi" className="text-slate-600 font-semibold text-xs uppercase tracking-wider" />
+                                <InputLabel htmlFor="staff-password" value={t('auth.staffPasswordLabel')} className="text-slate-600 font-semibold text-xs uppercase tracking-wider" />
                                 <div className="relative">
                                     <TextInput
                                         id="staff-password"
@@ -267,7 +269,7 @@ export default function Login({ status, studentLoginEnabled = true }) {
                                         className="block w-full px-4 pr-11 py-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-500/15 focus:border-primary-500 text-slate-800 transition"
                                         autoComplete="current-password"
                                         onChange={(e) => staffForm.setData('password', e.target.value)}
-                                        placeholder="Masukkan password Anda"
+                                        placeholder={t('auth.staffPasswordPlaceholder')}
                                         required
                                     />
                                     <EyeToggle show={showPassword} onClick={() => setShowPassword(!showPassword)} />
@@ -282,13 +284,13 @@ export default function Login({ status, studentLoginEnabled = true }) {
                                         checked={staffForm.data.remember}
                                         onChange={(e) => staffForm.setData('remember', e.target.checked)}
                                     />
-                                    <span className="ms-2 text-sm text-slate-500 font-medium">Ingat saya</span>
+                                    <span className="ms-2 text-sm text-slate-500 font-medium">{t('auth.rememberMe')}</span>
                                 </label>
                                 <Link
                                     href={route('password.request')}
                                     className="text-sm text-primary-600 hover:text-primary-700 font-semibold transition hover:underline"
                                 >
-                                    Lupa sandi?
+                                    {t('auth.forgotPassword')}
                                 </Link>
                             </div>
 
@@ -296,14 +298,14 @@ export default function Login({ status, studentLoginEnabled = true }) {
                                 className="w-full justify-center py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-bold tracking-wide transition focus:ring-2 focus:ring-primary-500/40"
                                 disabled={staffForm.processing}
                             >
-                                {staffForm.processing ? 'Masuk...' : 'Masuk Ke Sistem'}
+                                {staffForm.processing ? t('auth.signingIn') : t('auth.signInSystem')}
                             </PrimaryButton>
                         </form>
                     )}
 
                     {/* Quick accounts per mode */}
                     <div className="mt-8 pt-6 border-t border-slate-100">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Akun pengujian cepat</span>
+                        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">{t('auth.quickAccounts')}</span>
                         <div className="mt-3 flex flex-wrap gap-2">
                             {mode === 'student' ? (
                                 <button
@@ -311,7 +313,7 @@ export default function Login({ status, studentLoginEnabled = true }) {
                                     onClick={() => studentForm.setData({ nisn: '0011223344', password: '12052009' })}
                                     className="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-50 hover:bg-slate-100 hover:text-primary-700 border border-slate-200 rounded-md transition"
                                 >
-                                    Siswa Uji Coba
+                                    {t('auth.studentDemo')}
                                 </button>
                             ) : (
                                 staffAccounts.map((acc) => (

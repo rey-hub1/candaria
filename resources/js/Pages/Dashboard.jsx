@@ -2,6 +2,7 @@ import React from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatRupiah } from '@/utils/format';
+import { useTranslation } from '@/i18n';
 import {
     BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid,
     Tooltip as RechartsTooltip, ResponsiveContainer, Legend,
@@ -127,6 +128,7 @@ export default function Dashboard({
     topProducts = [],
 }) {
     const { auth, settings } = usePage().props;
+    const { t: tr, locale } = useTranslation();
     const waNumber = settings?.admin_whatsapp || '6287898048001';
     const role = auth.user.role;
 
@@ -137,7 +139,7 @@ export default function Dashboard({
         return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
     };
 
-    const todayLabel = new Date().toLocaleDateString('id-ID', {
+    const todayLabel = new Date().toLocaleDateString(locale === 'en' ? 'en-US' : 'id-ID', {
         weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
     });
 
@@ -148,8 +150,8 @@ export default function Dashboard({
     };
 
     return (
-        <AuthenticatedLayout title="Dashboard">
-            <Head title="Dashboard" />
+        <AuthenticatedLayout title={tr('nav.dashboard')}>
+            <Head title={tr('nav.dashboard')} />
 
             {/* Hero */}
             <div className="mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900 text-white shadow-xl">
@@ -159,14 +161,14 @@ export default function Dashboard({
                     <div className="max-w-2xl">
                         <p className="text-xs font-semibold uppercase tracking-widest text-primary-300/90">{todayLabel}</p>
                         <h2 className="mt-1.5 text-2xl sm:text-3xl font-extrabold tracking-tight">
-                            Selamat Datang, {auth.user.name}!
+                            {tr('dash.welcome')}, {auth.user.name}!
                         </h2>
                         <p className="mt-2 text-slate-300 text-sm sm:text-base">
                             {role === 'admin'
-                                ? 'Kelola produk, stok, penitip, pembayaran, dan pantau laporan penjualan kantin Anda di sini.'
+                                ? tr('dash.introAdmin')
                                 : role === 'penitip'
-                                    ? 'Pantau penjualan titipan, pendapatan, dan riwayat pencairan Anda.'
-                                    : 'Lakukan penjualan dengan cepat dan mudah menggunakan menu Kasir.'}
+                                    ? tr('dash.introPenitip')
+                                    : tr('dash.introCashier')}
                         </p>
                     </div>
                     {role !== 'penitip' && (
@@ -175,7 +177,7 @@ export default function Dashboard({
                             className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 font-bold text-sm rounded-xl shadow-lg hover:bg-slate-100 transition shrink-0"
                         >
                             <Icon path={ICONS.cart} className="w-5 h-5" />
-                            Buka Kasir
+                            {tr('dash.openCashier')}
                         </Link>
                     )}
                 </div>
@@ -187,9 +189,9 @@ export default function Dashboard({
                     <StatCard
                         href={route('transactions.index')}
                         icon="sales" accent="primary"
-                        label="Penjualan Hari Ini"
+                        label={tr('dash.todaySales')}
                         value={formatRupiah(todaySalesTotal || 0)}
-                        sub={`${todaySalesCount || 0} Transaksi`}
+                        sub={`${todaySalesCount || 0} ${tr('dash.transactions')}`}
                     />
                 )}
 
@@ -198,31 +200,31 @@ export default function Dashboard({
                         <StatCard
                             href={route('reports.sales')}
                             icon="profit" accent="blue"
-                            label="Keuntungan Kantin Hari Ini"
+                            label={tr('dash.todayProfit')}
                             value={formatRupiah(todayProfit)}
-                            sub="Bersih milik kantin"
+                            sub={tr('dash.netCanteen')}
                         />
                         <StatCard
                             href={route('settlements.index')}
                             icon="wallet" accent="amber"
-                            label="Uang Siswa Belum Dibayar"
+                            label={tr('dash.unpaidStudentMoney')}
                             value={formatRupiah(pendingSettlementAmount)}
-                            sub="Bayar Penitip →"
+                            sub={tr('dash.payConsignor')}
                         />
                     </>
                 ) : role === 'penitip' ? (
                     <>
                         <StatCard
                             icon="wallet" accent="amber"
-                            label="Titipan Belum Dibayar"
+                            label={tr('dash.unpaidConsignment')}
                             value={formatRupiah(myPendingSettlement)}
-                            sub="Akan dicairkan kantin"
+                            sub={tr('dash.willBeDisbursed')}
                         />
                         <StatCard
                             icon="profit" accent="blue"
-                            label="Pendapatan Bulan Ini"
+                            label={tr('dash.monthEarnings')}
                             value={formatRupiah(myEarningsMonth)}
-                            sub={`Hari ini: ${formatRupiah(myEarningsToday)}`}
+                            sub={`${tr('dash.today')}: ${formatRupiah(myEarningsToday)}`}
                         />
                         <a
                             href={`https://wa.me/${waNumber}`}
@@ -234,9 +236,9 @@ export default function Dashboard({
                                 <Icon path={ICONS.wa} className="w-7 h-7" />
                             </div>
                             <div className="min-w-0">
-                                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider group-hover:text-green-600 transition">Hubungi Penjaga</p>
-                                <h3 className="text-2xl font-bold text-slate-900 mt-0.5">WhatsApp</h3>
-                                <p className="text-xs text-slate-400 mt-0.5">Tap untuk chat →</p>
+                                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider group-hover:text-green-600 transition">{tr('dash.contactKeeper')}</p>
+                                <h3 className="text-2xl font-bold text-slate-900 mt-0.5">{tr('dash.whatsapp')}</h3>
+                                <p className="text-xs text-slate-400 mt-0.5">{tr('dash.tapToChat')}</p>
                             </div>
                         </a>
                     </>
@@ -246,10 +248,10 @@ export default function Dashboard({
                             <Icon path={ICONS.plus} className="w-7 h-7" />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-primary-800">Buka Kasir Sekarang</p>
-                            <h3 className="text-xs text-primary-600 mt-1">Mulai melayani pembeli</h3>
+                            <p className="text-sm font-semibold text-primary-800">{tr('dash.openCashierNow')}</p>
+                            <h3 className="text-xs text-primary-600 mt-1">{tr('dash.startServing')}</h3>
                             <Link href={route('transactions.create')} className="inline-block mt-2 px-4 py-1.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-xs rounded-lg shadow-sm transition">
-                                Buka Kasir →
+                                {tr('dash.openCashierArrow')}
                             </Link>
                         </div>
                     </div>
@@ -262,24 +264,24 @@ export default function Dashboard({
                     {/* Quick actions */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         <QuickAction href={route('consignments.index')} icon="box" accent="amber"
-                            label="Stok Titipan Harian" sub="Terima & ambil sisa per penitip" />
+                            label={tr('dash.qaConsignLabel')} sub={tr('dash.qaConsignSub')} />
                         <QuickAction href={route('daily-upload.index')} icon="download" accent="primary"
-                            label="Laporan Harian" sub="Download harian & konsyiansi" />
+                            label={tr('dash.qaDailyLabel')} sub={tr('dash.qaDailySub')} />
                         <QuickAction href={route('reports.sales')} icon="report" accent="blue"
-                            label="Laporan Penjualan" sub="Omset & keuntungan kantin" />
+                            label={tr('dash.qaSalesLabel')} sub={tr('dash.qaSalesSub')} />
                         <QuickAction href={route('reports.titipan')} icon="box" accent="green"
-                            label="Laporan Titipan" sub="Barang titipan terjual" />
+                            label={tr('dash.qaTitipanLabel')} sub={tr('dash.qaTitipanSub')} />
                     </div>
 
                     {/* Chart + month performance */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
                         <SectionCard
-                            title="Tren Penjualan (7 Hari)"
+                            title={tr('dash.salesTrend7')}
                             className="lg:col-span-2"
-                            action={<span className="text-xs font-semibold text-slate-400">Omset & keuntungan</span>}
+                            action={<span className="text-xs font-semibold text-slate-400">{tr('dash.revenueProfit')}</span>}
                         >
                             {salesChart.length === 0 || salesChart.every((d) => d.omset === 0 && d.profit === 0) ? (
-                                emptyState('Belum ada data penjualan 7 hari terakhir.')
+                                emptyState(tr('dash.noSales7'))
                             ) : (
                                 <div className="h-72 w-full">
                                     <ResponsiveContainer width="100%" height="100%">
@@ -297,8 +299,8 @@ export default function Dashboard({
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                                             <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={8} />
                                             <YAxis width={52} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(v) => `${v / 1000}k`} />
-                                            <RechartsTooltip {...chartTooltip} formatter={(v, n) => [formatRupiah(v), n === 'omset' ? 'Omset' : 'Keuntungan']} />
-                                            <Legend formatter={(v) => (v === 'omset' ? 'Omset' : 'Keuntungan Kantin')} wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
+                                            <RechartsTooltip {...chartTooltip} formatter={(v, n) => [formatRupiah(v), n === 'omset' ? tr('dash.revenue') : tr('dash.profit')]} />
+                                            <Legend formatter={(v) => (v === 'omset' ? tr('dash.revenue') : tr('dash.canteenProfit'))} wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
                                             <Area type="monotone" dataKey="omset" stroke="#6366f1" strokeWidth={2.5} fill="url(#gOmset)" />
                                             <Area type="monotone" dataKey="profit" stroke="#10b981" strokeWidth={2.5} fill="url(#gProfit)" />
                                         </AreaChart>
@@ -309,15 +311,15 @@ export default function Dashboard({
 
                         <div className="space-y-5">
                             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kinerja Bulan Ini</h4>
+                                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{tr('dash.monthPerformance')}</h4>
                                 <div className="mt-4 space-y-4">
                                     <div>
-                                        <p className="text-xs text-slate-400">Total Omset</p>
+                                        <p className="text-xs text-slate-400">{tr('dash.totalRevenue')}</p>
                                         <p className="text-xl font-bold text-slate-800">{formatRupiah(thisMonthSales)}</p>
                                     </div>
                                     <div className="h-px bg-slate-100" />
                                     <div>
-                                        <p className="text-xs text-slate-400">Keuntungan Kantin</p>
+                                        <p className="text-xs text-slate-400">{tr('dash.canteenProfit')}</p>
                                         <p className="text-xl font-bold text-primary-600">{formatRupiah(thisMonthProfit)}</p>
                                     </div>
                                 </div>
@@ -325,12 +327,12 @@ export default function Dashboard({
                             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex justify-around items-center">
                                 <Link href={route('products.index')} className="text-center group block hover:bg-slate-50 px-4 py-3 rounded-xl transition">
                                     <p className="text-3xl font-extrabold text-slate-800 group-hover:text-primary-600 transition">{totalProducts}</p>
-                                    <p className="text-xs text-slate-400 mt-1 group-hover:text-primary-500">Produk →</p>
+                                    <p className="text-xs text-slate-400 mt-1 group-hover:text-primary-500">{tr('dash.productsArrow')}</p>
                                 </Link>
                                 <div className="h-12 w-px bg-slate-200" />
                                 <Link href={route('sellers.index')} className="text-center group block hover:bg-slate-50 px-4 py-3 rounded-xl transition">
                                     <p className="text-3xl font-extrabold text-slate-800 group-hover:text-primary-600 transition">{totalSellers}</p>
-                                    <p className="text-xs text-slate-400 mt-1 group-hover:text-primary-500">Penitip →</p>
+                                    <p className="text-xs text-slate-400 mt-1 group-hover:text-primary-500">{tr('dash.consignorsArrow')}</p>
                                 </Link>
                             </div>
                         </div>
@@ -339,10 +341,10 @@ export default function Dashboard({
                     {/* Top products + titipan terjual */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
                         <SectionCard
-                            title="Produk Terlaris"
-                            action={<Link href={route('reports.products')} className="text-xs font-semibold text-primary-600 hover:underline">Laporan →</Link>}
+                            title={tr('dash.topProducts')}
+                            action={<Link href={route('reports.products')} className="text-xs font-semibold text-primary-600 hover:underline">{tr('dash.reportArrow')}</Link>}
                         >
-                            {adminTopProducts.length === 0 ? emptyState('Belum ada produk terjual.') : (
+                            {adminTopProducts.length === 0 ? emptyState(tr('dash.noProductsSold')) : (
                                 <div className="space-y-2.5">
                                     {adminTopProducts.map((p, i) => (
                                         <div key={p.id} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition">
@@ -350,7 +352,7 @@ export default function Dashboard({
                                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0 ${i === 0 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>#{i + 1}</div>
                                                 <div className="min-w-0">
                                                     <p className="font-semibold text-slate-800 text-sm truncate">{p.name}</p>
-                                                    <p className="text-xs text-slate-500">Terjual {p.qty} item{p.type ? ` · ${p.type}` : ''}</p>
+                                                    <p className="text-xs text-slate-500">{tr('dash.sold')} {p.qty} {tr('dash.items')}{p.type ? ` · ${p.type}` : ''}</p>
                                                 </div>
                                             </div>
                                             <p className="text-sm font-bold text-primary-600 shrink-0 ml-2">{formatRupiah(p.profit)}</p>
@@ -362,14 +364,14 @@ export default function Dashboard({
 
                         <Link href={route('reports.titipan')} className="block bg-white rounded-2xl border border-slate-200 shadow-sm p-6 hover:border-primary-300 hover:shadow-md transition group">
                             <div className="flex items-center justify-between mb-5">
-                                <h3 className="text-base font-bold text-slate-900">Barang Titipan Terjual</h3>
-                                <span className="text-xs font-semibold text-slate-400 group-hover:text-primary-600 transition">Laporan →</span>
+                                <h3 className="text-base font-bold text-slate-900">{tr('dash.consignmentSold')}</h3>
+                                <span className="text-xs font-semibold text-slate-400 group-hover:text-primary-600 transition">{tr('dash.reportArrow')}</span>
                             </div>
                             <div className="grid grid-cols-3 gap-4">
                                 {[
-                                    ['Minggu Ini', titipanSoldWeek, 'text-slate-800'],
-                                    ['Bulan Ini', titipanSoldMonth, 'text-slate-800'],
-                                    ['Total', titipanSoldAll, 'text-primary-600'],
+                                    [tr('dash.thisWeek'), titipanSoldWeek, 'text-slate-800'],
+                                    [tr('dash.thisMonth'), titipanSoldMonth, 'text-slate-800'],
+                                    [tr('dash.total'), titipanSoldAll, 'text-primary-600'],
                                 ].map(([label, val, color]) => (
                                     <div key={label} className="rounded-xl bg-slate-50 p-4">
                                         <p className="text-xs text-slate-400">{label}</p>
@@ -385,17 +387,17 @@ export default function Dashboard({
                         <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6 mb-6">
                             <div className="flex items-center gap-2 mb-4">
                                 <Icon path={ICONS.warning} className="w-5 h-5 text-amber-600" />
-                                <h3 className="text-base font-bold text-amber-800">Peringatan Stok Hampir Habis!</h3>
-                                <span className="ml-auto text-xs font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">{lowStockProducts.length} produk</span>
+                                <h3 className="text-base font-bold text-amber-800">{tr('dash.lowStockWarning')}</h3>
+                                <span className="ml-auto text-xs font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">{lowStockProducts.length} {tr('dash.productsUnit')}</span>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="min-w-full divide-y divide-amber-200">
                                     <thead>
                                         <tr>
-                                            {['Kode', 'Produk', 'Kategori', 'Jenis'].map((h) => (
+                                            {[tr('dash.thCode'), tr('dash.thProduct'), tr('dash.thCategory'), tr('dash.thType')].map((h) => (
                                                 <th key={h} className="px-4 py-2 text-left text-xs font-semibold text-amber-700 uppercase">{h}</th>
                                             ))}
-                                            <th className="px-4 py-2 text-center text-xs font-semibold text-amber-700 uppercase">Stok Sisa</th>
+                                            <th className="px-4 py-2 text-center text-xs font-semibold text-amber-700 uppercase">{tr('dash.thRemainingStock')}</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-amber-100">
@@ -414,7 +416,7 @@ export default function Dashboard({
                                 </table>
                             </div>
                             <div className="mt-3 text-right">
-                                <Link href={route('products.index')} className="text-xs font-bold text-amber-700 hover:underline">Kelola Stok Produk →</Link>
+                                <Link href={route('products.index')} className="text-xs font-bold text-amber-700 hover:underline">{tr('dash.manageStock')}</Link>
                             </div>
                         </div>
                     )}
@@ -424,21 +426,21 @@ export default function Dashboard({
             {/* ---------- RECENT TRANSACTIONS (admin + cashier) ---------- */}
             {role !== 'penitip' && (
                 <SectionCard
-                    title="Transaksi Terbaru"
-                    action={<Link href={route('transactions.index')} className="text-xs font-semibold text-primary-600 hover:underline">Lihat Semua →</Link>}
+                    title={tr('dash.recentTransactions')}
+                    action={<Link href={route('transactions.index')} className="text-xs font-semibold text-primary-600 hover:underline">{tr('dash.viewAll')}</Link>}
                 >
                     {(!recentTransactions || recentTransactions.length === 0) ? (
-                        emptyState('Belum ada transaksi hari ini.')
+                        emptyState(tr('dash.noTxToday'))
                     ) : (
                         <div className="overflow-x-auto -mx-2">
                             <table className="min-w-full divide-y divide-slate-100">
                                 <thead>
                                     <tr>
-                                        {['Kode', 'Petugas', 'Waktu'].map((h) => (
+                                        {[tr('dash.thCode'), tr('dash.thOfficer'), tr('dash.thTime')].map((h) => (
                                             <th key={h} className="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">{h}</th>
                                         ))}
-                                        <th className="px-4 py-3 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Total Belanja</th>
-                                        <th className="px-4 py-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">Aksi</th>
+                                        <th className="px-4 py-3 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">{tr('dash.thTotalSpend')}</th>
+                                        <th className="px-4 py-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">{tr('dash.thAction')}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
@@ -449,7 +451,7 @@ export default function Dashboard({
                                             <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-600">{formatDate(t.created_at)}</td>
                                             <td className="px-4 py-3 whitespace-nowrap text-sm text-right font-bold text-slate-900">{formatRupiah(t.total_amount)}</td>
                                             <td className="px-4 py-3 whitespace-nowrap text-sm text-center">
-                                                <Link href={route('transactions.show', t.id)} className="inline-flex items-center px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs rounded-lg transition">Detail / Struk</Link>
+                                                <Link href={route('transactions.show', t.id)} className="inline-flex items-center px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs rounded-lg transition">{tr('dash.detailReceipt')}</Link>
                                             </td>
                                         </tr>
                                     ))}
@@ -465,10 +467,10 @@ export default function Dashboard({
                 <div className="space-y-6 mt-2">
                     <div className="flex flex-wrap gap-3 justify-end">
                         <a href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg shadow transition">
-                            <Icon path={ICONS.wa} className="w-4 h-4" /> Hubungi Penjaga
+                            <Icon path={ICONS.wa} className="w-4 h-4" /> {tr('dash.contactKeeper')}
                         </a>
                         <a href={route('penitip.export')} className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold rounded-lg shadow transition">
-                            <Icon path={ICONS.download} className="w-4 h-4" /> Download Laporan (CSV)
+                            <Icon path={ICONS.download} className="w-4 h-4" /> {tr('dash.downloadReportCsv')}
                         </a>
                     </div>
 
@@ -476,14 +478,14 @@ export default function Dashboard({
                         <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6">
                             <div className="flex items-center gap-2 mb-4">
                                 <Icon path={ICONS.warning} className="w-5 h-5 text-amber-600" />
-                                <h3 className="text-base font-bold text-amber-800">Stok Hampir Habis!</h3>
+                                <h3 className="text-base font-bold text-amber-800">{tr('dash.lowStockShort')}</h3>
                             </div>
-                            <p className="text-sm text-amber-700 mb-4">Produk berikut stoknya menipis di kantin. Harap segera siapkan stok baru untuk dititipkan besok.</p>
+                            <p className="text-sm text-amber-700 mb-4">{tr('dash.lowStockPenitipDesc')}</p>
                             <ul className="space-y-2">
                                 {myLowStockProducts.map((p) => (
                                     <li key={p.id} className="flex justify-between items-center bg-white px-4 py-2 rounded-lg shadow-sm border border-amber-100">
                                         <span className="font-semibold text-slate-800">{p.name}</span>
-                                        <span className="text-rose-600 font-bold text-sm bg-rose-50 px-2 py-1 rounded">Sisa {p.stock}</span>
+                                        <span className="text-rose-600 font-bold text-sm bg-rose-50 px-2 py-1 rounded">{tr('dash.remaining')} {p.stock}</span>
                                     </li>
                                 ))}
                             </ul>
@@ -491,9 +493,9 @@ export default function Dashboard({
                     )}
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                        <SectionCard title="Grafik Penjualan (7 Hari)">
+                        <SectionCard title={tr('dash.salesChart7')}>
                             {mySalesChart.length === 0 || mySalesChart.every((i) => i.amount === 0) ? (
-                                emptyState('Belum ada data penjualan 7 hari terakhir.')
+                                emptyState(tr('dash.noSales7'))
                             ) : (
                                 <div className="h-64 w-full">
                                     <ResponsiveContainer width="100%" height="100%">
@@ -501,7 +503,7 @@ export default function Dashboard({
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                                             <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
                                             <YAxis width={52} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(v) => `Rp${v / 1000}k`} />
-                                            <RechartsTooltip {...chartTooltip} formatter={(v) => [formatRupiah(v), 'Pendapatan']} />
+                                            <RechartsTooltip {...chartTooltip} formatter={(v) => [formatRupiah(v), tr('dash.income')]} />
                                             <Bar dataKey="amount" fill="#3b82f6" radius={[4, 4, 0, 0]} maxBarSize={40} />
                                         </BarChart>
                                     </ResponsiveContainer>
@@ -509,8 +511,8 @@ export default function Dashboard({
                             )}
                         </SectionCard>
 
-                        <SectionCard title="Produk Terlaris">
-                            {topProducts.length === 0 ? emptyState('Belum ada produk yang terjual.') : (
+                        <SectionCard title={tr('dash.topProducts')}>
+                            {topProducts.length === 0 ? emptyState(tr('dash.noProductSold2')) : (
                                 <div className="space-y-3">
                                     {topProducts.map((p, i) => (
                                         <div key={p.id} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition">
@@ -518,7 +520,7 @@ export default function Dashboard({
                                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0 ${i === 0 ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-600'}`}>#{i + 1}</div>
                                                 <div className="min-w-0">
                                                     <p className="font-semibold text-slate-800 text-sm truncate">{p.name}</p>
-                                                    <p className="text-xs text-slate-500">Terjual {p.qty} item</p>
+                                                    <p className="text-xs text-slate-500">{tr('dash.sold')} {p.qty} {tr('dash.items')}</p>
                                                 </div>
                                             </div>
                                             <p className="text-sm font-bold text-primary-600 shrink-0 ml-2">{formatRupiah(p.profit)}</p>
@@ -530,15 +532,15 @@ export default function Dashboard({
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                        <SectionCard title="Status Produk Titipan Saya">
-                            {myProducts.length === 0 ? emptyState('Belum ada produk yang dititipkan.') : (
+                        <SectionCard title={tr('dash.myConsignStatus')}>
+                            {myProducts.length === 0 ? emptyState(tr('dash.noConsigned')) : (
                                 <div className="overflow-x-auto">
                                     <table className="min-w-full divide-y divide-slate-100">
                                         <thead>
                                             <tr>
-                                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Produk</th>
-                                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Harga (Modal)</th>
-                                                <th className="px-4 py-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">Sisa Stok</th>
+                                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">{tr('dash.thProduct')}</th>
+                                                <th className="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">{tr('dash.thPriceCost')}</th>
+                                                <th className="px-4 py-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">{tr('dash.thRemainingStock')}</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-slate-100">
@@ -555,18 +557,18 @@ export default function Dashboard({
                             )}
                         </SectionCard>
 
-                        <SectionCard title="Riwayat Pencairan Terakhir">
-                            {mySettlements.length === 0 ? emptyState('Belum ada riwayat pencairan dari kantin.') : (
+                        <SectionCard title={tr('dash.lastDisbursements')}>
+                            {mySettlements.length === 0 ? emptyState(tr('dash.noDisbursements')) : (
                                 <div className="space-y-3">
                                     {mySettlements.map((s) => (
                                         <div key={s.id} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50">
                                             <div>
                                                 <p className="text-sm font-semibold text-slate-800">{formatDate(s.created_at)}</p>
-                                                <p className="text-xs text-slate-500 mt-0.5">{s.notes || 'Pencairan dana otomatis'}</p>
+                                                <p className="text-xs text-slate-500 mt-0.5">{s.notes || tr('dash.autoDisbursement')}</p>
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-sm font-bold text-primary-600">+{formatRupiah(s.total_amount)}</p>
-                                                <span className="inline-block mt-1 px-2 py-0.5 bg-primary-100 text-primary-700 text-[10px] font-bold rounded uppercase">Berhasil</span>
+                                                <span className="inline-block mt-1 px-2 py-0.5 bg-primary-100 text-primary-700 text-[10px] font-bold rounded uppercase">{tr('dash.success')}</span>
                                             </div>
                                         </div>
                                     ))}
