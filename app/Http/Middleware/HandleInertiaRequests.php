@@ -54,6 +54,7 @@ class HandleInertiaRequests extends Middleware
                 'keyboard_default_mode' => \App\Models\Setting::get('keyboard_default_mode', 'prefix'),
             ],
             'features' => \App\Models\FeatureFlag::all()->pluck('is_enabled', 'key'),
+            'locale' => app()->getLocale(),
             'unreadNotificationsCount' => $request->user()
                 ? $request->user()->unreadNotifications()->count()
                 : 0,

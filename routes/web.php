@@ -40,6 +40,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [PublicController::class, 'welcome']);
 Route::get('/menu', [PublicController::class, 'menu'])->name('menu');
 
+// Switch UI language (available to guests & authenticated users)
+Route::post('/locale', [\App\Http\Controllers\LocaleController::class, 'update'])->name('locale.update');
+
 Route::middleware(['auth', 'password.changed'])->group(function () {
     // Wajib ganti password saat pertama login (penitip) — gated by flag
     Route::get('/ganti-password', [\App\Http\Controllers\Auth\ForcePasswordController::class, 'edit'])->name('password.force');
