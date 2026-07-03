@@ -17,7 +17,7 @@ const ProductCard = React.memo(function ProductCard({ product, cartQty = 0, onAd
     const remainingStock = product.stock - cartQty;
     const isOut = remainingStock <= 0;
     return (
-        <div className={`border rounded-xl p-3 md:p-4 flex flex-col justify-between hover:shadow-md transition duration-200 ${isOut ? 'bg-amber-50/60 border-amber-200 hover:border-amber-300' : 'bg-slate-50 border-slate-200 hover:border-primary-300'}`}>
+        <div className={`border rounded-xl p-2.5 md:p-4 flex flex-col justify-between hover:shadow-md transition duration-200 ${isOut ? 'bg-amber-50/60 border-amber-200 hover:border-amber-300' : 'bg-slate-50 border-slate-200 hover:border-primary-300'}`}>
             <div>
                 <div className="flex justify-between items-start gap-1 flex-wrap">
                     <span className={`px-1.5 py-0.5 rounded text-[8px] md:text-[9px] font-bold uppercase ${product.type === "kantin" ? "bg-indigo-50 text-indigo-700 border border-indigo-100" : "bg-orange-50 text-orange-700 border border-orange-100"}`}>
@@ -27,30 +27,30 @@ const ProductCard = React.memo(function ProductCard({ product, cartQty = 0, onAd
                 </div>
 
                 {product.image_url ? (
-                    <div className="mt-2 mb-1 w-full h-24 md:h-28 rounded-lg overflow-hidden bg-white border border-slate-100 flex items-center justify-center shadow-sm">
+                    <div className="mt-2 mb-1 w-full h-20 md:h-28 rounded-lg overflow-hidden bg-white border border-slate-100 flex items-center justify-center shadow-sm">
                         <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
                     </div>
                 ) : (
-                    <div className="mt-2 mb-1 w-full h-24 md:h-28 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-200 shadow-sm">
+                    <div className="mt-2 mb-1 w-full h-20 md:h-28 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-200 shadow-sm">
                         <svg className="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </div>
                 )}
 
-                <h4 className="font-bold text-slate-900 text-xs md:text-sm mt-2 leading-snug">{product.name}</h4>
-                <p className="text-[10px] md:text-xs text-slate-400 mt-0.5">{product.category?.name}</p>
+                <h4 className="font-bold text-slate-900 text-xs md:text-sm mt-2 leading-snug line-clamp-2">{product.name}</h4>
+                <p className="text-[10px] md:text-xs text-slate-400 mt-0.5 truncate">{product.category?.name}</p>
                 {product.seller && (
                     <p className="text-[9px] md:text-[10px] text-slate-500 font-semibold mt-1">Siswa: {product.seller.name}</p>
                 )}
             </div>
 
-            <div className="mt-3 md:mt-4">
-                <div className="flex justify-between items-baseline mb-2">
-                    <span className={`text-[10px] md:text-xs font-semibold ${isOut ? 'text-amber-600' : 'text-slate-400'}`}>{isOut ? 'Stok Habis' : `Stok: ${remainingStock}`}</span>
-                    <span className="font-extrabold text-slate-900 text-xs md:text-sm">{formatRupiah(product.selling_price)}</span>
+            <div className="mt-2.5 md:mt-4">
+                <div className="flex justify-between items-baseline mb-2 gap-1">
+                    <span className={`text-[10px] md:text-xs font-semibold shrink-0 ${isOut ? 'text-amber-600' : 'text-slate-400'}`}>{isOut ? 'Habis' : `Stok: ${remainingStock}`}</span>
+                    <span className="font-extrabold text-slate-900 text-[13px] md:text-sm">{formatRupiah(product.selling_price)}</span>
                 </div>
                 <button
                     onClick={() => onAdd(product.id)}
-                    className={`w-full py-1.5 md:py-2 text-white font-semibold text-[10px] md:text-xs rounded-lg shadow-sm transition flex items-center justify-center gap-1 ${isOut ? 'bg-amber-500 hover:bg-amber-600' : 'bg-primary-600 hover:bg-primary-700'}`}
+                    className={`w-full py-2 text-white font-semibold text-[11px] md:text-xs rounded-lg shadow-sm transition active:scale-[0.97] flex items-center justify-center gap-1 ${isOut ? 'bg-amber-500 hover:bg-amber-600' : 'bg-primary-600 hover:bg-primary-700'}`}
                 >
                     {isOut ? (
                         <>
@@ -438,7 +438,7 @@ export default function Create({
                 {/* Left Column: Search & Products Grid */}
                 <div className="lg:col-span-2 flex flex-col gap-6 lg:min-h-0 lg:overflow-y-auto">
                     {/* Search Card */}
-                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <div className="bg-white p-3 md:p-4 rounded-xl border border-slate-200 shadow-sm">
                         <form
                             onSubmit={handleSearchSubmit}
                             className="flex gap-2"
@@ -453,9 +453,21 @@ export default function Create({
                                     onChange={(e) =>
                                         setLocalSearch(e.target.value)
                                     }
-                                    placeholder="Cari produk (Ketuk untuk Keyboard)..."
-                                    className="w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 cursor-pointer"
+                                    placeholder="Cari produk..."
+                                    className="w-full pl-10 pr-9 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 cursor-pointer"
                                 />
+                                {localSearch && (
+                                    <button
+                                        type="button"
+                                        onClick={handleSearchReset}
+                                        className="sm:hidden absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 active:bg-slate-200"
+                                        aria-label="Hapus pencarian"
+                                    >
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                )}
                                 <div className="absolute left-3 top-3 text-slate-400">
                                     <svg
                                         className="w-5 h-5"
@@ -476,7 +488,7 @@ export default function Create({
                             <button
                                 id="search-btn"
                                 type="submit"
-                                className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm rounded-lg shadow-sm transition"
+                                className="px-4 sm:px-5 py-2.5 bg-slate-900 hover:bg-slate-800 active:bg-slate-800 text-white font-semibold text-sm rounded-lg shadow-sm transition"
                             >
                                 Cari
                             </button>
@@ -484,7 +496,7 @@ export default function Create({
                                 <button
                                     type="button"
                                     onClick={handleSearchReset}
-                                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-lg transition"
+                                    className="hidden sm:block px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-lg transition"
                                 >
                                     Reset
                                 </button>
@@ -493,7 +505,7 @@ export default function Create({
                     </div>
 
                     {/* Products Grid */}
-                    <div className="bg-white p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm flex-1">
+                    <div className="bg-white p-3 md:p-6 rounded-xl border border-slate-200 shadow-sm flex-1">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-sm md:text-base font-bold text-slate-900">
                                 Pilih Produk
@@ -510,7 +522,7 @@ export default function Create({
                                     : "Belum ada produk."}
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 overflow-y-auto pr-2 custom-scrollbar">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 md:gap-4 overflow-y-auto md:pr-2 custom-scrollbar pb-24 lg:pb-0">
                                 {products.map((p) => (
                                     <ProductCard key={p.id} product={p} cartQty={cart[p.id]?.quantity || 0} onAdd={handleAddToCart} />
                                 ))}
@@ -876,7 +888,7 @@ export default function Create({
 
             {/* Floating bottom bar on mobile */}
             {cartItems.length > 0 && (
-                <div className="lg:hidden fixed bottom-16 left-0 right-0 bg-primary-600 text-white px-5 py-3.5 flex justify-between items-center shadow-2xl z-20 transition border-t border-primary-500">
+                <div className="lg:hidden fixed bottom-[4.5rem] left-3 right-3 bg-primary-600 text-white pl-4 pr-3 py-3 flex justify-between items-center shadow-2xl shadow-primary-900/30 z-20 transition rounded-2xl border border-primary-500">
                     <div>
                         <p className="text-[10px] font-bold uppercase tracking-wider text-primary-100">
                             Keranjang
@@ -888,7 +900,7 @@ export default function Create({
                     </div>
                     <button
                         onClick={() => setShowCartDrawer(true)}
-                        className="px-4 py-2 bg-white text-primary-800 font-bold text-xs rounded-xl shadow-sm transition hover:bg-slate-100 flex items-center gap-1"
+                        className="px-4 py-2.5 bg-white text-primary-800 font-bold text-xs rounded-xl shadow-sm transition active:scale-95 hover:bg-slate-100 flex items-center gap-1.5"
                     >
                         <svg
                             className="w-4 h-4"
@@ -931,7 +943,7 @@ export default function Create({
                         onClick={() => setShowCartDrawer(false)}
                     ></div>
 
-                    <div className="fixed inset-x-0 bottom-0 h-[100dvh] bg-white rounded-t-3xl shadow-2xl z-50 flex flex-col overflow-hidden animate-slide-up">
+                    <div className="fixed inset-x-0 bottom-0 h-[92dvh] bg-white rounded-t-3xl shadow-2xl z-50 flex flex-col overflow-hidden animate-slide-up">
                         {/* Pill handle bar for native bottom sheet feel */}
                         <div className="w-12 h-1 bg-slate-300/80 rounded-full mx-auto mt-3 shrink-0"></div>
 
@@ -955,12 +967,26 @@ export default function Create({
                                     Keranjang Belanja ({cartItems.length})
                                 </h3>
                             </div>
-                            <button
-                                onClick={() => setShowCartDrawer(false)}
-                                className="text-slate-500 hover:text-slate-700 text-xs font-bold px-3 py-1.5 bg-slate-100 rounded-lg active:bg-slate-200"
-                            >
-                                Tutup
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        openConfirm({ message: 'Kosongkan keranjang?', danger: false }, () => {
+                                            setCart({});
+                                            setShowCartDrawer(false);
+                                        });
+                                    }}
+                                    className="text-rose-600 text-xs font-bold px-3 py-1.5 bg-rose-50 border border-rose-100 rounded-lg active:bg-rose-100"
+                                >
+                                    Kosongkan
+                                </button>
+                                <button
+                                    onClick={() => setShowCartDrawer(false)}
+                                    className="text-slate-500 hover:text-slate-700 text-xs font-bold px-3 py-1.5 bg-slate-100 rounded-lg active:bg-slate-200"
+                                >
+                                    Tutup
+                                </button>
+                            </div>
                         </div>
 
                         <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-2">
@@ -1057,7 +1083,7 @@ export default function Create({
                             ))}
                         </div>
 
-                        <div className="bg-slate-50 border-t border-slate-100 p-4 shrink-0">
+                        <div className="bg-slate-50 border-t border-slate-100 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shrink-0">
                             <div className="flex justify-between items-center mb-3">
                                 <span className="text-xs font-bold text-slate-500">
                                     Total Belanja
